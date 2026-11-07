@@ -1,0 +1,47 @@
+# dependencies
+node_modules/
+
+# env
+.env
+.env.*
+!.env.example
+
+# build output
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# expo
+.expo/
+web-build/
+expo-env.d.ts
+apps/mobile/ios/
+apps/mobile/android/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# supabase local
+supabase/.branches/
+supabase/.temp/
+
+# data downloads (raw source datasets are fetched by scripts, not committed)
+data/raw/
+
+# test / tooling
+coverage/
+.vitest/
+playwright-report/
+test-results/
+
+# os / editors
+.DS_Store
+*.log
+.idea/
+.vscode/*
+!.vscode/extensions.json

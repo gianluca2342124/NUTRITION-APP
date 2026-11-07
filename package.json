@@ -1,0 +1,31 @@
+{
+  "name": "nutrition-platform",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev:web": "pnpm --filter @repo/web dev",
+    "dev:mobile": "pnpm --filter @repo/mobile start",
+    "build:web": "pnpm --filter @repo/web build",
+    "typecheck": "pnpm -r --parallel typecheck",
+    "lint": "pnpm -r --parallel lint",
+    "test": "vitest run --project unit",
+    "test:db": "vitest run --project db",
+    "test:all": "vitest run",
+    "db:start": "supabase start -x studio,edge-runtime,logflare,vector,imgproxy,realtime,supavisor,postgres-meta",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "seed:build": "node scripts/seed/build-seed.mjs",
+    "check": "pnpm typecheck && pnpm lint && pnpm test"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.119.0",
+    "@types/node": "^22.19.0",
+    "supabase": "^3.0.0",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.0"
+  }
+}

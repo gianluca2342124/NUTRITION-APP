@@ -1,0 +1,73 @@
+import { z } from 'zod';
+import { EU_ALLERGENS } from './allergens';
+import { NutrientValuesSchema } from './nutrients';
+
+export const BASES = ['100g', '100ml'] as const;
+export type Basis = (typeof BASES)[number];
+
+export const DATA_SOURCES = ['open_food_facts', 'usda_fdc', 'user_contribution', 'label_scan', 'editorial'] as const;
+export type DataSource = (typeof DATA_SOURCES)[number];
+
+export const PRODUCT_WARNINGS = [
+  'missing_nutrition',
+  'partial_nutrition',
+  'missing_ingredients',
+  'energy_derived_from_kj',
+  'salt_derived_from_sodium',
+  'source_quality_errors',
+  'implausible_values',
+  'obsolete_product',
+] as const;
+export type ProductWarning = (typeof PRODUCT_WARNINGS)[number];
+
+export const ProductSchema = z.object({
+  gtin: z.string(),
+  name: z.string().nullable(),
+  /** Localised names keyed by language code when the source provides them. */
+  names: z.record(z.string(), z.string()),
+  brand: z.string().nullable(),
+  quantityText: z.string().nullable(),
+  netQuantity: z.number().positive().nullable(),
+  netQuantityUnit: z.enum(['g', 'ml']).nullable(),
+  servingSizeText: z.string().nullable(),
+  servingQuantity: z.number().positive().nullable(),
+  basis: z.enum(BASES),
+  nutrientsPer100: NutrientValuesSchema,
+  nutritionAvailable: z.boolean(),
+  categories: z.array(z.string()),
+  categoryMain: z.string().nullable(),
+  countries: z.array(z.string()),
+  ingredientsText: z.string().nullable(),
+  ingredientsTexts: z.record(z.string(), z.string()),
+  allergens: z.array(z.enum(EU_ALLERGENS)),
+  traces: z.array(z.enum(EU_ALLERGENS)),
+  additives: z.array(z.string()),
+  labels: z.array(z.string()),
+  nutriscoreGrade: z.enum(['a', 'b', 'c', 'd', 'e']).nullable(),
+  nutriscoreVersion: z.string().nullable(),
+  novaGroup: z.number().int().min(1).max(4).nullable(),
+  imageUrl: z.string().nullable(),
+  imageIngredientsUrl: z.string().nullable(),
+  imageNutritionUrl: z.string().nullable(),
+  source: z.enum(DATA_SOURCES),
+  sourceId: z.string(),
+  sourceUrl: z.string().nullable(),
+  license: z.string(),
+  sourceLastModified: z.string().nullable(),
+  warnings: z.array(z.enum(PRODUCT_WARNINGS)),
+});
+export type Product = z.infer<typeof ProductSchema>;
+
+/** Product as served by the API (adds catalogue identity + freshness). */
+export const CatalogProductSchema = ProductSchema.extend({
+  id: z.string(),
+  slug: z.string(),
+  importedAt: z.string(),
+  updatedAt: z.string(),
+  verificationStatus: z.enum(['imported', 'user_submitted', 'pending_review', 'verified', 'rejected']),
+});
+export type CatalogProduct = z.infer<typeof CatalogProductSchema>;
+
+export function localizedName(p: { name: string | null; names: Record<string, string> }, locale: string): string | null {
+  return p.names[locale] ?? p.name ?? Object.values(p.names)[0] ?? null;
+}

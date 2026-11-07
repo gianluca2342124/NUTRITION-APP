@@ -1,0 +1,205 @@
+fdc_id,slug,category,name_es,name_en,synonyms_es,synonyms_en
+171688,manzana,fruits,Manzana cruda con piel,"Apple, raw, with skin",manzanas,apples
+173944,platano,fruits,Plátano crudo,"Banana, raw",plátanos|banana|bananas,bananas
+169097,naranja,fruits,Naranja cruda,"Orange, raw",naranjas,oranges
+169105,mandarina,fruits,Mandarina cruda,"Mandarin orange (tangerine), raw",mandarinas|clementina|clementinas,tangerine|clementine
+169118,pera,fruits,Pera cruda,"Pear, raw",peras,pears
+169928,melocoton,fruits,Melocotón crudo,"Peach, yellow, raw",melocotones|durazno,peaches
+171697,albaricoque,fruits,Albaricoque crudo,"Apricot, raw",albaricoques,apricots
+169949,ciruela,fruits,Ciruela cruda,"Plum, raw",ciruelas,plums
+171719,cerezas,fruits,Cerezas dulces crudas,"Cherries, sweet, raw",cereza|picotas,cherry
+174683,uvas,fruits,Uvas crudas,"Grapes, red or green, raw",uva,grape
+167762,fresas,fruits,Fresas crudas,"Strawberries, raw",fresa|fresón|fresones,strawberry
+171711,arandanos,fruits,Arándanos crudos,"Blueberries, raw",arándano,blueberry
+167755,frambuesas,fruits,Frambuesas crudas,"Raspberries, raw",frambuesa,raspberry
+167765,sandia,fruits,Sandía cruda,"Watermelon, raw",sandías,
+169092,melon-cantalupo,fruits,Melón cantalupo crudo,"Cantaloupe melon, raw",melón,melon
+169124,pina,fruits,Piña cruda,"Pineapple, raw",piñas,
+169910,mango,fruits,Mango crudo,"Mango, raw",mangos,
+168153,kiwi,fruits,Kiwi verde crudo,"Kiwifruit, green, raw",kiwis,kiwi
+167746,limon,fruits,Limón crudo sin piel,"Lemon, raw, without peel",limones,lemons
+171705,aguacate,fruits,Aguacate crudo,"Avocado, raw",aguacates|palta,avocados
+173021,higos,fruits,Higos crudos,"Figs, raw",higo|brevas,fig
+168191,datiles-medjool,fruits,Dátiles medjool,"Dates, medjool",dátil|dátiles,dates
+168165,pasas,fruits,Pasas sin semillas,"Raisins, seedless",uvas pasas|pasa,raisin
+169134,granada,fruits,Granada cruda,"Pomegranate, raw",granadas,
+173033,pomelo,fruits,Pomelo crudo,"Grapefruit, raw",pomelos|toronja,
+169926,papaya,fruits,Papaya cruda,"Papaya, raw",papayas,
+169914,nectarina,fruits,Nectarina cruda,"Nectarine, raw",nectarinas,
+170457,tomate,vegetables,Tomate rojo crudo,"Tomato, red, ripe, raw",tomates,tomatoes
+169247,lechuga-romana,vegetables,Lechuga romana cruda,"Lettuce, romaine, raw",lechuga|cogollo,lettuce
+169248,lechuga-iceberg,vegetables,Lechuga iceberg cruda,"Lettuce, iceberg, raw",lechuga,lettuce
+168462,espinacas,vegetables,Espinacas crudas,"Spinach, raw",espinaca,
+168463,espinacas-cocidas,vegetables,Espinacas cocidas,"Spinach, cooked, boiled",,
+168409,pepino,vegetables,Pepino crudo con piel,"Cucumber, with peel, raw",pepinos,
+170393,zanahoria,vegetables,Zanahoria cruda,"Carrot, raw",zanahorias,carrots
+170000,cebolla,vegetables,Cebolla cruda,"Onion, raw",cebollas,onions
+169230,ajo,vegetables,Ajo crudo,"Garlic, raw",ajos|diente de ajo,
+170108,pimiento-rojo,vegetables,Pimiento rojo crudo,"Red bell pepper, raw",pimiento|pimientos,pepper
+170427,pimiento-verde,vegetables,Pimiento verde crudo,"Green bell pepper, raw",pimiento,pepper
+169291,calabacin,vegetables,Calabacín crudo con piel,"Zucchini, raw",calabacines,courgette
+169228,berenjena,vegetables,Berenjena cruda,"Eggplant, raw",berenjenas,aubergine
+170379,brocoli,vegetables,Brócoli crudo,"Broccoli, raw",brécol,
+169967,brocoli-cocido,vegetables,Brócoli cocido,"Broccoli, cooked, boiled",brécol,
+169986,coliflor,vegetables,Coliflor cruda,"Cauliflower, raw",,
+169961,judias-verdes,vegetables,Judías verdes crudas,"Green beans, raw",judía verde|vainas,string beans
+170419,guisantes,vegetables,Guisantes crudos,"Green peas, raw",guisante,peas
+169214,maiz-dulce,vegetables,Maíz dulce en conserva escurrido,"Sweet corn, canned, drained",maíz,corn
+170438,patata-cocida,vegetables,Patata cocida con piel,"Potato, boiled in skin",patatas|papa|papas,potatoes
+170093,patata-asada,vegetables,Patata asada con piel,"Potato, baked, flesh and skin",patata al horno,baked potato
+168483,boniato-asado,vegetables,Boniato asado,"Sweet potato, baked",batata|camote,
+169251,champinones,vegetables,Champiñones crudos,"White mushrooms, raw",champiñón|setas,mushrooms
+168389,esparragos,vegetables,Espárragos verdes crudos,"Asparagus, raw",espárrago|trigueros,
+169975,col,vegetables,Col (repollo) cruda,"Cabbage, raw",repollo,
+168421,kale,vegetables,Kale crudo,"Kale, raw",col rizada,
+169246,puerro,vegetables,Puerro crudo,"Leeks, raw",puerros,leek
+169988,apio,vegetables,Apio crudo,"Celery, raw",,
+169145,remolacha,vegetables,Remolacha cruda,"Beets, raw",,beetroot
+168448,calabaza,vegetables,Calabaza cruda,"Pumpkin, raw",,
+169205,alcachofa,vegetables,Alcachofa cruda,"Artichoke, raw",alcachofas,
+169387,rucula,vegetables,Rúcula cruda,"Arugula, raw",rúcola,rocket
+170383,coles-de-bruselas,vegetables,Coles de Bruselas crudas,"Brussels sprouts, raw",,
+169096,aceitunas-verdes,vegetables,Aceitunas verdes en conserva,"Green olives, pickled",aceituna|olivas,olives
+169094,aceitunas-negras,vegetables,Aceitunas negras en conserva,"Ripe black olives, canned",olivas negras,olives
+169836,patatas-fritas,prepared,Patatas fritas (restaurante),"French fries, restaurant",patatas fritas|fritas,chips
+173757,garbanzos-cocidos,legumes,Garbanzos cocidos,"Chickpeas, cooked",garbanzos,garbanzo beans
+172421,lentejas-cocidas,legumes,Lentejas cocidas,"Lentils, cooked",lentejas,
+175203,alubias-blancas-cocidas,legumes,Alubias blancas cocidas,"White beans, cooked",judías blancas|alubias,
+173735,alubias-negras-cocidas,legumes,Alubias negras cocidas,"Black beans, cooked",frijoles negros,
+175194,alubias-rojas-cocidas,legumes,Alubias rojas cocidas,"Red kidney beans, cooked",judías rojas|frijoles rojos,kidney beans
+172475,tofu-firme,legumes,Tofu firme,"Tofu, firm",tofu,
+174289,hummus,legumes,Hummus,Hummus,humus,
+168411,edamame,legumes,Edamame cocido,"Edamame, prepared",,
+173806,cacahuetes,nuts_seeds,Cacahuetes tostados sin sal,"Peanuts, dry-roasted, unsalted",cacahuete|maní,peanut
+172470,crema-de-cacahuete,nuts_seeds,Crema de cacahuete sin sal,"Peanut butter, smooth, unsalted",mantequilla de cacahuete,
+169757,arroz-blanco-cocido,grains,Arroz blanco cocido,"White rice, long-grain, cooked",arroz,rice
+169704,arroz-integral-cocido,grains,Arroz integral cocido,"Brown rice, long-grain, cooked",arroz integral,
+168928,pasta-cocida,grains,Pasta cocida,"Pasta, cooked",macarrones|espaguetis|fideos|tallarines,spaghetti|macaroni|noodles
+168910,pasta-integral-cocida,grains,Pasta integral cocida,"Whole-wheat pasta, cooked",,
+174924,pan-de-molde-blanco,grains,Pan de molde blanco,"White bread, sliced",pan blanco|pan de molde,
+172688,pan-integral,grains,Pan integral de trigo,"Whole-wheat bread",pan de molde integral,wholemeal bread
+172675,pan-de-barra,grains,Pan de barra (tipo baguette),"French bread (baguette)",barra de pan|baguette|pan,bread
+172684,pan-de-centeno,grains,Pan de centeno,"Rye bread",,
+168013,pan-multicereales,grains,Pan multicereales,"Multi-grain bread",,
+173904,copos-de-avena,grains,Copos de avena,"Rolled oats, dry",avena,oatmeal|oats
+168917,quinoa-cocida,grains,Quinoa cocida,"Quinoa, cooked",quinua,
+169700,cuscus-cocido,grains,Cuscús cocido,"Couscous, cooked",cous cous,
+170287,bulgur-cocido,grains,Bulgur cocido,"Bulgur, cooked",,
+175036,tortilla-de-maiz,grains,Tortilla de maíz,"Corn tortilla",,
+175037,tortilla-de-trigo,grains,Tortilla de trigo,"Flour tortilla",wrap|fajita,
+174648,copos-de-maiz,grains,Copos de maíz (cereal de desayuno),"Corn flakes cereal",cereales,cereal
+171646,granola,grains,Granola casera,"Granola, homemade",,
+170250,tortitas-de-arroz,grains,Tortitas de arroz integral,"Rice cakes, brown rice",,
+168914,fideos-de-arroz,grains,Fideos de arroz cocidos,"Rice noodles, cooked",,
+169762,fideos-de-huevo,grains,Fideos de huevo cocidos,"Egg noodles, cooked",,
+174987,cruasan,sweets_snacks,Cruasán de mantequilla,"Croissant, butter",croissant,
+171265,leche-entera,dairy,Leche entera,"Whole milk (3.25% fat)",leche,milk
+171267,leche-semidesnatada,dairy,Leche con 2 % de grasa,"Reduced-fat milk (2%)",leche semidesnatada|leche semi,
+171269,leche-desnatada,dairy,Leche desnatada,"Skim milk",,
+171284,yogur-natural,dairy,Yogur natural entero,"Yogurt, plain, whole milk",yogur|yogurt,yoghurt
+170886,yogur-natural-bajo-en-grasa,dairy,Yogur natural bajo en grasa,"Yogurt, plain, low fat",yogur desnatado,
+170894,yogur-griego-0,dairy,Yogur griego natural 0 %,"Greek yogurt, plain, nonfat",,
+171304,yogur-griego,dairy,Yogur griego natural entero,"Greek yogurt, plain, whole milk",yogur griego,
+173414,queso-cheddar,dairy,Queso cheddar,"Cheddar cheese",,
+170845,mozzarella,dairy,Queso mozzarella,"Mozzarella, whole milk",,
+170848,parmesano,dairy,Queso parmesano,"Parmesan cheese",,
+172179,queso-cottage,dairy,Queso cottage,"Cottage cheese",,
+173418,queso-crema,dairy,Queso crema,"Cream cheese",queso para untar,
+173420,queso-feta,dairy,Queso feta,"Feta cheese",,
+173435,queso-de-cabra,dairy,Queso de cabra tierno,"Goat cheese, soft",rulo de cabra,
+170851,ricotta,dairy,Queso ricotta,"Ricotta, whole milk",,
+172177,queso-brie,dairy,Queso brie,"Brie cheese",,
+171251,queso-suizo,dairy,Queso suizo (emmental),"Swiss cheese",emmental,
+170859,nata-para-montar,dairy,Nata para montar,"Heavy whipping cream",nata,cream
+167575,helado-de-vainilla,sweets_snacks,Helado de vainilla,"Vanilla ice cream",helado,ice cream
+171287,huevo,eggs,Huevo entero crudo,"Egg, whole, raw",huevos,eggs
+173424,huevo-duro,eggs,Huevo duro,"Egg, hard-boiled",huevo cocido,boiled egg
+173423,huevo-frito,eggs,Huevo frito,"Egg, fried",,fried egg
+172187,huevos-revueltos,eggs,Huevos revueltos,"Scrambled eggs",,
+172183,clara-de-huevo,eggs,Clara de huevo cruda,"Egg white, raw",claras,
+171477,pechuga-de-pollo,meat,Pechuga de pollo asada sin piel,"Chicken breast, roasted, meat only",pollo|pechuga,chicken
+172388,muslo-de-pollo,meat,Muslo de pollo asado sin piel,"Chicken thigh, roasted, meat only",contramuslo,
+171496,pechuga-de-pavo,meat,Pechuga de pavo asada,"Turkey breast, roasted",pavo,turkey
+172941,pavo-en-lonchas,meat,Pechuga de pavo en lonchas,"Turkey breast, sliced deli",fiambre de pavo,
+174032,carne-picada-de-vacuno,meat,Carne picada de vacuno 85/15 cocinada,"Ground beef 85% lean, cooked",hamburguesa de ternera|carne picada,beef patty
+173118,filete-de-vacuno,meat,Filete de vacuno (top sirloin) a la parrilla,"Beef top sirloin steak, broiled",ternera|filete|bistec,steak
+168233,lomo-de-cerdo,meat,Lomo de cerdo asado,"Pork loin, roasted, lean",cerdo|lomo,pork
+173863,jamon-cocido,meat,Jamón cocido en lonchas,"Ham, sliced, deli",jamón york|jamón de york,ham
+168277,bacon,meat,Beicon crudo,"Bacon, cured, raw",bacon|panceta,
+172938,salami,meat,Salami curado de cerdo,"Salami, dry, pork",,
+174586,salchicha-de-cerdo,meat,Salchicha de cerdo (tipo italiana) cocinada,"Italian pork sausage, cooked",salchicha,sausage
+173862,salchicha-frankfurt,meat,Salchicha Frankfurt de vacuno,"Frankfurter, beef",frankfurt,hot dog
+174314,pierna-de-cordero,meat,Pierna de cordero asada (magra),"Lamb leg, roasted, lean",cordero,lamb
+175168,salmon,fish_seafood,Salmón atlántico de piscifactoría cocinado,"Atlantic salmon, farmed, cooked",salmón,salmon
+171998,salmon-salvaje,fish_seafood,Salmón atlántico salvaje cocinado,"Atlantic salmon, wild, cooked",,
+173687,salmon-ahumado,fish_seafood,Salmón ahumado,"Smoked salmon",,lox
+173709,atun-al-natural,fish_seafood,Atún claro al natural escurrido,"Light tuna, canned in water, drained",atún|atún en lata,tuna
+173708,atun-en-aceite,fish_seafood,Atún claro en aceite escurrido,"Light tuna, canned in oil, drained",atún en aceite,
+175159,atun-fresco,fish_seafood,Atún fresco (rabil) crudo,"Yellowfin tuna, raw",,
+171956,bacalao,fish_seafood,Bacalao fresco cocinado,"Atlantic cod, cooked",,cod
+175139,sardinas-en-aceite,fish_seafood,Sardinas en aceite escurridas,"Sardines, canned in oil, drained",sardina,sardine
+175120,caballa,fish_seafood,Caballa cocinada,"Atlantic mackerel, cooked",,mackerel
+174183,anchoas,fish_seafood,Anchoas en aceite escurridas,"Anchovies, canned in oil, drained",anchoa,anchovy
+175180,gambas-cocidas,fish_seafood,Gambas cocidas,"Shrimp, cooked",gamba|langostinos,prawns
+174223,calamar,fish_seafood,Calamar crudo,"Squid, raw",calamares,
+174249,pulpo-cocido,fish_seafood,Pulpo cocido,"Octopus, cooked",pulpo,
+174217,mejillones,fish_seafood,Mejillones cocidos,"Mussels, cooked",,
+171975,almejas,fish_seafood,Almejas cocidas,"Clams, cooked",,
+175177,tilapia,fish_seafood,Tilapia cocinada,"Tilapia, cooked",,
+173718,trucha,fish_seafood,Trucha arcoíris cocinada,"Rainbow trout, cooked",,trout
+171413,aceite-de-oliva,fats_oils,Aceite de oliva,"Olive oil",aceite|AOVE|aceite de oliva virgen extra,oil
+172338,aceite-de-girasol,fats_oils,Aceite de girasol alto oleico,"Sunflower oil, high oleic",aceite de girasol,
+172349,margarina,fats_oils,Margarina (80 % de grasa),"Margarine (80% fat)",,
+173430,mantequilla-sin-sal,fats_oils,Mantequilla sin sal,"Butter, unsalted",,
+173410,mantequilla,fats_oils,Mantequilla con sal,"Butter, salted",mantequilla,butter
+171009,mayonesa,condiments,Mayonesa,"Mayonnaise",,mayo
+170567,almendras,nuts_seeds,Almendras,"Almonds",almendra,
+170187,nueces,nuts_seeds,Nueces,"Walnuts",nuez,
+170162,anacardos,nuts_seeds,Anacardos crudos,"Cashews, raw",anacardo,
+170184,pistachos,nuts_seeds,Pistachos crudos,"Pistachios, raw",pistacho,
+170581,avellanas,nuts_seeds,Avellanas,"Hazelnuts",avellana,
+170562,pipas-de-girasol,nuts_seeds,Pipas de girasol peladas,"Sunflower seed kernels",pipas,
+170554,semillas-de-chia,nuts_seeds,Semillas de chía,"Chia seeds",chía,
+169414,semillas-de-lino,nuts_seeds,Semillas de lino,"Flaxseed",linaza,
+170150,semillas-de-sesamo,nuts_seeds,Semillas de sésamo,"Sesame seeds",sésamo,
+170556,pipas-de-calabaza,nuts_seeds,Pipas de calabaza peladas,"Pumpkin seed kernels",,
+170273,chocolate-negro,sweets_snacks,Chocolate negro 70-85 %,"Dark chocolate 70-85%",chocolate,chocolate
+167587,chocolate-con-leche,sweets_snacks,Chocolate con leche,"Milk chocolate",,
+169655,azucar,sweets_snacks,Azúcar blanco,"Sugar, granulated",azúcar,sugar
+168833,azucar-moreno,sweets_snacks,Azúcar moreno,"Brown sugar",,
+169640,miel,sweets_snacks,Miel,"Honey",,
+169641,mermelada,sweets_snacks,Mermelada,"Jam",confitura,jam|preserves
+169661,sirope-de-arce,sweets_snacks,Sirope de arce,"Maple syrup",,
+169677,patatas-chips,sweets_snacks,Patatas fritas de bolsa,"Potato chips, salted",chips,crisps
+167959,palomitas,sweets_snacks,Palomitas sin aceite,"Popcorn, air-popped",palomitas,popcorn
+172716,galletas-con-pepitas-de-chocolate,sweets_snacks,Galletas con pepitas de chocolate,"Chocolate chip cookies",galletas,cookies
+174990,donut,sweets_snacks,Dónut de bizcocho sin cobertura,"Doughnut, cake-type, plain",dónut|rosquilla,donut
+172765,muffin-de-arandanos,sweets_snacks,Muffin de arándanos,"Blueberry muffin",magdalena,muffin
+175009,tortitas-americanas,sweets_snacks,Tortitas (pancakes) caseras,"Pancakes, homemade",pancakes,
+167542,barrita-de-granola,sweets_snacks,Barrita de granola,"Granola bar, plain",barrita de cereales,
+169593,cacao-en-polvo,sweets_snacks,Cacao puro en polvo sin azúcar,"Cocoa powder, unsweetened",cacao,cocoa
+171890,cafe,beverages,Café solo de filtro,"Coffee, brewed",café,coffee
+171891,espresso,beverages,Café espresso,"Espresso",café expreso|café solo,
+173227,te-negro,beverages,Té negro,"Black tea, brewed",té,tea
+169098,zumo-de-naranja,beverages,Zumo de naranja natural,"Orange juice, fresh",zumo,juice
+173933,zumo-de-manzana,beverages,Zumo de manzana sin azúcar añadido,"Apple juice, unsweetened",,
+174852,refresco-de-cola,beverages,Refresco de cola,"Cola soft drink",cola|refresco,soda
+174850,refresco-de-cola-sin-azucar,beverages,Refresco de cola sin azúcar (aspartamo),"Diet cola (aspartame)",cola light|cola zero,diet soda
+168746,cerveza,beverages,Cerveza,"Beer, regular",caña|tercio,beer
+173190,vino-tinto,beverages,Vino tinto,"Red wine",vino,wine
+174837,vino-blanco,beverages,Vino blanco,"White wine",,
+174832,bebida-de-almendra,beverages,Bebida de almendra sin azúcar,"Almond milk, unsweetened",leche de almendra,
+172446,bebida-de-soja,beverages,Bebida de soja original,"Soy milk, original",leche de soja,soymilk
+173647,agua,beverages,Agua,"Water",,
+173177,proteina-whey,other,Proteína whey aislada en polvo,"Whey protein isolate powder",proteína en polvo|whey,protein powder
+168556,ketchup,condiments,Kétchup,"Ketchup",tomate kétchup,catsup
+171192,salsa-de-tomate,condiments,Salsa de tomate tipo marinara,"Marinara pasta sauce",salsa de tomate,tomato sauce
+172234,mostaza,condiments,Mostaza,"Mustard, yellow",,
+174277,salsa-de-soja,condiments,Salsa de soja,"Soy sauce",soja,
+172241,vinagre-balsamico,condiments,Vinagre balsámico,"Balsamic vinegar",vinagre,
+173469,vinagre-de-manzana,condiments,Vinagre de manzana,"Cider vinegar",,
+171579,pesto,condiments,Salsa pesto,"Pesto sauce",,
+173468,sal,condiments,Sal de mesa,"Table salt",,salt
+170317,pizza-de-queso,prepared,Pizza de queso (congelada horneada),"Cheese pizza, frozen, baked",pizza,
+170693,hamburguesa-sencilla,prepared,Hamburguesa sencilla (comida rápida),"Hamburger, single patty, plain",hamburguesa,burger
+167668,arroz-frito,prepared,Arroz frito sin carne (restaurante),"Fried rice without meat, restaurant",,fried rice
