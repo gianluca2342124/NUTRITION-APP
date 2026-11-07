@@ -1,4 +1,7 @@
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
+
+const r = (p: string) => fileURLToPath(new URL(p, import.meta.url));
 
 export default defineConfig({
   test: {
@@ -11,6 +14,12 @@ export default defineConfig({
         },
       },
       {
+        resolve: {
+          alias: {
+            '@': r('./apps/web/src'),
+            'server-only': r('./supabase/tests/server-only-stub.ts'),
+          },
+        },
         test: {
           name: 'db',
           include: ['supabase/tests/**/*.test.ts'],

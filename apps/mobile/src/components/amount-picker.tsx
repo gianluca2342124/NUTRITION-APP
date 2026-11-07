@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { formatNumber, type Basis, type Portion } from '@repo/core';
 import { Choice, Field, IconButton, Row, Text } from './ui';
@@ -49,11 +49,14 @@ export function AmountPicker({
 }) {
   const { t, locale } = useT();
   const [text, setText] = useState(formatNumber(value, locale, 1));
+  const [shown, setShown] = useState(value);
   const unit = basis === '100ml' ? 'ml' : 'g';
 
-  useEffect(() => {
+  // Keep the text field in sync when the value changes from outside (chips, steppers).
+  if (shown !== value) {
+    setShown(value);
     setText(formatNumber(value, locale, 1));
-  }, [value, locale]);
+  }
 
   const commit = (raw: string) => {
     const n = Number(raw.replace(',', '.'));

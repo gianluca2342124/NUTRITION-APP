@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Alert, Platform, View } from 'react-native';
 import { MEAL_TYPES, formatNumber, scaleNutrients, type MealType } from '@repo/core';
-import { getEntry } from '@repo/data';
+import { getEntry, type DiaryEntry } from '@repo/data';
 import { AmountPicker } from '@/components/amount-picker';
 import { MacroLine } from '@/components/nutrition';
 import { Button, Card, ErrorState, IconButton, Notice, Row, Screen, SegmentedControl, Skeleton, Text } from '@/components/ui';
@@ -25,24 +25,9 @@ function confirm(message: string, onYes: () => void, yes: string, no: string) {
 }
 
 export default function EntryScreen() {
-  const { t, locale } = useT();
+  const { t } = useT();
   const { id } = useLocalSearchParams<{ id: string }>();
   const entry = useQuery({ queryKey: ['entry', id], queryFn: () => getEntry(supabase(), id) });
-  const updateItem = useUpdateItem();
-  const deleteItem = useDeleteItem();
-  const deleteEntry = useDeleteEntry();
-  const updateEntry = useUpdateEntry();
-  const [amounts, setAmounts] = useState<Record<string, number>>({});
-  const [meal, setMeal] = useState<MealType | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (entry.data) {
-      setAmounts(Object.fromEntries(entry.data.items.map((i) => [i.id, i.amount])));
-      setMeal(entry.data.mealType);
-    }
-  }, [entry.data]);
-
   const close = () => router.back();
 
   if (entry.isLoading) {
@@ -59,7 +44,18 @@ export default function EntryScreen() {
       </Screen>
     );
   }
-  const e = entry.data;
+  return <EntryEditor entry={entry.data} onChanged={() => entry.refetch()} onClose={close} />;
+}
+
+function EntryEditor({ entry: e, onChanged, onClose: close }: { entry: DiaryEntry; onChanged: () => void; onClose: () => void }) {
+  const { t, locale } = useT();
+  const updateItem = useUpdateItem();
+  const deleteItem = useDeleteItem();
+  const deleteEntry = useDeleteEntry();
+  const updateEntry = useUpdateEntry();
+  const [amounts, setAmounts] = useState<Record<string, number>>(() => Object.fromEntries(e.items.map((i) => [i.id, i.amount])));
+  const [meal, setMeal] = useState<MealType>(e.mealType);
+  const [error, setError] = useState<string | null>(null);
 
   const saveChanges = async () => {
     setError(null);
@@ -70,7 +66,7 @@ export default function EntryScreen() {
           await updateItem.mutateAsync({ id: item.id, amount: next, label: null });
         }
       }
-      if (meal && meal !== e.mealType) await updateEntry.mutateAsync({ id: e.id, mealType: meal });
+      if (meal !== e.mealType) await updateEntry.mutateAsync({ id: e.id, mealType: meal });
       close();
     } catch (err) {
       setError(errorMessage(err, t));
@@ -86,7 +82,7 @@ export default function EntryScreen() {
         <IconButton icon="close" label={t.common.close} onPress={close} />
       </Row>
       <View style={{ marginTop: space.md }}>
-        <SegmentedControl value={meal ?? e.mealType} onChange={setMeal} options={MEAL_TYPES.map((m) => ({ value: m, label: t.meals[m] }))} />
+        <SegmentedControl value={meal} onChange={setMeal} options={MEAL_TYPES.map((m) => ({ value: m, label: t.meals[m] }))} />
       </View>
 
       {e.items.map((item) => {
@@ -107,7 +103,7 @@ export default function EntryScreen() {
                 size={36}
                 label={t.common.delete}
                 onPress={() =>
-                  confirm(`${t.common.delete} “${item.displayName}”?`, () => deleteItem.mutate(item.id, { onSuccess: () => entry.refetch() }), t.common.delete, t.common.cancel)
+                  confirm(`${t.common.delete} “${item.displayName}”?`, () => deleteItem.mutate(item.id, { onSuccess: onChanged }), t.common.delete, t.common.cancel)
                 }
               />
             </Row>

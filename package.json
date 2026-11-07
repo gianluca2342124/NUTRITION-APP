@@ -22,12 +22,15 @@
     "check": "pnpm typecheck && pnpm lint && pnpm test"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@repo/core": "workspace:*",
     "@repo/data": "workspace:*",
     "@supabase/supabase-js": "^2.119.0",
     "@types/node": "^22.19.0",
+    "eslint": "^9.39.5",
     "supabase": "^3.0.0",
     "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.1",
     "vitest": "^5.1.0"
   }
 }

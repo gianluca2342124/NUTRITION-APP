@@ -141,12 +141,7 @@ export function createApiClient(options: ApiClientOptions) {
     } finally {
       clearTimeout(timer);
     }
-    let body: unknown = null;
-    try {
-      body = await res.json();
-    } catch {
-      body = null;
-    }
+    const body: unknown = await res.json().catch(() => null);
     if (!res.ok) {
       const parsed = ApiErrorBodySchema.safeParse(body);
       if (parsed.success) throw new ApiError(res.status, parsed.data.error.code, parsed.data.error.message);

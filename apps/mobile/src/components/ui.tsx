@@ -127,16 +127,16 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export function PressableScale({ children, style, onPressIn, onPressOut, ...rest }: PressableProps & { style?: StyleProp<ViewStyle> }) {
   const scale = useSharedValue(1);
-  const animated = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+  const animated = useAnimatedStyle(() => ({ transform: [{ scale: scale.get() }] }));
   return (
     <AnimatedPressable
       {...rest}
       onPressIn={(e) => {
-        scale.value = withSpring(0.97, motion.spring);
+        scale.set(withSpring(0.97, motion.spring));
         onPressIn?.(e);
       }}
       onPressOut={(e) => {
-        scale.value = withSpring(1, motion.spring);
+        scale.set(withSpring(1, motion.spring));
         onPressOut?.(e);
       }}
       style={[style, animated]}

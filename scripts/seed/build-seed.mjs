@@ -230,6 +230,13 @@ const EXCLUDED_PORTIONS = new Set([
   'fdc_portion:91076',
 ]);
 
+/** Liquid foods outside the "beverages" category that people measure in ml. */
+const LIQUID_SLUGS = new Set([
+  'leche-entera', 'leche-semidesnatada', 'leche-desnatada', 'nata-para-montar',
+  'aceite-de-oliva', 'aceite-de-girasol', 'salsa-de-soja', 'vinagre-balsamico', 'vinagre-de-manzana',
+]);
+const GLASS_SLUGS = new Set(['leche-entera', 'leche-semidesnatada', 'leche-desnatada']);
+
 /** Standard volume portions for beverages, using density derived from USDA cup / fl oz weights. */
 function beveragePortions(slug, densityGPerMl) {
   const ml = (v, es, en) => ({ es, en, grams: round(v * densityGPerMl, 1), rank: -1 });
@@ -303,13 +310,26 @@ async function buildGenericFoods() {
       const label = portionLabels(p.amount, p.modifier || '', c.category);
       if (label) portions.push({ ...label, grams, ref: `fdc_portion:${p.id}` });
     }
-    if (c.category === 'beverages') {
+    if (c.category === 'beverages' || LIQUID_SLUGS.has(c.slug)) {
       const cup = raw.find((p) => /^cup/.test(p.modifier) && Number(p.amount) === 1);
       const floz = raw.find((p) => /^fl oz/.test(p.modifier) && Number(p.amount) === 1);
-      const density = cup ? Number(cup.gram_weight) / 236.588 : floz ? Number(floz.gram_weight) / 29.5735 : null;
-      portions = portions.filter((p) => !/taza|cup/.test(p.es));
-      if (density && density > 0.8 && density < 1.3) {
-        portions.push(...beveragePortions(c.slug, density).map((p) => ({ ...p, ref: `derived_density:${round(density, 4)}` })));
+      const tbsp = raw.find((p) => /^(tbsp|tablespoon)/.test(p.modifier) && Number(p.amount) === 1);
+      const density = cup
+        ? Number(cup.gram_weight) / 236.588
+        : floz
+          ? Number(floz.gram_weight) / 29.5735
+          : tbsp
+            ? Number(tbsp.gram_weight) / 14.787
+            : null;
+      if (density && density > 0.8 && density < 1.4) {
+        const ref = `derived_density:${round(density, 4)}`;
+        if (c.category === 'beverages') {
+          portions = portions.filter((p) => !/taza|cup/.test(p.es));
+          portions.push(...beveragePortions(c.slug, density).map((p) => ({ ...p, ref })));
+        } else {
+          portions.push({ es: '100 ml', en: '100 ml', grams: round(100 * density, 1), rank: -1, ref });
+          if (GLASS_SLUGS.has(c.slug)) portions.push({ es: '1 vaso (250 ml)', en: '1 glass (250 ml)', grams: round(250 * density, 1), rank: -1, ref });
+        }
       }
     }
     const seen = new Set();

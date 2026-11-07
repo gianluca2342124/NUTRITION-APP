@@ -1,3 +1,4 @@
+import { unstable_rethrow } from 'next/navigation';
 import type { ApiErrorCode } from '@repo/core';
 
 export class ApiFailure extends Error {
@@ -36,6 +37,8 @@ export function handler<Args extends unknown[]>(fn: (...args: Args) => Promise<R
     try {
       return await fn(...args);
     } catch (error) {
+      // Let Next.js control-flow signals (prerender bailouts, notFound…) propagate.
+      unstable_rethrow(error);
       return errorResponse(error);
     }
   };

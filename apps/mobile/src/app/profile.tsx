@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Alert, Platform, Share, View } from 'react-native';
 import { formatNumber } from '@repo/core';
 import { Button, Card, Divider, Field, IconButton, ListRow, Notice, Row, Screen, Text } from '@/components/ui';
@@ -36,7 +36,7 @@ export default function ProfileScreen() {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState({ energy: '', protein: '', carbs: '', fat: '', fiber: '' });
 
-  useEffect(() => {
+  const startEditing = () => {
     const d = target.data;
     setDraft({
       energy: d?.energyKcal?.toString() ?? '',
@@ -45,7 +45,8 @@ export default function ProfileScreen() {
       fat: d?.fatG?.toString() ?? '',
       fiber: d?.fiberG?.toString() ?? '',
     });
-  }, [target.data]);
+    setEditing(true);
+  };
 
   const run = async (key: string, fn: () => Promise<void>, success?: string) => {
     setBusy(key);
@@ -130,7 +131,7 @@ export default function ProfileScreen() {
       <Card style={{ marginTop: space.md, gap: space.sm }}>
         <Row style={{ justifyContent: 'space-between' }}>
           <Text variant="cardTitle">{t.profile.targets}</Text>
-          <Button title={editing ? t.common.cancel : t.profile.editTargets} variant="ghost" size="md" onPress={() => setEditing(!editing)} />
+          <Button title={editing ? t.common.cancel : t.profile.editTargets} variant="ghost" size="md" onPress={() => (editing ? setEditing(false) : startEditing())} />
         </Row>
         {editing ? (
           <>
