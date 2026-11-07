@@ -30,12 +30,13 @@ export const MealPhotoModelOutputSchema = z.object({
       z.object({
         name_es: shortText(60),
         name_en: shortText(60),
+        /** Slug of the closest catalogue food, or null when none fits. */
+        catalog_slug: z.string().max(80).nullable(),
         food_query: shortText(80),
-        estimated_grams: z.number().min(0).max(2000),
+        estimated_grams: z.number().min(1).max(2000),
         min_grams: z.number().min(0).max(2000),
-        max_grams: z.number().min(0).max(3000),
+        max_grams: z.number().min(1).max(3000),
         confidence: ConfidenceSchema,
-        visible: z.boolean(),
       }),
     )
     .max(15),
@@ -47,8 +48,9 @@ export const MealPhotoModelOutputSchema = z.object({
         question_en: shortText(140),
         if_yes_name_es: shortText(60),
         if_yes_name_en: shortText(60),
+        if_yes_catalog_slug: z.string().max(80).nullable(),
         if_yes_food_query: shortText(80),
-        if_yes_grams: z.number().min(0).max(500),
+        if_yes_grams: z.number().min(1).max(500),
       }),
     )
     .max(3),
@@ -67,6 +69,7 @@ export const ParsedLogModelOutputSchema = z.object({
         spoken_text: z.string().max(120),
         name_es: shortText(60),
         name_en: shortText(60),
+        catalog_slug: z.string().max(80).nullable(),
         food_query: shortText(80),
         quantity: z.number().positive().nullable(),
         unit: z.enum(SPOKEN_UNITS).nullable(),
@@ -117,6 +120,8 @@ export const DraftItemSchema = z.object({
   /** Amount in grams (or ml for liquids) of the matched food's basis. */
   grams: z.number().nonnegative(),
   gramsRange: z.tuple([z.number(), z.number()]).nullable(),
+  /** Human-readable amount as stated ("2 × huevo mediano"), when known. */
+  quantityLabel: z.string().nullable(),
   amountIsEstimate: z.boolean(),
   confidence: ConfidenceSchema.nullable(),
   visible: z.boolean(),

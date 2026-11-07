@@ -337,7 +337,9 @@ function normalizeCode(key) {
 
 function stripName(name, code) {
   if (!name) return null;
-  return name.replace(new RegExp(`^E\\s?${code.slice(1)}\\s*[-–]\\s*`, 'i'), '').trim() || null;
+  const stripped = name.replace(new RegExp(`^E\\s?${code.slice(1)}\\s*[-–]\\s*`, 'i'), '').trim();
+  // Entries whose "name" is only the E-number carry no information.
+  return stripped && stripped.toLowerCase() !== code.toLowerCase() ? stripped : null;
 }
 
 function doiFromUrl(url) {
