@@ -176,8 +176,8 @@ export function createApiClient(options: ApiClientOptions) {
     getAdditive: (code: string) => request(`/api/v1/additives/${encodeURIComponent(code)}`, AdditiveSchema),
     analyzeMealPhoto: (form: FormData) =>
       request('/api/v1/ai/meal-photo', MealDraftSchema, { method: 'POST', body: form, timeoutMs: 90_000 }),
-    parseMealText: (text: string, source: 'voice' | 'text' = 'text') =>
-      request('/api/v1/ai/parse-meal', MealDraftSchema, { ...json({ text, source }), timeoutMs: 60_000 }),
+    parseMealText: (text: string, source: 'voice' | 'text' = 'text', today?: string) =>
+      request('/api/v1/ai/parse-meal', MealDraftSchema, { ...json({ text, source, today }), timeoutMs: 60_000 }),
     transcribe: (form: FormData) =>
       request('/api/v1/ai/transcribe', TranscriptSchema, { method: 'POST', body: form, timeoutMs: 60_000 }),
     extractLabel: (form: FormData) =>
