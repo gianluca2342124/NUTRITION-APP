@@ -14,9 +14,9 @@ import {
   type MealType,
 } from '@repo/core';
 import { AmountPicker, amountOptions } from '@/components/amount-picker';
-import { MacroTrio } from '@/components/cards';
 import { FoodPicker } from '@/components/food-picker';
-import { AnimatedCounter, Appear } from '@/components/motion';
+import { Appear } from '@/components/motion';
+import { NutrientGrid } from '@/components/stats';
 import { MacroLine } from '@/components/nutrition';
 import { Button, Card, Choice, EmptyState, Field, IconButton, Notice, Row, Screen, SegmentedControl, Text, haptic } from '@/components/ui';
 import { errorMessage } from '@/lib/errors';
@@ -162,26 +162,30 @@ export default function ReviewScreen() {
         {pending?.photoUri ? (
           <Image source={{ uri: pending.photoUri }} style={{ width: '100%', height: 200, borderRadius: 24 }} contentFit="cover" />
         ) : null}
-        <Card style={{ gap: space.sm, marginTop: pending?.photoUri ? -36 : 0, marginHorizontal: pending?.photoUri ? space.sm : 0 }}>
-          <Text variant="caption" color="textSecondary">
-            {t.review.total}
-          </Text>
-          <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 6 }}>
-            <AnimatedCounter value={Math.round(totals.values.energy_kcal ?? 0)} format={(n) => formatNumber(Math.round(n), locale)} variant="display" />
-            <Text variant="bodyStrong" color="textSecondary">
-              kcal
+        <Card style={{ gap: space.md, marginTop: pending?.photoUri ? -36 : 0, marginHorizontal: pending?.photoUri ? space.sm : 0 }}>
+          <View style={{ gap: 2 }}>
+            <Text variant="eyebrow" color="textSecondary">
+              {t.review.total}
+            </Text>
+            <Text variant="title" numberOfLines={1}>
+              {title || t.review.defaultTitle}
             </Text>
           </View>
-          <MacroTrio protein={totals.values.protein_g} carbs={totals.values.carbs_g} fat={totals.values.fat_g} />
+          <NutrientGrid values={totals.values} keys={['energy_kcal', 'protein_g', 'carbs_g', 'fat_g']} />
           {items.length ? (
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.xs, marginTop: space.xs }}>
-              {items.map((i) => (
-                <View key={i.key} style={{ backgroundColor: i.match ? p.primarySoft : p.warningSoft, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 }}>
-                  <Text variant="caption" style={{ color: i.match ? p.primaryText : p.warningText }}>
-                    {i.label}
-                  </Text>
-                </View>
-              ))}
+            <View style={{ gap: space.xs }}>
+              <Text variant="eyebrow" color="textSecondary">
+                {t.review.detected}
+              </Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.xs }}>
+                {items.map((i) => (
+                  <View key={i.key} style={{ backgroundColor: i.match ? p.primarySoft : p.warningSoft, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 }}>
+                    <Text variant="caption" style={{ color: i.match ? p.primaryText : p.warningText, fontWeight: '600' }}>
+                      {i.label} · {formatNumber(i.grams, locale)} g
+                    </Text>
+                  </View>
+                ))}
+              </View>
             </View>
           ) : null}
           <Text variant="caption" color="textTertiary">

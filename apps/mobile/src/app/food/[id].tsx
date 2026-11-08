@@ -39,6 +39,7 @@ export default function FoodScreen() {
           </Text>
           <View style={{ marginTop: space.md }}>
             <AddToDiaryCard
+              compact
               match={matchFromFood(food.data, locale)}
               defaultGrams={food.data.portions.find((p) => /\bmedium\b/i.test(p.labelEn))?.grams ?? food.data.portions[0]?.grams ?? 100}
               meal={(meal as MealType) || null}

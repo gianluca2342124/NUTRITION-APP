@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { router } from 'expo-router';
-import { useEffect, useMemo, useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useMemo, useRef, useState, type ComponentRef } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, TextInput, View } from 'react-native';
 import {
   formatNumber,
@@ -19,7 +19,7 @@ import { FoodCard, RecipeCard } from '@/components/cards';
 import { FoodImage } from '@/components/food-image';
 import { Icon } from '@/components/icons';
 import { FriendlyEmptyState } from '@/components/states';
-import { Button, Card, Chip, ListRow, Notice, Screen, SectionHeader, Text } from '@/components/ui';
+import { Button, Card, Chip, ListRow, Notice, Screen, SectionHeader, Text, fontFor } from '@/components/ui';
 import { apiClient } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 import { useT } from '@/lib/i18n';
@@ -41,7 +41,7 @@ function useDebounced<T>(value: T, ms = 250): T {
 
 function open(hit: SearchHit) {
   if (hit.kind === 'generic_food') router.push(`/food/${hit.id}`);
-  else if (hit.kind === 'product') router.push({ pathname: '/product/[code]', params: { code: hit.slug?.split('-').pop() ?? hit.id } });
+  else if (hit.kind === 'product') router.push({ pathname: '/product/[code]', params: { code: hit.slug?.split('-').pop() ?? hit.id, from: 'search' } });
   else router.push(`/additive/${hit.id}`);
 }
 
@@ -50,6 +50,12 @@ export default function ExploreScreen() {
   const p = usePalette();
   const [q, setQ] = useState('');
   const [kind, setKind] = useState<SearchKind | 'all'>('all');
+  // "+ → Buscar" lands here with the keyboard ready.
+  const { focus } = useLocalSearchParams<{ focus?: string }>();
+  const input = useRef<ComponentRef<typeof TextInput>>(null);
+  useEffect(() => {
+    if (focus) input.current?.focus();
+  }, [focus]);
   const query = useDebounced(q.trim());
   const barcode = normalizeBarcode(query);
   const search = useQuery({
@@ -73,6 +79,7 @@ export default function ExploreScreen() {
       >
         <Icon name="search" size={20} color={p.textTertiary} />
         <TextInput
+          ref={input}
           value={q}
           onChangeText={setQ}
           placeholder={t.search.placeholder}
@@ -81,7 +88,7 @@ export default function ExploreScreen() {
           autoCorrect={false}
           accessibilityLabel={t.common.search}
           maxFontSizeMultiplier={1.4}
-          style={{ flex: 1, fontSize: 16, color: p.ink, paddingVertical: 0 }}
+          style={{ flex: 1, fontSize: 16, color: p.ink, paddingVertical: 0, fontFamily: fontFor('500') }}
         />
         {q ? (
           <Pressable accessibilityRole="button" accessibilityLabel={t.common.close} onPress={() => setQ('')} hitSlop={10}>
@@ -103,7 +110,7 @@ export default function ExploreScreen() {
               icon="barcode"
               variant="soft"
               style={{ marginTop: space.md }}
-              onPress={() => router.push({ pathname: '/product/[code]', params: { code: barcode } })}
+              onPress={() => router.push({ pathname: '/product/[code]', params: { code: barcode, from: 'barcode' } })}
             />
           ) : null}
           {search.isLoading ? (

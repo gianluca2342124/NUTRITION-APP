@@ -1,4 +1,5 @@
 import Svg, { Circle, Path, Rect } from 'react-native-svg';
+import { NUTRIENT_ICON_PATHS } from '@repo/design';
 
 /** Original 24×24 stroke icons drawn for this app (no third-party icon set). */
 const PATHS = {
@@ -43,6 +44,17 @@ const PATHS = {
   clock: ['M12 7.5V12l3 2'],
   book: ['M5 5.5A1.5 1.5 0 0 1 6.5 4H19v14H6.5A1.5 1.5 0 0 0 5 19.5z', 'M5 19.5A1.5 1.5 0 0 0 6.5 21H19'],
   share: ['M12 4v11', 'M8 8l4-4 4 4', 'M6 13v5.5A1.5 1.5 0 0 0 7.5 20h9a1.5 1.5 0 0 0 1.5-1.5V13'],
+  drumstick: NUTRIENT_ICON_PATHS.drumstick,
+  wheat: NUTRIENT_ICON_PATHS.wheat,
+  cubes: NUTRIENT_ICON_PATHS.cubes,
+  dropHalf: NUTRIENT_ICON_PATHS.dropHalf,
+  shaker: NUTRIENT_ICON_PATHS.shaker,
+  edit: ['M14.5 5.5l4 4', 'M5 19l1-4.5 9.5-9.5a1.4 1.4 0 0 1 2 0l2 2a1.4 1.4 0 0 1 0 2L10 18.5z'],
+  undo: ['M9 14 4.5 9.5 9 5', 'M4.5 9.5h9a5.5 5.5 0 0 1 0 11H11'],
+  settings: ['M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z', 'M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z'],
+  article: ['M7 4.5h10A1.5 1.5 0 0 1 18.5 6v12A1.5 1.5 0 0 1 17 19.5H7A1.5 1.5 0 0 1 5.5 18V6A1.5 1.5 0 0 1 7 4.5z', 'M8.5 8.5h7', 'M8.5 12h7', 'M8.5 15.5h4'],
+  eye: ['M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z', 'M12 14.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z'],
+  camera2: ['M4.5 8h2.8l1.7-2.5h6l1.7 2.5h2.8A1.5 1.5 0 0 1 21 9.5v8a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.5v-8A1.5 1.5 0 0 1 4.5 8z', 'M12 16.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6z'],
 } as const;
 
 const CIRCLES: Partial<Record<IconName, [number, number, number][]>> = {

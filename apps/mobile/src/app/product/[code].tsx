@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Linking, Pressable, View } from 'react-native';
@@ -11,7 +11,9 @@ import {
   scoreInputFromProduct,
   type CatalogProduct,
   type MealType,
+  type NutrientKey,
 } from '@repo/core';
+import { linkProductScan, type ScanSource } from '@repo/data';
 import { AddToDiaryCard } from '@/components/add-to-diary';
 import { FudyuCharacter } from '@/components/art';
 import { Collapsible } from '@/components/collapsible';
@@ -19,23 +21,27 @@ import { FoodImage } from '@/components/food-image';
 import { Icon } from '@/components/icons';
 import { Appear } from '@/components/motion';
 import { NutrientTable } from '@/components/nutrition';
-import { AdditiveRow, FudyuScoreRing, PersonalFit, ScoreExplanation } from '@/components/score';
+import { NutrientEditSheet } from '@/components/nutrient-edit';
+import { AdditiveRow, PersonalFit, ScoreDial, ScoreExplanation } from '@/components/score';
 import { BottomSheet } from '@/components/sheet';
+import { BasisToggle, NutrientGrid } from '@/components/stats';
 import { FriendlyEmptyState } from '@/components/states';
-import { Button, Card, ErrorState, IconButton, Notice, Row, Screen, Skeleton, Text } from '@/components/ui';
+import { Button, ErrorState, IconButton, Notice, Row, Screen, Skeleton, Text } from '@/components/ui';
 import { trackActivity } from '@/lib/activity';
 import { apiClient } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 import { useT } from '@/lib/i18n';
 import { matchFromProduct } from '@/lib/matches';
 import { useDiet, useHealthProfile } from '@/lib/profile-data';
-import { useProfile } from '@/lib/queries';
+import { markScanLinked } from '@/lib/feed';
+import { today, trackScan, useProfile } from '@/lib/queries';
+import { supabase } from '@/lib/supabase';
 import { toggleCompare, useCompareIds } from '@/lib/stores';
 import { radius, shadow, space, usePalette } from '@/lib/theme';
 
 export default function ProductScreen() {
   const { t } = useT();
-  const { code, meal } = useLocalSearchParams<{ code: string; meal?: string }>();
+  const { code, meal, from } = useLocalSearchParams<{ code: string; meal?: string; from?: string }>();
   const lookup = useQuery({ queryKey: ['product', code], queryFn: () => apiClient().lookupProduct(code), retry: 1 });
 
   const header = (
@@ -85,21 +91,28 @@ export default function ProductScreen() {
       </Screen>
     );
   }
-  return <ProductDetail product={result.product} meal={(meal as MealType) || null} header={header} />;
+  const source: ScanSource | null = from === 'barcode' || from === 'search' || from === 'label' ? from : null;
+  return <ProductDetail product={result.product} meal={(meal as MealType) || null} source={source} header={header} />;
 }
 
-function ProductDetail({ product, meal, header }: { product: CatalogProduct; meal: MealType | null; header: ReactNode }) {
+function ProductDetail({ product, meal, source, header }: { product: CatalogProduct; meal: MealType | null; source: ScanSource | null; header: ReactNode }) {
   const { t, f, locale } = useT();
   const p = usePalette();
+  const qc = useQueryClient();
   const compareIds = useCompareIds();
   const health = useHealthProfile();
   const profile = useProfile();
   const diet = useDiet();
   const [adding, setAdding] = useState(false);
+  const [mode, setMode] = useState<'per100' | 'mine'>('per100');
+  const [amount, setAmount] = useState(product.servingQuantity ?? 100);
+  const [editing, setEditing] = useState<{ nutrient: NutrientKey | null } | null>(null);
 
   useEffect(() => {
     trackActivity('product_analyzed', product.gtin);
-  }, [product.gtin]);
+    // Scanned or looked up: goes to today's "Recientes" without counting as eaten.
+    if (source) trackScan(product.id, source);
+  }, [product.gtin, product.id, source]);
 
   const score = useMemo(() => computeFudyuScore(scoreInputFromProduct(product)), [product]);
   const notes = useMemo(
@@ -125,32 +138,30 @@ function ProductDetail({ product, meal, header }: { product: CatalogProduct; mea
     <Screen>
       {header}
 
-      {/* Hero */}
+      {/* Hero: real photo and score side by side, identity right below */}
       <Appear index={0}>
-        <View style={[{ marginTop: space.sm, borderRadius: radius.xl, backgroundColor: '#FFFFFF', padding: space.md, alignItems: 'center' }, shadow(p, 'card')]}>
-          <FoodImage uri={product.imageUrl} fallback="product" width="100%" height={220} fit="contain" radius={radius.lg} label={name} />
+        <View style={{ flexDirection: 'row', gap: space.sm, marginTop: space.sm, alignItems: 'stretch' }}>
+          <View style={[{ flex: 0.9, borderRadius: radius.lg, backgroundColor: '#FFFFFF', padding: space.xs, justifyContent: 'center' }, shadow(p, 'card')]}>
+            <FoodImage uri={product.imageUrl} fallback="product" width="100%" height={168} fit="contain" radius={radius.md} label={name} />
+          </View>
+          <View style={{ flex: 1.1 }}>
+            <ScoreDial result={score} size={128} />
+          </View>
         </View>
         <View style={{ marginTop: space.md, gap: 2 }}>
-          {product.brand ? (
-            <Text variant="caption" color="textSecondary" style={{ textTransform: 'uppercase', letterSpacing: 0.6 }}>
-              {product.brand}
-            </Text>
-          ) : null}
-          <Text variant="title" accessibilityRole="header">
+          <Text variant="title" accessibilityRole="header" numberOfLines={2}>
             {name}
           </Text>
-          {product.quantityText ? (
-            <Text variant="secondary" color="textSecondary">
-              {product.quantityText}
-            </Text>
-          ) : null}
+          <Text variant="secondary" color="textSecondary" numberOfLines={1}>
+            {[product.brand, product.quantityText].filter(Boolean).join(' · ')}
+          </Text>
         </View>
       </Appear>
 
       {/* Declared allergens the person marked: always visible, never in an accordion. */}
       {allergenAlert || tracesAlert ? (
         <View style={{ marginTop: space.md, flexDirection: 'row', gap: space.sm, alignItems: 'center', padding: space.md, borderRadius: radius.lg, backgroundColor: p.warningSoft }}>
-          <FudyuCharacter expression="attention" size={44} animate={false} />
+          <FudyuCharacter expression="attention" size={40} animate={false} />
           <View style={{ flex: 1, gap: 2 }}>
             {allergenAlert ? (
               <Text variant="bodyStrong" style={{ color: p.warningText }}>
@@ -166,19 +177,6 @@ function ProductDetail({ product, meal, header }: { product: CatalogProduct; mea
         </View>
       ) : null}
 
-      {/* Evaluation first */}
-      <Appear index={1}>
-        <Card style={{ marginTop: space.md, paddingVertical: space.xl, gap: space.lg }}>
-          <FudyuScoreRing result={score} />
-          {score.status === 'scored' ? <ScoreExplanation result={score} unit={unit} /> : null}
-          <Pressable accessibilityRole="link" onPress={() => router.push('/methodology')} hitSlop={8} style={{ alignSelf: 'center' }}>
-            <Text variant="secondaryStrong" color="primaryText">
-              {t.score.methodology}
-            </Text>
-          </Pressable>
-        </Card>
-      </Appear>
-
       {/* Actions */}
       <Row gap={space.sm} style={{ marginTop: space.md }}>
         <Button
@@ -192,15 +190,28 @@ function ProductDetail({ product, meal, header }: { product: CatalogProduct; mea
             router.push('/compare');
           }}
         />
-        {product.nutritionAvailable ? (
-          <Button title={t.product.add} icon="plus" size="md" style={{ flex: 1 }} onPress={() => setAdding(true)} />
-        ) : null}
+        {product.nutritionAvailable ? <Button title={t.product.addToDay} icon="plus" size="md" style={{ flex: 1 }} onPress={() => setAdding(true)} /> : null}
       </Row>
-      {!product.nutritionAvailable ? (
-        <View style={{ marginTop: space.sm }}>
+
+      {/* Stat card: per 100 g/ml or my amount, every value editable */}
+      {product.nutritionAvailable ? (
+        <Appear index={1}>
+          <View style={{ marginTop: space.lg, gap: space.sm }}>
+            <BasisToggle
+              mode={mode}
+              onMode={setMode}
+              basis={unit}
+              amountLabel={f(t.stats.myAmountValue, { value: `${formatNumber(amount, locale)} ${unit}` })}
+              onEditAmount={() => setEditing({ nutrient: null })}
+            />
+            <NutrientGrid values={mode === 'per100' ? v : scaleNutrients(v, amount)} onEdit={(key) => setEditing({ nutrient: key })} />
+          </View>
+        </Appear>
+      ) : (
+        <View style={{ marginTop: space.md }}>
           <Notice tone="info" text={t.product.nutritionMissing} />
         </View>
-      ) : null}
+      )}
 
       <View style={{ marginTop: space.md }}>
         <PersonalFit notes={notes} unit={unit} />
@@ -211,6 +222,16 @@ function ProductDetail({ product, meal, header }: { product: CatalogProduct; mea
         {t.product.analysisTitle}
       </Text>
       <View style={{ gap: space.sm }}>
+        {score.status === 'scored' ? (
+          <Collapsible title={t.score.factorsTitle} icon="bolt" summary={t.score.factorsSummary}>
+            <ScoreExplanation result={score} unit={unit} max={5} />
+            <Pressable accessibilityRole="link" onPress={() => router.push('/methodology')} hitSlop={8}>
+              <Text variant="secondaryStrong" color="primaryText">
+                {t.score.methodology}
+              </Text>
+            </Pressable>
+          </Collapsible>
+        ) : null}
         {product.nutritionAvailable ? (
           <Collapsible
             title={t.product.nutrition}
@@ -351,15 +372,35 @@ function ProductDetail({ product, meal, header }: { product: CatalogProduct; mea
         </Text>
       </View>
 
-      <BottomSheet visible={adding} onClose={() => setAdding(false)} title={t.product.addToDiary}>
+      {editing ? (
+        <NutrientEditSheet
+          product={product}
+          nutrient={editing.nutrient}
+          amount={amount}
+          onApplyAmount={(g) => {
+            setAmount(g);
+            setMode('mine');
+          }}
+          onClose={() => setEditing(null)}
+        />
+      ) : null}
+
+      <BottomSheet visible={adding} onClose={() => setAdding(false)} title={t.product.addToDay}>
         <AddToDiaryCard
           bare
           match={matchFromProduct(product, locale)}
-          defaultGrams={product.servingQuantity ?? 100}
+          compact
+          defaultGrams={amount}
           netQuantity={product.netQuantity}
           meal={meal}
-          method="barcode"
-          onSaved={() => setTimeout(() => setAdding(false), 900)}
+          method={source === 'search' ? 'search' : 'barcode'}
+          onSaved={(entryId) => {
+            // The scan of this product today becomes this entry (shown once in Today).
+            const day = today();
+            markScanLinked(qc, null, entryId, product.id, day);
+            linkProductScan(supabase(), product.id, day, entryId).catch(() => qc.invalidateQueries({ queryKey: ['scans'] }));
+            setTimeout(() => setAdding(false), 900);
+          }}
         />
       </BottomSheet>
     </Screen>

@@ -2,8 +2,7 @@ import { router } from 'expo-router';
 import { useMemo, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 import Svg, { Line, Rect } from 'react-native-svg';
-import { ACHIEVEMENT_IDS, addDays, dateRange, formatNumber, parseLocalDate, weekDays } from '@repo/core';
-import { AchievementGrid } from '@/components/achievements';
+import { addDays, dateRange, formatNumber, parseLocalDate, weekDays } from '@repo/core';
 import { Icon } from '@/components/icons';
 import { Appear } from '@/components/motion';
 import { FriendlyEmptyState } from '@/components/states';
@@ -46,7 +45,6 @@ export default function ProgressScreen() {
     for (const d of totals.data ?? []) if (d.entryCount > 0) set.add(d.date);
     return set;
   }, [game.data, totals.data]);
-  const earned = useMemo(() => new Set((game.data?.achievements ?? []).map((a) => a.id)), [game.data]);
 
   const chartW = 340;
   const chartH = 150;
@@ -160,20 +158,6 @@ export default function ProgressScreen() {
         )}
       </Card>
 
-      {/* Achievements (real events only) */}
-      {gamification && game.data ? (
-        <>
-          <SectionHeader title={t.achievements.title} />
-          <Card style={{ paddingVertical: space.lg }}>
-            <AchievementGrid
-              ids={ACHIEVEMENT_IDS}
-              earned={earned}
-              progress={{ ...game.data.counts, longestStreak: game.data.streak.longest }}
-            />
-          </Card>
-        </>
-      ) : null}
-
       {/* Weight: optional, private */}
       <SectionHeader title={t.progress.weight} action={<Text variant="caption" color="textTertiary">{t.progress.weightOptional}</Text>} />
       <Card style={{ gap: space.sm }}>
@@ -213,7 +197,7 @@ export default function ProgressScreen() {
             <Text variant="secondary" color="textSecondary">
               {t.progress.weightNeedsConsent}
             </Text>
-            <Button title={t.profile.privacy} variant="soft" size="md" onPress={() => router.push('/profile')} />
+            <Button title={t.profile.privacy} variant="soft" size="md" onPress={() => router.push('/settings')} />
           </>
         )}
       </Card>

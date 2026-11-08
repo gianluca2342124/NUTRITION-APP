@@ -48,7 +48,7 @@ export default function ScanScreen() {
     }
     scanned.current = true;
     haptic.success();
-    router.replace({ pathname: '/product/[code]', params: { code: gtin, meal: params.meal ?? '' } });
+    router.replace({ pathname: '/product/[code]', params: { code: gtin, meal: params.meal ?? '', from: 'barcode' } });
   };
 
   const onBarcode = (result: BarcodeScanningResult) => {

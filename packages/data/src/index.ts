@@ -5,3 +5,6 @@ export * from './catalog';
 export * from './images';
 export * from './streaks';
 export * from './recipes';
+export * from './scans';
+export * from './community';
+export * from './feed';

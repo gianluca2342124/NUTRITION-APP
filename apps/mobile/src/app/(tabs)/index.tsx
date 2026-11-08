@@ -1,27 +1,39 @@
 import { Redirect, router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, View } from 'react-native';
-import { addDays, formatNumber, MEAL_TYPES, parseLocalDate, sumNutrients, weekDays } from '@repo/core';
-import { MealCard, VisualMetric } from '@/components/cards';
+import Animated, { FadeInDown, FadeOutLeft, LinearTransition } from 'react-native-reanimated';
+import { addDays, formatNumber, parseLocalDate, sumNutrients, weekDays } from '@repo/core';
+import type { ProductScan } from '@repo/data';
+import { motion } from '@repo/design';
+import { VisualMetric } from '@/components/cards';
+import { FeedItemCard, ScanAddSheet } from '@/components/feed';
 import { Icon } from '@/components/icons';
 import { AnimatedCounter, Appear } from '@/components/motion';
 import { NutrientTable } from '@/components/nutrition';
 import { MetricRing } from '@/components/rings';
 import { BottomSheet } from '@/components/sheet';
+import { FriendlyEmptyState } from '@/components/states';
 import { StreakCalendar, StreakHero, StreakPill } from '@/components/streak';
 import { Button, Card, EmptyState, ErrorState, Notice, PressableScale, Screen, Skeleton, Text } from '@/components/ui';
 import { WeeklyDayStrip } from '@/components/week-strip';
 import { errorMessage } from '@/lib/errors';
+import { buildFeed, useFeedDelete, type FeedItem } from '@/lib/feed';
 import { useT } from '@/lib/i18n';
-import { today, useDiary, useGamification, useProfile, useTarget, useTotals } from '@/lib/queries';
+import { today, useDiary, useGamification, useProfile, useScans, useTarget, useTotals } from '@/lib/queries';
 import { useSession } from '@/lib/session';
 import { radius, space, usePalette } from '@/lib/theme';
+import { openAddSheet } from '@/lib/stores';
+import { useHiddenIds } from '@/lib/undo';
 
 function greeting(t: ReturnType<typeof useT>['t']): string {
   const h = new Date().getHours();
   return h < 13 ? t.today.greetingMorning : h < 20 ? t.today.greetingAfternoon : t.today.greetingEvening;
 }
 
+/**
+ * Today: greeting and streak, week, the day's summary (logged food only),
+ * then everything from the day in time order. Scans never add to the totals.
+ */
 export default function TodayScreen() {
   const { t, f, locale } = useT();
   const p = usePalette();
@@ -29,14 +41,20 @@ export default function TodayScreen() {
   const todayStr = today();
   const [date, setDate] = useState(todayStr);
   const [sheet, setSheet] = useState<'streak' | 'day' | null>(null);
+  const [adding, setAdding] = useState<ProductScan | null>(null);
   const profile = useProfile();
   const diary = useDiary(date);
+  const scans = useScans(date);
   const target = useTarget(date);
   const week = weekDays(date);
   const weekTotals = useTotals(week[0]!, week[6]!);
   const game = useGamification();
+  const hidden = useHiddenIds();
+  const remove = useFeedDelete();
 
-  const entries = useMemo(() => diary.data ?? [], [diary.data]);
+  // Totals come only from logged entries (never from scans) and drop deleted items at once.
+  const entries = useMemo(() => (diary.data ?? []).filter((e) => !hidden.has(e.id)), [diary.data, hidden]);
+  const feed = useMemo(() => buildFeed(entries, scans.data ?? [], hidden), [entries, scans.data, hidden]);
   const totals = useMemo(() => sumNutrients(entries.flatMap((e) => e.items.map((i) => i.nutrients))), [entries]);
   const activeDays = useMemo(() => new Set((weekTotals.data ?? []).filter((d) => d.entryCount > 0).map((d) => d.date)), [weekTotals.data]);
   const streakDays = useMemo(() => new Set(game.data?.activeDays ?? []), [game.data]);
@@ -61,14 +79,20 @@ export default function TodayScreen() {
   const energy = totals.values.energy_kcal ?? 0;
   const targetKcal = target.data?.energyKcal ?? null;
   const isToday = date === todayStr;
+  const isFuture = date > todayStr;
   const hasEstimates = entries.some((e) => e.items.some((i) => i.isEstimate));
+  const hasScans = feed.some((i) => i.kind === 'scan');
   const name = profile.data?.displayName?.trim();
   const gamification = game.data?.enabled !== false;
-  const dayTitle = isToday
-    ? t.today.progressTitle
-    : date === addDays(todayStr, -1)
-      ? t.common.yesterday
-      : parseLocalDate(date).toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
+  const dayRaw = parseLocalDate(date).toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
+  const dayLabel = dayRaw.charAt(0).toUpperCase() + dayRaw.slice(1);
+  const dayTitle = isToday ? t.today.progressTitle : date === addDays(todayStr, -1) ? t.common.yesterday : dayLabel;
+  const loadingFeed = diary.isLoading || scans.isLoading;
+
+  const open = (item: FeedItem) => {
+    if (item.kind === 'entry') router.push(`/entry/${item.entry.id}`);
+    else router.push({ pathname: '/product/[code]', params: { code: item.scan.product.gtin } });
+  };
 
   return (
     <Screen
@@ -77,34 +101,21 @@ export default function TodayScreen() {
           refreshing={diary.isRefetching}
           onRefresh={() => {
             void diary.refetch();
+            void scans.refetch();
             void game.refetch();
           }}
           tintColor={p.primary}
         />
       }
     >
-      {/* 1 · Greeting, avatar, streak */}
+      {/* 1 · Greeting and streak */}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingTop: space.sm }}>
-        <PressableScale
-          accessibilityRole="button"
-          accessibilityLabel={t.today.profile}
-          onPress={() => router.push('/profile')}
-          style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: p.primarySoft, alignItems: 'center', justifyContent: 'center' }}
-        >
-          {name ? (
-            <Text variant="bodyStrong" color="primaryText">
-              {name.charAt(0).toUpperCase()}
-            </Text>
-          ) : (
-            <Icon name="user" size={22} color={p.primaryText} />
-          )}
-        </PressableScale>
         <View style={{ flex: 1 }}>
           <Text variant="secondary" color="textSecondary" numberOfLines={1}>
             {greeting(t)}
             {name ? `, ${name}` : ''}
           </Text>
-          <Text variant="title" numberOfLines={1}>
+          <Text variant="largeTitle" numberOfLines={1} accessibilityRole="header">
             {t.nav.today}
           </Text>
         </View>
@@ -116,13 +127,13 @@ export default function TodayScreen() {
         <WeeklyDayStrip selected={date} today={todayStr} activeDays={activeDays} onSelect={setDate} />
       </View>
 
-      {/* 3–4 · Progress (energy + macros) */}
+      {/* 3 · Summary of what was eaten */}
       <Appear index={0}>
         <PressableScale accessibilityRole="button" accessibilityLabel={`${dayTitle}. ${t.today.progressDetail}`} onPress={() => setSheet('day')} style={{ marginTop: space.md }}>
           <Card style={{ gap: space.md, paddingVertical: space.lg }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
               <View style={{ flex: 1, gap: 2 }}>
-                <Text variant="secondaryStrong" color="textSecondary" style={{ textTransform: isToday ? 'none' : 'capitalize' }}>
+                <Text variant="secondaryStrong" color="textSecondary">
                   {dayTitle}
                 </Text>
                 {diary.isLoading ? (
@@ -140,7 +151,7 @@ export default function TodayScreen() {
                     {f(t.today.progressOf, { target: formatNumber(targetKcal, locale) })}
                   </Text>
                 ) : (
-                  <Pressable onPress={() => router.push('/profile')} accessibilityRole="link" hitSlop={8}>
+                  <Pressable onPress={() => router.push('/settings')} accessibilityRole="link" hitSlop={8}>
                     <Text variant="secondaryStrong" color="primaryText">
                       {t.today.progressNoTarget} · {t.today.setTarget}
                     </Text>
@@ -166,29 +177,59 @@ export default function TodayScreen() {
         </PressableScale>
       </Appear>
 
-      {/* 5 · Meals */}
+      {/* 4 · Everything from the day, newest first */}
+      <View style={{ marginTop: space.lg, gap: 2 }}>
+        <Text variant="section" accessibilityRole="header">
+          {isToday ? t.today.recentTitle : t.today.dayTitle}
+        </Text>
+        {hasScans ? (
+          <Text variant="caption" color="textTertiary">
+            {t.today.scansNote}
+          </Text>
+        ) : null}
+      </View>
       {diary.isError ? (
         <ErrorState message={errorMessage(diary.error, t)} onRetry={() => diary.refetch()} retryLabel={t.common.retry} />
+      ) : loadingFeed ? (
+        <View style={{ gap: space.sm, marginTop: space.sm }}>
+          <Skeleton height={76} style={{ borderRadius: radius.lg }} />
+          <Skeleton height={76} style={{ borderRadius: radius.lg }} />
+        </View>
+      ) : feed.length === 0 ? (
+        <FriendlyEmptyState
+          compact
+          expression={isFuture ? 'curious' : 'smile'}
+          size={76}
+          title={isFuture ? t.today.futureTitle : isToday ? t.today.feedEmptyTitle : t.today.pastEmptyTitle}
+          body={isFuture ? t.today.futureBody : isToday ? t.today.feedEmptyBody : undefined}
+          action={isToday ? <Button title={t.today.logAction} icon="plus" size="md" onPress={openAddSheet} /> : undefined}
+        />
       ) : (
-        <View style={{ gap: space.sm, marginTop: space.md }}>
-          {MEAL_TYPES.map((meal, i) => (
-            <Appear key={meal} index={i + 1}>
-              <MealCard
-                meal={meal}
-                entries={entries.filter((e) => e.mealType === meal)}
-                onAdd={() => router.push({ pathname: '/scan', params: { meal } })}
-                onOpenEntry={(id) => router.push(`/entry/${id}`)}
+        <View style={{ gap: space.sm, marginTop: space.sm }}>
+          {feed.map((item, i) => (
+            <Animated.View
+              key={item.key}
+              entering={FadeInDown.duration(motion.base).delay(Math.min(i, 6) * motion.stagger)}
+              exiting={FadeOutLeft.duration(motion.micro)}
+              layout={LinearTransition.duration(motion.base)}
+            >
+              <FeedItemCard
+                item={item}
+                onOpen={() => open(item)}
+                onEdit={() => open(item)}
+                onAdd={() => item.kind === 'scan' && setAdding(item.scan)}
+                onDelete={() => remove(item)}
               />
-            </Appear>
+            </Animated.View>
           ))}
         </View>
       )}
 
-      {/* 6 · Progress access */}
+      {/* 5 · Progress access */}
       <PressableScale
         accessibilityRole="button"
         onPress={() => router.push('/progress')}
-        style={{ marginTop: space.md, flexDirection: 'row', alignItems: 'center', gap: space.sm, padding: space.md, borderRadius: radius.lg, backgroundColor: p.primarySoft }}
+        style={{ marginTop: space.lg, flexDirection: 'row', alignItems: 'center', gap: space.sm, padding: space.md, borderRadius: radius.lg, backgroundColor: p.primarySoft }}
       >
         <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: p.surface, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="chart" size={20} color={p.primaryText} />
@@ -202,6 +243,8 @@ export default function TodayScreen() {
         <Icon name="chevronRight" size={18} color={p.primaryText} />
       </PressableScale>
 
+      <ScanAddSheet scan={adding} onClose={() => setAdding(null)} />
+
       <BottomSheet visible={sheet === 'streak'} onClose={() => setSheet(null)} title={t.streak.title}>
         {game.data ? (
           <View style={{ gap: space.lg }}>
@@ -213,7 +256,7 @@ export default function TodayScreen() {
               variant="soft"
               onPress={() => {
                 setSheet(null);
-                router.push('/progress');
+                router.navigate('/profile');
               }}
             />
             <Text variant="caption" color="textTertiary" align="center">

@@ -2,45 +2,36 @@ import { formatNumber, topFactors, type FudyuScoreResult, type ScoreFactor, type
 import { format } from '@repo/i18n';
 import { LOCALE, t } from '@/lib/site';
 
-const TONES: Record<ScoreLevel, { fill: string; soft: string; text: string }> = {
-  excellent: { fill: 'var(--fy-scale-green)', soft: 'var(--fy-scale-green-soft)', text: 'var(--fy-scale-green-text)' },
-  good: { fill: 'var(--fy-scale-lime)', soft: 'var(--fy-scale-lime-soft)', text: 'var(--fy-scale-lime-text)' },
-  fair: { fill: 'var(--fy-scale-amber)', soft: 'var(--fy-scale-amber-soft)', text: 'var(--fy-scale-amber-text)' },
-  poor: { fill: 'var(--fy-scale-orange)', soft: 'var(--fy-scale-orange-soft)', text: 'var(--fy-scale-orange-text)' },
-  limit: { fill: 'var(--fy-scale-coral)', soft: 'var(--fy-scale-coral-soft)', text: 'var(--fy-scale-coral-text)' },
+const TONES: Record<ScoreLevel, { fill: string; soft: string; text: string; strong: string }> = {
+  excellent: { fill: 'var(--fy-scale-green)', soft: 'var(--fy-scale-green-soft)', text: 'var(--fy-scale-green-text)', strong: 'var(--fy-scale-green-strong)' },
+  good: { fill: 'var(--fy-scale-lime)', soft: 'var(--fy-scale-lime-soft)', text: 'var(--fy-scale-lime-text)', strong: 'var(--fy-scale-lime-strong)' },
+  fair: { fill: 'var(--fy-scale-amber)', soft: 'var(--fy-scale-amber-soft)', text: 'var(--fy-scale-amber-text)', strong: 'var(--fy-scale-amber-strong)' },
+  poor: { fill: 'var(--fy-scale-orange)', soft: 'var(--fy-scale-orange-soft)', text: 'var(--fy-scale-orange-text)', strong: 'var(--fy-scale-orange-strong)' },
+  limit: { fill: 'var(--fy-scale-coral)', soft: 'var(--fy-scale-coral-soft)', text: 'var(--fy-scale-coral-text)', strong: 'var(--fy-scale-coral-strong)' },
 };
 
 export function scoreTone(level: ScoreLevel) {
   return TONES[level];
 }
 
-/** Big ring in the level colour; "Sin puntuación" when the data is not enough. */
+/** Score + level, nothing else: big number, ring, bold level on a soft tint. */
 export function ScoreRing({ result, size = 180 }: { result: FudyuScoreResult; size?: number }) {
   const scored = result.status === 'scored';
   const tone = scored ? TONES[result.level] : null;
-  const stroke = Math.round(size * 0.075);
+  const stroke = Math.round(size * 0.08);
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const label = scored ? t.score.levels[result.level] : t.score.unscored;
   return (
-    <div className="flex flex-col items-center gap-3 text-center">
-      <div
-        role="img"
-        aria-label={scored ? format(t.score.a11y, { score: result.score, level: label }) : `${t.score.title}: ${label}`}
-        className="relative flex items-center justify-center rounded-full"
-        style={{ width: size, height: size, background: tone?.soft ?? 'var(--fy-surface-muted)' }}
-      >
+    <div
+      role="img"
+      aria-label={scored ? format(t.score.a11y, { score: result.score, level: label }) : `${t.score.title}: ${label}`}
+      className="flex flex-col items-center gap-2 rounded-[28px] px-5 py-5 text-center"
+      style={{ background: tone?.soft ?? 'var(--fy-surface-muted)' }}
+    >
+      <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
         <svg width={size} height={size} className="absolute inset-0 -rotate-90" aria-hidden="true">
-          <circle cx={size / 2} cy={size / 2} r={r - stroke * 0.6} fill="var(--fy-surface)" />
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={r}
-            fill="none"
-            stroke={scored ? 'var(--fy-surface)' : 'var(--fy-border-strong)'}
-            strokeWidth={stroke}
-            strokeDasharray={scored ? undefined : '4 8'}
-          />
+          <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke={scored ? 'rgba(255,255,255,0.75)' : 'var(--fy-border-strong)'} strokeWidth={stroke} strokeDasharray={scored ? undefined : '4 8'} />
           {scored && result.score > 0 ? (
             <circle
               className="fy-ring-arc"
@@ -57,25 +48,23 @@ export function ScoreRing({ result, size = 180 }: { result: FudyuScoreResult; si
             />
           ) : null}
         </svg>
-        <div className="relative flex flex-col items-center">
-          {scored ? (
-            <>
-              <span className="tabular text-[56px] font-extrabold leading-none tracking-[-0.05em]" style={{ color: tone!.text, fontSize: size * 0.31 }}>
-                {result.score}
-              </span>
-              <span className="mt-1 text-[11px] font-semibold text-faint">{t.score.outOf}</span>
-            </>
-          ) : (
-            <span className="text-[28px] font-bold text-faint">—</span>
-          )}
-        </div>
+        {scored ? (
+          <span className="relative flex items-end leading-none">
+            <span className="tabular font-extrabold tracking-[-0.06em]" style={{ color: tone!.strong, fontSize: size * 0.4 }}>
+              {result.score}
+            </span>
+            <span className="mb-[0.35em] ml-0.5 text-[14px] font-bold" style={{ color: tone!.text }}>
+              /100
+            </span>
+          </span>
+        ) : (
+          <span className="relative text-[28px] font-bold text-faint">—</span>
+        )}
       </div>
-      <div className="max-w-xs">
-        <p className="text-[20px] font-bold tracking-tight" style={{ color: tone?.text ?? 'var(--fy-text-secondary)' }}>
-          {label}
-        </p>
-        <p className="mt-0.5 text-[14px] text-muted">{scored ? t.score.sentences[result.level] : t.score.unscoredReasons[result.reason]}</p>
-      </div>
+      <p className="text-[19px] font-extrabold uppercase tracking-[0.08em]" style={{ color: tone?.strong ?? 'var(--fy-text-secondary)' }}>
+        {label}
+      </p>
+      {!scored ? <p className="max-w-[16rem] text-[13px] text-muted">{t.score.unscoredReasons[result.reason]}</p> : null}
     </div>
   );
 }
@@ -126,14 +115,13 @@ export function factorText(factor: ScoreFactor, unit: 'g' | 'ml'): { title: stri
   return { title, detail };
 }
 
-/** "¿Por qué?" — up to three real, signed reasons. */
-export function ScoreReasons({ result, unit }: { result: Extract<FudyuScoreResult, { status: 'scored' }>; unit: 'g' | 'ml' }) {
-  const factors = topFactors(result);
+/** The real, signed reasons behind the score (inside "Análisis completo"). */
+export function ScoreReasons({ result, unit, max = 5 }: { result: Extract<FudyuScoreResult, { status: 'scored' }>; unit: 'g' | 'ml'; max?: number }) {
+  const factors = topFactors(result, max);
   if (!factors.length) return null;
   return (
     <div>
-      <p className="text-[16px] font-semibold text-ink">{t.score.why}</p>
-      <ul className="mt-3 space-y-3">
+      <ul className="space-y-3">
         {factors.map((f) => {
           const { title, detail } = factorText(f, unit);
           const positive = f.sign > 0;

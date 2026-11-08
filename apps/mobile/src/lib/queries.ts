@@ -11,6 +11,9 @@ import {
   getProfile,
   getRecipe,
   listRecipes,
+  listScans,
+  recordScan,
+  type ScanSource,
   latestConsents,
   listEntries,
   listWeights,
@@ -26,7 +29,7 @@ import {
   type NewMeal,
   type TargetRow,
 } from '@repo/data';
-import { trackActivity } from './activity';
+import { celebrateFirstMeal, trackActivity } from './activity';
 import { apiClient } from './api';
 import { queryClient, today } from './query-client';
 import { useSession } from './session';
@@ -91,6 +94,18 @@ export function useSetGamification() {
   });
 }
 
+export function useScans(date: string) {
+  const { userId, enabled } = useUserScope();
+  return useQuery({ queryKey: ['scans', userId, date], queryFn: () => listScans(supabase(), date), enabled });
+}
+
+/** Adds a product interaction to today's history (fire-and-forget, never blocks). */
+export function trackScan(productId: string, source: ScanSource): void {
+  recordScan(supabase(), productId, today(), source)
+    .then(() => queryClient.invalidateQueries({ queryKey: ['scans'] }))
+    .catch(() => undefined);
+}
+
 export function useRecipes() {
   return useQuery({ queryKey: ['recipes'], queryFn: () => listRecipes(supabase()), staleTime: 60 * 60_000 });
 }
@@ -128,6 +143,7 @@ export function useSaveMeal() {
     onSuccess: async (_data, meal) => {
       await invalidate();
       trackActivity('meal_logged', meal.id);
+      celebrateFirstMeal();
     },
   });
 }

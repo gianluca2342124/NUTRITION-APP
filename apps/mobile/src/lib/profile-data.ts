@@ -1,5 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import type { Allergen, DietPattern } from '@repo/core';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { Allergen, DietPattern, Goal } from '@repo/core';
+import { refreshComputedTarget, updateGoals, updateHealthProfile, type HealthPatch } from '@repo/data';
+import { today } from './query-client';
 import { useSession } from './session';
 import { supabase } from './supabase';
 
@@ -51,5 +53,24 @@ export function useDiet() {
       if (error) throw error;
       return (data?.diet as DietPattern | null | undefined) ?? null;
     },
+  });
+}
+
+/**
+ * Saves personal data or the goal, then recomputes the daily target (unless
+ * the person set their own). Every screen that shows targets updates.
+ */
+export function useUpdatePersonal() {
+  const qc = useQueryClient();
+  const { userId } = useSession();
+  return useMutation({
+    mutationFn: async (v: { health?: HealthPatch; goal?: Goal; goals?: Goal[] }) => {
+      const day = today();
+      if (v.health) await updateHealthProfile(supabase(), userId!, v.health, day);
+      if (v.goal) await updateGoals(supabase(), userId!, v.goal, v.goals ?? []);
+      await refreshComputedTarget(supabase(), day);
+    },
+    onSuccess: () =>
+      Promise.all(['health-profile', 'profile', 'target', 'weights'].map((k) => qc.invalidateQueries({ queryKey: [k] }))),
   });
 }

@@ -17,42 +17,32 @@ import { useT } from '@/lib/i18n';
 import { radius, space, usePalette } from '@/lib/theme';
 
 /**
- * The Fudyu Score at a glance: big ring in the level colour on a soft tinted
- * disc, the number counting up to its real value, and a human label.
+ * The Fudyu Score as the brand's signature: a big number in the level colour,
+ * the level in bold capitals and a ring that fills on reveal, on a soft tint.
  * Unscored products show "Sin puntuación" — never a made-up number.
  */
-export function FudyuScoreRing({ result, size = 176 }: { result: FudyuScoreResult; size?: number }) {
+export function ScoreDial({ result, size = 138 }: { result: FudyuScoreResult; size?: number }) {
   const p = usePalette();
   const { t, f } = useT();
   const scored = result.status === 'scored';
   const shown = useCountUp(scored ? result.score : null);
   const tone = scored ? scaleTone(p, result.level) : null;
-  const stroke = Math.round(size * 0.075);
+  const stroke = Math.round(size * 0.08);
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const progress = scored && shown != null ? Math.max(0, Math.min(1, shown / 100)) : 0;
   const label = scored ? t.score.levels[result.level] : t.score.unscored;
 
   return (
-    <View style={{ alignItems: 'center', gap: space.sm }}>
-      <View
-        accessible
-        accessibilityRole="image"
-        accessibilityLabel={scored ? f(t.score.a11y, { score: result.score, level: label }) : `${t.score.title}: ${label}`}
-        style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: tone?.soft ?? p.surfaceMuted, alignItems: 'center', justifyContent: 'center' }}
-      >
+    <View
+      accessible
+      accessibilityRole="image"
+      accessibilityLabel={scored ? f(t.score.a11y, { score: result.score, level: label }) : `${t.score.title}: ${label}`}
+      style={{ alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: space.md, paddingHorizontal: space.sm, borderRadius: radius.lg, backgroundColor: tone?.soft ?? p.surfaceMuted }}
+    >
+      <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
         <Svg width={size} height={size} style={{ position: 'absolute', transform: [{ rotate: '-90deg' }] }}>
-          <Circle cx={size / 2} cy={size / 2} r={r - stroke * 0.6} fill={p.surface} />
-          <Circle
-            cx={size / 2}
-            cy={size / 2}
-            r={r}
-            stroke={scored ? p.surface : p.borderStrong}
-            strokeOpacity={scored ? 0.9 : 1}
-            strokeWidth={stroke}
-            strokeDasharray={scored ? undefined : '4 8'}
-            fill="none"
-          />
+          <Circle cx={size / 2} cy={size / 2} r={r} stroke={scored ? 'rgba(255,255,255,0.75)' : p.borderStrong} strokeWidth={stroke} strokeDasharray={scored ? undefined : '4 8'} fill="none" />
           {scored && progress > 0 ? (
             <Circle
               cx={size / 2}
@@ -68,31 +58,34 @@ export function FudyuScoreRing({ result, size = 176 }: { result: FudyuScoreResul
           ) : null}
         </Svg>
         {scored ? (
-          <>
-            <Text variant="hero" style={{ color: tone!.text, fontVariant: ['tabular-nums'] }}>
+          <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+            <Text variant="score" style={{ color: tone!.strong, fontVariant: ['tabular-nums'], fontSize: size * 0.4, lineHeight: size * 0.42 }}>
               {Math.round(shown ?? result.score)}
             </Text>
-            <Text variant="micro" color="textTertiary" style={{ marginTop: -4 }}>
-              {t.score.outOf}
+            <Text variant="secondaryStrong" style={{ color: tone!.text, marginBottom: size * 0.05, marginLeft: 1 }}>
+              /100
             </Text>
-          </>
+          </View>
         ) : (
           <Text variant="title" color="textTertiary">
             —
           </Text>
         )}
       </View>
-      <View style={{ alignItems: 'center', gap: 2, paddingHorizontal: space.md }}>
-        <Text variant="section" style={{ color: tone?.text ?? p.textSecondary }} align="center">
-          {label}
+      <Text variant="section" align="center" style={{ color: tone?.strong ?? p.textSecondary, fontWeight: '800', letterSpacing: 1.2, textTransform: 'uppercase' }}>
+        {label}
+      </Text>
+      {!scored ? (
+        <Text variant="caption" color="textSecondary" align="center" numberOfLines={3} style={{ maxWidth: 200 }}>
+          {t.score.unscoredReasons[result.reason]}
         </Text>
-        <Text variant="secondary" color="textSecondary" align="center">
-          {scored ? t.score.sentences[result.level] : t.score.unscoredReasons[result.reason]}
-        </Text>
-      </View>
+      ) : null}
     </View>
   );
 }
+
+/** @deprecated Kept for compatibility; prefer ScoreDial. */
+export const FudyuScoreRing = ScoreDial;
 
 /** Compact score for lists and comparisons. */
 export function ScoreBadge({ score, level, compact }: { score: number | null; level: ScoreLevel | null; compact?: boolean }) {
@@ -159,16 +152,14 @@ export function useFactorLabel(unit: 'g' | 'ml' = 'g') {
   };
 }
 
-/** "¿Por qué?" — the 2–3 real reasons behind the score, signed. */
-export function ScoreExplanation({ result, unit }: { result: Extract<FudyuScoreResult, { status: 'scored' }>; unit: 'g' | 'ml' }) {
+/** The real reasons behind the score, signed (shown in "Análisis completo"). */
+export function ScoreExplanation({ result, unit, max = 3 }: { result: Extract<FudyuScoreResult, { status: 'scored' }>; unit: 'g' | 'ml'; max?: number }) {
   const p = usePalette();
-  const { t } = useT();
   const label = useFactorLabel(unit);
-  const factors = topFactors(result);
+  const factors = topFactors(result, max);
   if (factors.length === 0) return null;
   return (
     <View style={{ gap: space.sm }}>
-      <Text variant="bodyStrong">{t.score.why}</Text>
       {factors.map((factor) => {
         const { title, detail } = label(factor);
         const positive = factor.sign > 0;

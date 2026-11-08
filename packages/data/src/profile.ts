@@ -232,3 +232,72 @@ export async function logWeight(client: SupabaseClient, date: string, weightKg: 
   const { error } = await client.from('weight_logs').upsert({ logged_on: date, weight_kg: weightKg }, { onConflict: 'user_id,logged_on' });
   if (error) throw error;
 }
+
+export interface HealthPatch {
+  birthYear?: number | null;
+  sex?: 'female' | 'male' | 'unspecified' | null;
+  heightCm?: number | null;
+  weightKg?: number | null;
+  activity?: string | null;
+}
+
+/**
+ * Updates personal data (requires the health_data consent; RLS rejects it
+ * otherwise). A new weight is also logged for the day.
+ */
+export async function updateHealthProfile(client: SupabaseClient, userId: string, patch: HealthPatch, today: string): Promise<void> {
+  const row: Row = { user_id: userId };
+  if (patch.birthYear !== undefined) row.birth_year = patch.birthYear;
+  if (patch.sex !== undefined) row.sex = patch.sex;
+  if (patch.heightCm !== undefined) row.height_cm = patch.heightCm;
+  if (patch.weightKg !== undefined) row.weight_kg = patch.weightKg;
+  if (patch.activity !== undefined) row.activity_level = patch.activity;
+  const { error } = await client.from('health_profiles').upsert(row, { onConflict: 'user_id', defaultToNull: false });
+  if (error) throw error;
+  if (patch.weightKg != null) await logWeight(client, today, patch.weightKg);
+}
+
+export async function updateGoals(client: SupabaseClient, userId: string, primaryGoal: Goal, goals: Goal[]): Promise<void> {
+  const all = goals.includes(primaryGoal) ? goals : [primaryGoal, ...goals];
+  const { error } = await client.from('profiles').update({ primary_goal: primaryGoal, goals: all }).eq('id', userId);
+  if (error) throw error;
+}
+
+/**
+ * Recomputes the daily target after personal data or goal changes, unless the
+ * person set their own target. Without enough data nothing is invented.
+ */
+export async function refreshComputedTarget(client: SupabaseClient, today: string): Promise<void> {
+  const current = await getCurrentTarget(client, today);
+  if (current?.method === 'user_defined') return;
+  const [health, profile] = await Promise.all([
+    client.from('health_profiles').select('birth_year, sex, height_cm, weight_kg, activity_level').maybeSingle(),
+    getProfile(client),
+  ]);
+  if (health.error) throw health.error;
+  const h = health.data as Row | null;
+  if (!h || !profile) return;
+  const num = (v: unknown) => (v == null ? undefined : Number(v));
+  const birthYear = num(h.birth_year);
+  const targets = computeDailyTargets(
+    {
+      sex: (h.sex as OnboardingAnswers['sex']) ?? undefined,
+      ageYears: birthYear ? Number(today.slice(0, 4)) - birthYear : undefined,
+      heightCm: num(h.height_cm),
+      weightKg: num(h.weight_kg),
+      activity: (h.activity_level as OnboardingAnswers['activity']) ?? undefined,
+    },
+    profile.primaryGoal,
+  );
+  if (targets.status !== 'ok') return;
+  await setTarget(client, {
+    effectiveFrom: today,
+    energyKcal: targets.energyKcal,
+    proteinG: targets.proteinG,
+    carbsG: targets.carbsG,
+    fatG: targets.fatG,
+    fiberG: targets.fiberG,
+    method: targets.method,
+    inputs: { goal: profile.primaryGoal, notes: targets.notes },
+  });
+}

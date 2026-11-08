@@ -10,7 +10,10 @@ import { useT } from '@/lib/i18n';
 import { today, useSaveMeal } from '@/lib/queries';
 import { space } from '@/lib/theme';
 
-/** Amount + meal selection and an idempotent save for one catalogue item. */
+/**
+ * Amount selection and an idempotent save for one catalogue item. Compact
+ * mode (Today is chronological) files the meal by time instead of asking.
+ */
 export function AddToDiaryCard({
   match,
   defaultGrams,
@@ -19,21 +22,29 @@ export function AddToDiaryCard({
   method,
   onSaved,
   bare = false,
+  compact = false,
+  date,
+  consumedAt,
 }: {
   /** Inside a bottom sheet: no card chrome and no repeated title. */
   bare?: boolean;
+  /** Hide the meal selector (meal inferred from the time). */
+  compact?: boolean;
   match: FoodMatch;
   defaultGrams: number;
   netQuantity?: number | null;
   meal?: MealType | null;
   method: 'barcode' | 'search';
-  onSaved?: () => void;
+  /** Local day to log on (defaults to today) and the moment it was eaten. */
+  date?: string;
+  consumedAt?: string | null;
+  onSaved?: (entryId: string) => void;
 }) {
   const { t, locale } = useT();
   const save = useSaveMeal();
   const [grams, setGrams] = useState(defaultGrams);
   const [label, setLabel] = useState<string | null>(null);
-  const [meal, setMeal] = useState<MealType>(initialMeal ?? defaultMealForDate(new Date()));
+  const [meal, setMeal] = useState<MealType>(initialMeal ?? defaultMealForDate(consumedAt ? new Date(consumedAt) : new Date()));
   // One id per screen visit: double taps and retries never duplicate the entry.
   const [ids] = useState(() => ({ entry: uuid(), item: uuid() }));
   const [saved, setSaved] = useState(false);
@@ -42,8 +53,8 @@ export function AddToDiaryCard({
   const onSave = async () => {
     await save.mutateAsync({
       id: ids.entry,
-      consumedOn: today(),
-      consumedAt: new Date().toISOString(),
+      consumedOn: date ?? today(),
+      consumedAt: consumedAt ?? new Date().toISOString(),
       mealType: meal,
       method,
       items: [
@@ -61,7 +72,7 @@ export function AddToDiaryCard({
     });
     haptic.success();
     setSaved(true);
-    onSaved?.();
+    onSaved?.(ids.entry);
   };
 
   const body = (
@@ -92,12 +103,12 @@ export function AddToDiaryCard({
           <MacroLine values={values} />
         </View>
       </Row>
-      <SegmentedControl value={meal} onChange={setMeal} options={MEAL_TYPES.map((m) => ({ value: m, label: t.meals[m] }))} />
+      {compact ? null : <SegmentedControl value={meal} onChange={setMeal} options={MEAL_TYPES.map((m) => ({ value: m, label: t.meals[m] }))} />}
       {save.isError && <Notice tone="error" text={errorMessage(save.error, t)} />}
       {saved ? (
         <Notice tone="success" text={t.review.saved} />
       ) : (
-        <Button title={t.product.addToDiary} icon="plus" onPress={onSave} loading={save.isPending} />
+        <Button title={t.product.addToDay} icon="plus" onPress={onSave} loading={save.isPending} />
       )}
     </>
   );

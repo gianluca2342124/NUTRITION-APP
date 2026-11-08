@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Alert, Platform, Share, Switch, View } from 'react-native';
 import { formatNumber } from '@repo/core';
 import { Button, Card, Divider, Field, IconButton, ListRow, Notice, Row, Screen, Text } from '@/components/ui';
+import { hapticsEnabled, setHapticsEnabled } from '@/lib/haptics';
+import { setCelebrationsEnabled, useCelebrationsSetting } from '@/lib/prefs';
 import { apiClient } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 import { useT } from '@/lib/i18n';
@@ -22,7 +24,8 @@ function ask(message: string, onYes: () => void, yes: string, no: string) {
   ]);
 }
 
-export default function ProfileScreen() {
+/** Account, targets, privacy and app preferences (the person's public page is the Perfil tab). */
+export default function SettingsScreen() {
   const { t, f, locale } = useT();
   const session = useSession();
   const consents = useConsents();
@@ -38,6 +41,8 @@ export default function ProfileScreen() {
   const [message, setMessage] = useState<{ tone: 'error' | 'success'; text: string } | null>(null);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState({ energy: '', protein: '', carbs: '', fat: '', fiber: '' });
+  const [haptics, setHaptics] = useState(hapticsEnabled);
+  const celebrations = useCelebrationsSetting();
 
   const startEditing = () => {
     const d = target.data;
@@ -74,7 +79,7 @@ export default function ProfileScreen() {
     <Screen>
       <Row style={{ justifyContent: 'space-between', paddingTop: space.sm }}>
         <IconButton icon="chevronLeft" label={t.common.back} onPress={() => router.back()} />
-        <Text variant="cardTitle">{t.profile.title}</Text>
+        <Text variant="cardTitle">{t.settings.title}</Text>
         <View style={{ width: 44 }} />
       </Row>
 
@@ -215,6 +220,35 @@ export default function ProfileScreen() {
               onValueChange={(v) => setGame.mutate(v)}
               trackColor={{ true: p.primary, false: p.borderStrong }}
               accessibilityLabel={t.profile.gamification}
+            />
+          }
+        />
+        <Divider />
+        <ListRow
+          title={t.settings.celebrations}
+          subtitle={t.settings.celebrationsHint}
+          right={
+            <Switch
+              value={celebrations}
+              onValueChange={setCelebrationsEnabled}
+              trackColor={{ true: p.primary, false: p.borderStrong }}
+              accessibilityLabel={t.settings.celebrations}
+            />
+          }
+        />
+        <Divider />
+        <ListRow
+          title={t.settings.haptics}
+          subtitle={t.settings.hapticsHint}
+          right={
+            <Switch
+              value={haptics}
+              onValueChange={(v) => {
+                setHapticsEnabled(v);
+                setHaptics(v);
+              }}
+              trackColor={{ true: p.primary, false: p.borderStrong }}
+              accessibilityLabel={t.settings.haptics}
             />
           }
         />

@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { View } from 'react-native';
 import { compareItems, computeFudyuScore, formatNutrient, localizedName, scoreInputFromProduct, type CatalogProduct } from '@repo/core';
 import { FoodImage } from '@/components/food-image';
-import { ScoreBadge } from '@/components/score';
+import { ScoreDial } from '@/components/score';
 import { Button, Card, Divider, EmptyState, IconButton, Notice, Row, Screen, Text } from '@/components/ui';
 import { trackActivity } from '@/lib/activity';
 import { apiClient } from '@/lib/api';
@@ -167,5 +167,9 @@ export default function CompareScreen() {
 
 function CompareScore({ product }: { product: CatalogProduct }) {
   const r = computeFudyuScore(scoreInputFromProduct(product));
-  return r.status === 'scored' ? <ScoreBadge score={r.score} level={r.level} /> : <ScoreBadge score={null} level={null} />;
+  return (
+    <View style={{ alignSelf: 'stretch' }}>
+      <ScoreDial result={r} size={92} />
+    </View>
+  );
 }

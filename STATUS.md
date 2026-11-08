@@ -1,6 +1,6 @@
 # STATUS
 
-Last updated: 2026-11-08 · Branch: `claude/nifty-mccarthy-v7012h`
+Last updated: 2026-11-08 (2.1) · Branch: `claude/nifty-mccarthy-v7012h`
 
 ## Phases
 | Phase | State |
@@ -8,10 +8,21 @@ Last updated: 2026-11-08 · Branch: `claude/nifty-mccarthy-v7012h`
 | 0 — Foundation | Done |
 | 1 — Core nutrition | Done in code. AI-backed features need credentials to run live (see below) |
 | **2.0 — Product experience redesign** | Done: design system, Today, streaks and achievements, Fudyu Score, product, additives, scanner, progress, onboarding, Explore, recipes, Coach preview, web |
+| **2.1 — Premium experience upgrade** | Done: typography, score card, editable nutrient grid, chronological Today with scans, undo, new navigation with "+", Profile with moderated publications, haptics, motion and celebrations |
 | 2 — Connected intelligence (Coach, plans, shopping lists) | Not started. The Coach tab shows an honest preview and does not simulate answers |
 | 3 — Web & SEO | Partly done: home, search, food, product, additive, recipes, methodology, credits, sitemap |
-| 4 — Community | Not started. No user recipes, and none are pretended |
+| 4 — Community | Started: authors can draft recipes and articles and send them to review. Nothing is published without a moderator (no moderation UI yet) |
 | 5 — Commerce & growth | Not started |
+
+## What is new in 2.1
+- **Design system:** Plus Jakarta Sans (OFL, 400–800) on app and web; nutrient tokens and icons (`NUTRIENT_STATS`); motion durations by pattern; central `haptics.ts` with intents, throttling and a setting.
+- **Fudyu Score:** big number, ring and direct level (Excelente/Bueno/Regular/Malo/Muy malo); no "¿Por qué?"; reasons in "Análisis completo". Same methodology v1.0.0.
+- **Product card:** photo + score side by side, then name, brand, quantity; 8-stat grid "Por 100 g/ml" or "Mi cantidad", each with a pencil. Personal changes only change the amount; a value that differs from the package becomes a moderated `product_correction` contribution (the catalogue is never edited).
+- **Today:** greeting and streak, swipeable week (any day), summary, "Recientes de hoy" in time order. Scans live in `product_scans` and never add nutrients; "Añadir" logs them in one tap with a compact amount picker. Delete with a 5 s "Deshacer" (optimistic, restored on failure; deleting an entry removes the scan it came from, never the product).
+- **Navigation:** Hoy · Explorar · (+) · Coach · Perfil. "+" opens real actions: barcode, plate photo, label, voice, search, manual label entry, publish recipe, write article.
+- **Profile:** photo or initials, name, @username, bio; private data cards (goal, sex, age, height, weight, activity) that recompute the target unless the person set their own; "Vista pública" shows only name, username, bio, photo, opt-in achievements and approved publications. "Mis logros" moved here from Progress.
+- **Publications:** recipes (catalogue ingredients only, nutrition computed) and articles (sources required), drafts, "Enviado a revisión". Only the service role can publish or reject; editing a published item takes it back to review.
+- **Celebrations:** confetti only for real achievements, streak milestones (3, 7, 14, 30…) and the first entry; off with the setting or Reduce Motion.
 
 ## What is new in 2.0
 - **Design system:**
@@ -59,7 +70,13 @@ Last updated: 2026-11-08 · Branch: `claude/nifty-mccarthy-v7012h`
   - Recipe pages, methodology page, image credits page.
 - **Images:** 27 curated, licence-checked Wikimedia Commons photos with attribution (`docs/images.md`), and an original illustration fallback everywhere else.
 
-## Verified in this session (commands actually run)
+## Verified for 2.1 (commands actually run)
+- `pnpm check`: typecheck and lint for every workspace; **157 unit tests** pass (new: Today feed and optimistic totals).
+- `npx supabase db reset` then `pnpm test:db`: **42 integration tests** pass (new: scans never count and are private; entry deletion removes its scan; public profile privacy; achievements opt-in; moderation: authors cannot publish, ingredients of a published recipe cannot change silently, articles need sources).
+- `next build` (production) passes.
+- Mobile browser E2E (Playwright, 390×844, light and dark, no page errors): onboarding; product card and nutrient edit sheet; scan → "Recientes" without calories → "Añadir" → 539 kcal → delete with undo → restore → delete persisted after reload; week navigation; "+" sheet; recipe editor with catalogue ingredient → "Enviado a revisión" (never "¡Publicado!"); profile editing; weight edit recomputing the target; public view without sensitive data; article preview and review; manual label entry; settings toggles.
+
+## Verified in 2.0
 - `pnpm check`: typecheck and lint for every workspace; **150 unit tests** pass. Before 2.0 there were 63; the new ones cover the score, Nutri-Score, streaks, personal fit and recipes.
 - `npx supabase db reset` then `pnpm test:db`: **33 integration tests** pass. They cover the earlier suites plus streaks:
   - dedup, ownership, date window, grace day, achievements, opt-out, RLS and write protection
@@ -88,7 +105,8 @@ Last updated: 2026-11-08 · Branch: `claude/nifty-mccarthy-v7012h`
 - **Native iOS and Android:**
   - Not run on a device or simulator.
   - Unverified there: camera and barcode, haptics, Liquid Glass, Reduce Motion behaviour, and the curated images loaded from the API origin.
-- **Dark mode:** tokens are defined, but the screens were not reviewed visually in dark mode.
+- **Dark mode:** reviewed in the browser for Today, the "+" sheet, Profile and Progress (2.1); other screens not reviewed.
+- **Moderation:** there is no moderator UI; publishing or rejecting is done with the service role (dashboard). Community media is in a public bucket under unguessable paths, so a draft image is reachable by its exact URL.
 - **Anonymous → email account upgrade:** not tested end to end.
 - **CI on GitHub:** not run.
 

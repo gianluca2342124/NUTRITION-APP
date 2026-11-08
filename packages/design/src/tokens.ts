@@ -48,6 +48,21 @@ export interface Palette {
   scaleCoral: string;
   scaleCoralSoft: string;
   scaleCoralText: string;
+  /** Vivid level colours for large score numerals (≥ 3:1 on white and on the soft tint). */
+  scaleGreenStrong: string;
+  scaleLimeStrong: string;
+  scaleAmberStrong: string;
+  scaleOrangeStrong: string;
+  scaleCoralStrong: string;
+  /* Nutrient accents (identity, never evaluation). */
+  nutrientEnergy: string;
+  nutrientProtein: string;
+  nutrientCarbs: string;
+  nutrientSugars: string;
+  nutrientFiber: string;
+  nutrientFat: string;
+  nutrientSaturates: string;
+  nutrientSalt: string;
   /** Streak flame (warm, friendly — not an alarm). */
   streak: string;
   streakSoft: string;
@@ -107,6 +122,19 @@ export const palettes: Record<ColorScheme, Palette> = {
     scaleCoral: scale.coral,
     scaleCoralSoft: '#FCEBED',
     scaleCoralText: '#B42E3B',
+    scaleGreenStrong: '#12A16D',
+    scaleLimeStrong: '#5E9A1A',
+    scaleAmberStrong: '#B87500',
+    scaleOrangeStrong: '#D2602A',
+    scaleCoralStrong: '#D63A47',
+    nutrientEnergy: brand.primaryColor,
+    nutrientProtein: '#7A5AF8',
+    nutrientCarbs: '#1DA8D8',
+    nutrientSugars: '#5FC1E3',
+    nutrientFiber: '#1389B0',
+    nutrientFat: '#C77DDB',
+    nutrientSaturates: '#A35BB5',
+    nutrientSalt: '#6B7A99',
     streak: scale.orange,
     streakSoft: '#FFF1E8',
     streakText: '#A4461A',
@@ -161,6 +189,19 @@ export const palettes: Record<ColorScheme, Palette> = {
     scaleCoral: '#F0707A',
     scaleCoralSoft: '#3A1820',
     scaleCoralText: '#FF98A0',
+    scaleGreenStrong: '#2BD69A',
+    scaleLimeStrong: '#B4E266',
+    scaleAmberStrong: '#F7C057',
+    scaleOrangeStrong: '#F59362',
+    scaleCoralStrong: '#F0707A',
+    nutrientEnergy: '#5A86FF',
+    nutrientProtein: '#9B85FF',
+    nutrientCarbs: '#4CC3EA',
+    nutrientSugars: '#7FD3EE',
+    nutrientFiber: '#38A9CF',
+    nutrientFat: '#D99BE8',
+    nutrientSaturates: '#C27FD2',
+    nutrientSalt: '#97A3BC',
     streak: '#F59362',
     streakSoft: '#3A2112',
     streakText: '#F8AE88',
@@ -178,21 +219,34 @@ export const palettes: Record<ColorScheme, Palette> = {
 /** Evaluation level keys (mirrors SCORE_LEVELS in @repo/core). */
 export type ScaleLevel = 'excellent' | 'good' | 'fair' | 'poor' | 'limit';
 
-/** Fill / soft surface / text colours for an evaluation level. */
-export function scaleTone(p: Palette, level: ScaleLevel): { fill: string; soft: string; text: string } {
+/** Fill / soft surface / small text / large numeral colours for an evaluation level. */
+export function scaleTone(p: Palette, level: ScaleLevel): { fill: string; soft: string; text: string; strong: string } {
   switch (level) {
     case 'excellent':
-      return { fill: p.scaleGreen, soft: p.scaleGreenSoft, text: p.scaleGreenText };
+      return { fill: p.scaleGreen, soft: p.scaleGreenSoft, text: p.scaleGreenText, strong: p.scaleGreenStrong };
     case 'good':
-      return { fill: p.scaleLime, soft: p.scaleLimeSoft, text: p.scaleLimeText };
+      return { fill: p.scaleLime, soft: p.scaleLimeSoft, text: p.scaleLimeText, strong: p.scaleLimeStrong };
     case 'fair':
-      return { fill: p.scaleAmber, soft: p.scaleAmberSoft, text: p.scaleAmberText };
+      return { fill: p.scaleAmber, soft: p.scaleAmberSoft, text: p.scaleAmberText, strong: p.scaleAmberStrong };
     case 'poor':
-      return { fill: p.scaleOrange, soft: p.scaleOrangeSoft, text: p.scaleOrangeText };
+      return { fill: p.scaleOrange, soft: p.scaleOrangeSoft, text: p.scaleOrangeText, strong: p.scaleOrangeStrong };
     case 'limit':
-      return { fill: p.scaleCoral, soft: p.scaleCoralSoft, text: p.scaleCoralText };
+      return { fill: p.scaleCoral, soft: p.scaleCoralSoft, text: p.scaleCoralText, strong: p.scaleCoralStrong };
   }
 }
+
+/** The eight nutrients of the stat grid: accent token and icon (identity only). */
+export const NUTRIENT_STATS = [
+  { key: 'energy_kcal', color: 'nutrientEnergy', icon: 'flame', unit: 'kcal' },
+  { key: 'protein_g', color: 'nutrientProtein', icon: 'drumstick', unit: 'g' },
+  { key: 'carbs_g', color: 'nutrientCarbs', icon: 'wheat', unit: 'g' },
+  { key: 'fat_g', color: 'nutrientFat', icon: 'drop', unit: 'g' },
+  { key: 'sugars_g', color: 'nutrientSugars', icon: 'cubes', unit: 'g' },
+  { key: 'saturated_fat_g', color: 'nutrientSaturates', icon: 'dropHalf', unit: 'g' },
+  { key: 'fiber_g', color: 'nutrientFiber', icon: 'leaf', unit: 'g' },
+  { key: 'salt_g', color: 'nutrientSalt', icon: 'shaker', unit: 'g' },
+] as const;
+export type NutrientStat = (typeof NUTRIENT_STATS)[number];
 
 /** 4/8-based spacing scale (px / dp). */
 export const space = {
@@ -216,33 +270,61 @@ export const radius = {
   pill: 999,
 } as const;
 
-/** Type scale in points. Mobile uses the system font so Dynamic Type applies. */
+/**
+ * Brand typeface: Plus Jakarta Sans (SIL Open Font License 1.1). Each weight is
+ * a separate family on native platforms; the web uses the same family name.
+ */
+export const FONT_FAMILY = 'Plus Jakarta Sans';
+export const fontFamilies = {
+  '400': 'PlusJakartaSans_400Regular',
+  '500': 'PlusJakartaSans_500Medium',
+  '600': 'PlusJakartaSans_600SemiBold',
+  '700': 'PlusJakartaSans_700Bold',
+  '800': 'PlusJakartaSans_800ExtraBold',
+} as const;
+export type FontWeightKey = keyof typeof fontFamilies;
+
+/** Type scale in points (Dynamic Type still applies through font scaling). */
 export const typography = {
+  score: { fontSize: 76, lineHeight: 78, fontWeight: '800', letterSpacing: -3.2 },
   hero: { fontSize: 56, lineHeight: 60, fontWeight: '800', letterSpacing: -2 },
-  display: { fontSize: 44, lineHeight: 50, fontWeight: '800', letterSpacing: -1.2 },
-  largeTitle: { fontSize: 32, lineHeight: 38, fontWeight: '800', letterSpacing: -0.8 },
-  title: { fontSize: 26, lineHeight: 32, fontWeight: '700', letterSpacing: -0.5 },
-  section: { fontSize: 20, lineHeight: 26, fontWeight: '700', letterSpacing: -0.3 },
-  cardTitle: { fontSize: 17, lineHeight: 22, fontWeight: '600', letterSpacing: -0.2 },
-  body: { fontSize: 16, lineHeight: 22, fontWeight: '400', letterSpacing: -0.1 },
-  bodyStrong: { fontSize: 16, lineHeight: 22, fontWeight: '600', letterSpacing: -0.1 },
-  secondary: { fontSize: 14, lineHeight: 19, fontWeight: '400', letterSpacing: 0 },
-  secondaryStrong: { fontSize: 14, lineHeight: 19, fontWeight: '600', letterSpacing: 0 },
-  caption: { fontSize: 13, lineHeight: 17, fontWeight: '500', letterSpacing: 0 },
+  display: { fontSize: 42, lineHeight: 48, fontWeight: '800', letterSpacing: -1.4 },
+  largeTitle: { fontSize: 30, lineHeight: 36, fontWeight: '800', letterSpacing: -0.9 },
+  title: { fontSize: 24, lineHeight: 30, fontWeight: '700', letterSpacing: -0.6 },
+  section: { fontSize: 19, lineHeight: 25, fontWeight: '700', letterSpacing: -0.3 },
+  metric: { fontSize: 26, lineHeight: 30, fontWeight: '700', letterSpacing: -0.6 },
+  cardTitle: { fontSize: 16, lineHeight: 21, fontWeight: '700', letterSpacing: -0.2 },
+  body: { fontSize: 15, lineHeight: 22, fontWeight: '400', letterSpacing: -0.1 },
+  bodyStrong: { fontSize: 15, lineHeight: 22, fontWeight: '600', letterSpacing: -0.1 },
+  secondary: { fontSize: 14, lineHeight: 19, fontWeight: '500', letterSpacing: 0 },
+  secondaryStrong: { fontSize: 14, lineHeight: 19, fontWeight: '700', letterSpacing: 0 },
+  caption: { fontSize: 12.5, lineHeight: 17, fontWeight: '500', letterSpacing: 0 },
+  eyebrow: { fontSize: 11.5, lineHeight: 14, fontWeight: '700', letterSpacing: 0.9 },
   micro: { fontSize: 11, lineHeight: 14, fontWeight: '600', letterSpacing: 0.2 },
 } as const;
 
 export type TypeVariant = keyof typeof typography;
 
+/**
+ * Motion tokens (ms). Press 80–140, micro 140–220, card entry 180–280,
+ * sheets 220–360, celebrations ≤ 900. Springs for things that move.
+ */
 export const motion = {
+  press: 110,
   fast: 160,
+  micro: 180,
   base: 240,
+  enter: 240,
   slow: 320,
+  sheet: 300,
   /** Count-up of numbers that matter (score, calories). */
   reveal: 700,
+  celebrate: 850,
   /** Delay between cards appearing in reading order. */
-  stagger: 45,
+  stagger: 40,
   spring: { damping: 18, stiffness: 220, mass: 1 },
+  /** Snappy spring for press feedback and the tab indicator. */
+  snappy: { damping: 20, stiffness: 380, mass: 0.8 },
   /** Softer spring for celebrations and sheets. */
   gentle: { damping: 16, stiffness: 140, mass: 1 },
 } as const;

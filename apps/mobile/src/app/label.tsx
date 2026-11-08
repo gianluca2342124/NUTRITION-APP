@@ -3,7 +3,6 @@ import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { submitContribution } from '@repo/data';
 import {
-  MEAL_TYPES,
   defaultMealForDate,
   formatNumber,
   scaleNutrients,
@@ -13,7 +12,7 @@ import {
   type MealType,
 } from '@repo/core';
 import { AmountPicker } from '@/components/amount-picker';
-import { Button, Card, Choice, EmptyState, Field, IconButton, Notice, Row, Screen, SegmentedControl, Text, haptic } from '@/components/ui';
+import { Button, Card, Choice, EmptyState, Field, IconButton, Notice, Row, Screen, Text, haptic } from '@/components/ui';
 import { errorMessage } from '@/lib/errors';
 import { uuid } from '@/lib/ids';
 import { useT } from '@/lib/i18n';
@@ -55,7 +54,7 @@ export default function LabelScreen() {
   const [basis, setBasis] = useState<Basis | null>(draft?.basis === '100ml' ? '100ml' : draft?.basis === '100g' || draft?.basis === 'serving' ? '100g' : null);
   const [name, setName] = useState(draft?.productName ?? '');
   const [grams, setGrams] = useState(100);
-  const [meal, setMeal] = useState<MealType>(defaultMealForDate(new Date()));
+  const [meal] = useState<MealType>(() => defaultMealForDate(new Date()));
   const [ids] = useState(() => ({ entry: uuid(), item: uuid() }));
   const [contributed, setContributed] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -124,9 +123,9 @@ export default function LabelScreen() {
     <Screen edges={['top', 'bottom']} bottomInset={40}>
       <Row style={{ justifyContent: 'space-between', paddingTop: space.sm }}>
         <View style={{ flex: 1 }}>
-          <Text variant="title">{t.label.title}</Text>
+          <Text variant="title">{pending?.manual ? t.label.manualTitle : t.label.title}</Text>
           <Text variant="secondary" color="textSecondary">
-            {t.label.subtitle}
+            {pending?.manual ? t.label.manualSubtitle : t.label.subtitle}
           </Text>
         </View>
         <IconButton icon="close" label={t.common.close} onPress={() => router.back()} />
@@ -190,8 +189,7 @@ export default function LabelScreen() {
           <Text variant="title" style={{ fontVariant: ['tabular-nums'] }}>
             {formatNumber(scaleNutrients(validation.nutrients, grams).energy_kcal ?? 0, locale)} kcal
           </Text>
-          <SegmentedControl value={meal} onChange={setMeal} options={MEAL_TYPES.map((m) => ({ value: m, label: t.meals[m] }))} />
-          <Button title={t.product.addToDiary} icon="plus" onPress={logIt} loading={save.isPending} />
+          <Button title={t.product.addToDay} icon="plus" onPress={logIt} loading={save.isPending} />
         </Card>
       )}
 

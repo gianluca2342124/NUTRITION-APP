@@ -276,11 +276,42 @@ export function MacroTrio({ protein, carbs, fat }: { protein: number | null; car
 /** Recipe card: large photo (illustrative) or illustration, title, time, servings, one justified tag. */
 export function RecipeCard({ recipe, width = 248, onPress }: { recipe: Recipe; width?: number | `${number}%`; onPress: () => void }) {
   const { t, f, locale } = useT();
-  const p = usePalette();
   const n = recipeNutrition(recipe);
   const tags = recipeTags(recipe, n);
   const tag = (['high_protein', 'high_fiber', 'protein_source', 'fiber_source'] as const).find((x) => tags.includes(x));
-  const title = locale === 'en' ? recipe.titleEn : recipe.titleEs;
+  return (
+    <RecipeCardView
+      title={locale === 'en' ? recipe.titleEn : recipe.titleEs}
+      imageUri={foodImageUri(recipe.imageKey, 'wide')}
+      meta={`${f(t.recipes.minutes, { value: recipe.minutes })} · ${formatNumber(n.perServing.energy_kcal ?? 0, locale)} kcal`}
+      tag={tag ? t.recipes.tags[tag] : null}
+      width={width}
+      onPress={onPress}
+    />
+  );
+}
+
+/** Layout shared by editorial and community recipes. */
+export function RecipeCardView({
+  title,
+  imageUri,
+  meta,
+  tag,
+  badge,
+  footer,
+  width = 248,
+  onPress,
+}: {
+  title: string;
+  imageUri: string | null;
+  meta: string;
+  tag?: string | null;
+  badge?: ReactNode;
+  footer?: ReactNode;
+  width?: number | `${number}%`;
+  onPress: () => void;
+}) {
+  const p = usePalette();
   return (
     <PressableScale
       accessibilityRole="button"
@@ -289,23 +320,96 @@ export function RecipeCard({ recipe, width = 248, onPress }: { recipe: Recipe; w
       style={[{ width, borderRadius: radius.lg, backgroundColor: p.surface, overflow: 'hidden', borderWidth: StyleSheet.hairlineWidth, borderColor: p.border }, shadow(p, 'card')]}
     >
       <View>
-        <FoodImage uri={foodImageUri(recipe.imageKey, 'wide')} fallback="recipe" width="100%" height={typeof width === 'number' ? Math.round(width * 0.66) : 150} radius={0} />
+        <FoodImage uri={imageUri} fallback="recipe" width="100%" height={typeof width === 'number' ? Math.round(width * 0.66) : 150} radius={0} />
         {tag ? (
           <View style={{ position: 'absolute', top: 10, left: 10, backgroundColor: 'rgba(255,255,255,0.95)', borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 4 }}>
             <Text variant="micro" style={{ color: '#172033' }}>
-              {t.recipes.tags[tag]}
+              {tag}
             </Text>
           </View>
         ) : null}
+        {badge ? <View style={{ position: 'absolute', top: 10, right: 10 }}>{badge}</View> : null}
       </View>
       <View style={{ padding: space.sm, gap: 2 }}>
         <Text variant="bodyStrong" numberOfLines={2}>
           {title}
         </Text>
         <Text variant="caption" color="textSecondary" numberOfLines={1}>
-          {f(t.recipes.minutes, { value: recipe.minutes })} · {formatNumber(n.perServing.energy_kcal ?? 0, locale)} kcal
+          {meta}
         </Text>
+        {footer}
       </View>
     </PressableScale>
+  );
+}
+
+/** Article card: cover (if any), title and a short excerpt. */
+export function ArticleCard({
+  title,
+  excerpt,
+  coverUri,
+  badge,
+  footer,
+  width = '100%',
+  onPress,
+}: {
+  title: string;
+  excerpt: string | null;
+  coverUri: string | null;
+  badge?: ReactNode;
+  footer?: ReactNode;
+  width?: number | `${number}%`;
+  onPress: () => void;
+}) {
+  const p = usePalette();
+  return (
+    <PressableScale
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      onPress={onPress}
+      style={[{ width, borderRadius: radius.lg, backgroundColor: p.surface, overflow: 'hidden', borderWidth: StyleSheet.hairlineWidth, borderColor: p.border }, shadow(p, 'card')]}
+    >
+      <View>
+        {coverUri ? (
+          <FoodImage uri={coverUri} fallback="recipe" width="100%" height={140} radius={0} />
+        ) : (
+          <View style={{ height: 76, backgroundColor: p.primarySoft, alignItems: 'flex-start', justifyContent: 'flex-end', padding: space.sm }}>
+            <Icon name="article" size={26} color={p.primaryText} />
+          </View>
+        )}
+        {badge ? <View style={{ position: 'absolute', top: 10, right: 10 }}>{badge}</View> : null}
+      </View>
+      <View style={{ padding: space.sm, gap: 2 }}>
+        <Text variant="bodyStrong" numberOfLines={2}>
+          {title}
+        </Text>
+        {excerpt ? (
+          <Text variant="caption" color="textSecondary" numberOfLines={2}>
+            {excerpt}
+          </Text>
+        ) : null}
+        {footer}
+      </View>
+    </PressableScale>
+  );
+}
+
+/** Moderation state of a publication: never confuse "in review" with "published". */
+export function PublicationStatusPill({ status }: { status: 'draft' | 'pending_review' | 'published' | 'rejected' }) {
+  const p = usePalette();
+  const { t } = useT();
+  const tone = {
+    draft: { bg: p.surfaceMuted, fg: p.textSecondary, icon: 'pencil' as const },
+    pending_review: { bg: p.primarySoft, fg: p.primaryText, icon: 'clock' as const },
+    published: { bg: p.secondarySoft, fg: p.secondaryText, icon: 'check' as const },
+    rejected: { bg: p.errorSoft, fg: p.errorText, icon: 'alert' as const },
+  }[status];
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: tone.bg, borderRadius: radius.pill, paddingHorizontal: 9, paddingVertical: 4 }}>
+      <Icon name={tone.icon} size={12} color={tone.fg} strokeWidth={2.4} />
+      <Text variant="micro" style={{ color: tone.fg }}>
+        {t.me.status[status]}
+      </Text>
+    </View>
   );
 }

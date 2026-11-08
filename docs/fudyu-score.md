@@ -13,13 +13,18 @@ Implementation: `packages/core/src/score.ts` (engine) and
 
 | Score | Level | Colour | Label (es) |
 | --- | --- | --- | --- |
-| 80–100 | excellent | green `#20C78A` | Buena opción |
-| 60–79 | good | lime `#A4D950` | Favorable |
-| 40–59 | fair | amber `#F4B23A` | Intermedio |
-| 20–39 | poor | orange `#F08042` | Mejorable |
-| 0–19 | limit | coral `#E65762` | Conviene limitarlo |
+| 80–100 | excellent | green `#20C78A` | Excelente |
+| 60–79 | good | lime `#A4D950` | Bueno |
+| 40–59 | fair | amber `#F4B23A` | Regular |
+| 20–39 | poor | orange `#F08042` | Malo |
+| 0–19 | limit | coral `#E65762` | Muy malo |
 
 Colour never carries the meaning alone: every score shows its number and its label.
+Since 2.1 the labels are direct (the bands, weights and internal level keys did
+not change, so `FUDYU_SCORE_VERSION` stays 1.0.0). The reasons live in
+"Análisis completo → Qué influye en la puntuación", not under the score. The
+score rates the product's nutritional profile; it is never a disease risk or a
+personal medical assessment.
 
 ## 2. How it is calculated
 

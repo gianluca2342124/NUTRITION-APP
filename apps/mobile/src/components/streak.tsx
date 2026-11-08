@@ -1,5 +1,8 @@
+import { useEffect, useRef } from 'react';
 import { View } from 'react-native';
+import Animated, { FadeInUp, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import { calendarWeeks, parseLocalDate, type StreakSummary } from '@repo/core';
+import { motion } from '@repo/design';
 import { Icon } from './icons';
 import { PressableScale, Text } from './ui';
 import { useT } from '@/lib/i18n';
@@ -10,6 +13,14 @@ export function StreakPill({ count, onPress }: { count: number; onPress: () => v
   const p = usePalette();
   const { t, f } = useT();
   const active = count > 0;
+  // The flame pops once when the streak grows (a real event); nothing otherwise.
+  const pop = useSharedValue(1);
+  const previous = useRef(count);
+  useEffect(() => {
+    if (count > previous.current) pop.set(withSequence(withTiming(1.32, { duration: motion.micro }), withSpring(1, motion.snappy)));
+    previous.current = count;
+  }, [count, pop]);
+  const flame = useAnimatedStyle(() => ({ transform: [{ scale: pop.get() }] }));
   return (
     <PressableScale
       accessibilityRole="button"
@@ -28,10 +39,14 @@ export function StreakPill({ count, onPress }: { count: number; onPress: () => v
         borderColor: p.border,
       }}
     >
-      <Icon name="flame" size={18} color={active ? p.streak : p.textTertiary} fill={active ? p.streak : 'none'} strokeWidth={active ? 1.4 : 2} />
-      <Text variant="bodyStrong" style={{ color: active ? p.streakText : p.textSecondary, fontVariant: ['tabular-nums'] }}>
-        {count}
-      </Text>
+      <Animated.View style={flame}>
+        <Icon name="flame" size={18} color={active ? p.streak : p.textTertiary} fill={active ? p.streak : 'none'} strokeWidth={active ? 1.4 : 2} />
+      </Animated.View>
+      <Animated.View key={count} entering={FadeInUp.duration(motion.micro)}>
+        <Text variant="bodyStrong" style={{ color: active ? p.streakText : p.textSecondary, fontVariant: ['tabular-nums'] }}>
+          {count}
+        </Text>
+      </Animated.View>
     </PressableScale>
   );
 }

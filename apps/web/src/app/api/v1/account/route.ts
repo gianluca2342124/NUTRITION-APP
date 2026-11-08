@@ -1,10 +1,11 @@
 import { handler, json } from '@/server/http';
 import { requireUser, serviceClient } from '@/server/supabase';
 
-const PHOTO_BUCKETS = ['meal-photos', 'label-photos'] as const;
+const PHOTO_BUCKETS = ['meal-photos', 'label-photos', 'avatars', 'community-media'] as const;
 
 /**
- * Deletes the account. Private photos are removed first; every user-owned row
+ * Deletes the account. Photos (private and public: avatar, publications) are
+ * removed first; every user-owned row
  * is removed by ON DELETE CASCADE; contributions are kept anonymised
  * (user_id set to null) as described in the privacy policy.
  */

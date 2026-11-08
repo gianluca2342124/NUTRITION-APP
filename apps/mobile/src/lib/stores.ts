@@ -35,6 +35,8 @@ export const useDraft = () => useStore(draftStore);
 export interface PendingLabel {
   draft: LabelDraft;
   gtin: string | null;
+  /** Typed by the person (no photo, no AI). */
+  manual?: boolean;
 }
 export const labelStore = createStore<PendingLabel | null>(null);
 export const useLabelDraft = () => useStore(labelStore);
@@ -75,9 +77,51 @@ export function clearOnboarding() {
 export const celebrationStore = createStore<AchievementId[]>([]);
 export const useCelebration = () => useStore(celebrationStore);
 
-export interface Toast {
-  id: number;
-  kind: 'streakDay';
-}
+export type Toast =
+  | { id: number; kind: 'streakDay' }
+  | { id: number; kind: 'streakMilestone'; count: number }
+  | { id: number; kind: 'firstMeal' }
+  | { id: number; kind: 'message'; text: string; tone: 'success' | 'error' | 'info' };
 export const toastStore = createStore<Toast | null>(null);
 export const useToast = () => useStore(toastStore);
+
+let toastSeq = 1000;
+export function showToast(text: string, tone: 'success' | 'error' | 'info' = 'info') {
+  toastStore.set({ id: ++toastSeq, kind: 'message', text, tone });
+}
+
+/* The "+" action sheet (opened from the tab bar or empty states). */
+export const addSheetStore = createStore(false);
+export const useAddSheetOpen = () => useStore(addSheetStore);
+export const openAddSheet = () => addSheetStore.set(true);
+export const closeAddSheet = () => addSheetStore.set(false);
+
+/** Empty label to type values by hand (Registrar → Manual). */
+export function manualLabelDraft(): LabelDraft {
+  return {
+    draftId: 'manual',
+    legibility: 'good',
+    basis: '100g',
+    servingSizeG: null,
+    productName: null,
+    brand: null,
+    netQuantityText: null,
+    raw: {
+      energy_kcal: null,
+      energy_kj: null,
+      fat_g: null,
+      saturated_fat_g: null,
+      carbs_g: null,
+      sugars_g: null,
+      fiber_g: null,
+      protein_g: null,
+      salt_g: null,
+      sodium_g: null,
+    },
+    nutrientsPer100: null,
+    issues: [],
+    ingredientsText: null,
+    allergens: [],
+    lowConfidenceFields: [],
+  };
+}

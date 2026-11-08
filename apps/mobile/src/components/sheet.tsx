@@ -17,12 +17,15 @@ export function BottomSheet({
   title,
   children,
   scroll = true,
+  overlay,
 }: {
   visible: boolean;
   onClose: () => void;
   title?: string;
   children: ReactNode;
   scroll?: boolean;
+  /** Decorative layer above the sheet (e.g. confetti); never takes touches. */
+  overlay?: ReactNode;
 }) {
   const p = usePalette();
   const { t } = useT();
@@ -69,6 +72,11 @@ export function BottomSheet({
           )}
         </Animated.View>
       </KeyboardAvoidingView>
+      {overlay ? (
+        <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+          {overlay}
+        </View>
+      ) : null}
     </Modal>
   );
 }

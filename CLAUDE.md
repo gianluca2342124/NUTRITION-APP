@@ -43,6 +43,18 @@ progress lives in `STATUS.md`.
 - The character appears only on welcome, empty states, achievements, positive
   results and completion.
 
+## Fudyu 2.1 rules
+- Scans (`product_scans`) never add nutrients; only diary entries do. "Añadir al día"
+  needs the person's confirmation. Deleting an entry removes the scan it came from.
+- Deletes from Today are optimistic with "Deshacer" (`lib/undo.ts`); never delete
+  catalogue data or another person's records.
+- Personal edits change amounts only; corrections to public data are
+  `product_correction` contributions. Publications (`community_*`) are moderated:
+  clients can only save `draft` or `pending_review`.
+- `public_profiles` holds only what the person chose to show — never health data.
+- Haptics go through `lib/haptics.ts`; confetti only via `celebrate()` for real
+  events, never for calorie limits.
+
 ## Conventions
 - Migrations: new file per change in `supabase/migrations/`; seeds (foods,
   additives, editorial recipes from `data/recipes/recipes.json`) are generated

@@ -1,5 +1,4 @@
-import * as Haptics from 'expo-haptics';
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import {
   ActivityIndicator,
   Platform,
@@ -17,17 +16,30 @@ import {
   type TextStyle,
   type ViewStyle,
 } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
-import { motion } from '@repo/design';
+import { fontFamilies, motion, type FontWeightKey } from '@repo/design';
 import { Icon, type IconName } from './icons';
+import { haptic as playHaptic } from '@/lib/haptics';
 import { radius, shadow, space, typography, usePalette, type Palette } from '@/lib/theme';
 
+/** Semantic haptics (see lib/haptics.ts). */
 export const haptic = {
-  light: () => Platform.OS !== 'web' && Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => undefined),
-  success: () => Platform.OS !== 'web' && Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => undefined),
-  selection: () => Platform.OS !== 'web' && Haptics.selectionAsync().catch(() => undefined),
+  light: () => playHaptic('light'),
+  selection: () => playHaptic('selection'),
+  medium: () => playHaptic('medium'),
+  success: () => playHaptic('success'),
+  warning: () => playHaptic('warning'),
+  error: () => playHaptic('error'),
+  celebration: () => playHaptic('celebration'),
 };
+
+/** Maps a weight to the matching Plus Jakarta Sans face (custom fonts do not synthesise weights). */
+export function fontFor(weight: TextStyle['fontWeight'] | undefined): string {
+  const w = String(weight ?? '400');
+  const key = (w === 'bold' ? '700' : w === 'normal' ? '400' : w) as FontWeightKey;
+  return fontFamilies[key] ?? (Number(w) >= 800 ? fontFamilies['800'] : Number(w) >= 600 ? fontFamilies['600'] : fontFamilies['400']);
+}
 
 /* ---------------------------------- text ---------------------------------- */
 
@@ -42,14 +54,17 @@ export function Text({
 }: TextProps & { variant?: keyof typeof typography; color?: ColorKey; align?: TextStyle['textAlign'] }) {
   const p = usePalette();
   const t = typography[variant];
+  const flat = StyleSheet.flatten(style) ?? {};
+  const { fontWeight, ...override } = flat;
   return (
     <RNText
       maxFontSizeMultiplier={1.6}
       {...rest}
       style={[
-        { fontSize: t.fontSize, lineHeight: t.lineHeight, fontWeight: t.fontWeight, letterSpacing: t.letterSpacing, color: p[color] },
+        { fontSize: t.fontSize, lineHeight: t.lineHeight, fontFamily: fontFor(fontWeight ?? t.fontWeight), letterSpacing: t.letterSpacing, color: p[color] },
+        variant === 'eyebrow' ? { textTransform: 'uppercase' } : null,
         align ? { textAlign: align } : null,
-        style,
+        override,
       ]}
     />
   );
@@ -162,11 +177,11 @@ export function PressableScale({ children, style, onPressIn, onPressOut, ...rest
     <AnimatedPressable
       {...rest}
       onPressIn={(e) => {
-        scale.set(withSpring(0.97, motion.spring));
+        scale.set(withTiming(0.96, { duration: motion.press }));
         onPressIn?.(e);
       }}
       onPressOut={(e) => {
-        scale.set(withSpring(1, motion.spring));
+        scale.set(withSpring(1, motion.snappy));
         onPressOut?.(e);
       }}
       style={[style, animated]}
@@ -397,8 +412,10 @@ export function SegmentedControl<T extends string>({
 
 /* --------------------------------- inputs --------------------------------- */
 
-export function Field({ label, suffix, style, ...rest }: TextInputProps & { label?: string; suffix?: string }) {
+export function Field({ label, suffix, style, onFocus, onBlur, ...rest }: TextInputProps & { label?: string; suffix?: string }) {
   const p = usePalette();
+  // Visible focus state of our own (the browser outline is replaced, not removed).
+  const [focused, setFocused] = useState(false);
   return (
     <View style={{ gap: 6 }}>
       {label ? (
@@ -412,17 +429,30 @@ export function Field({ label, suffix, style, ...rest }: TextInputProps & { labe
           alignItems: 'center',
           minHeight: 52,
           borderRadius: radius.md,
-          borderWidth: 1,
-          borderColor: p.border,
+          borderWidth: focused ? 2 : 1,
+          borderColor: focused ? p.primary : p.border,
           backgroundColor: p.surface,
-          paddingHorizontal: space.md,
+          paddingHorizontal: focused ? space.md - 1 : space.md,
+          gap: space.xs,
         }}
       >
         <TextInput
           placeholderTextColor={p.textTertiary}
           maxFontSizeMultiplier={1.6}
           {...rest}
-          style={[{ flex: 1, fontSize: 17, color: p.ink, paddingVertical: space.sm }, style]}
+          onFocus={(e) => {
+            setFocused(true);
+            onFocus?.(e);
+          }}
+          onBlur={(e) => {
+            setFocused(false);
+            onBlur?.(e);
+          }}
+          style={[
+            { flex: 1, minWidth: 0, fontSize: 17, fontFamily: fontFor('500'), color: p.ink, paddingVertical: space.sm },
+            Platform.OS === 'web' ? ({ outlineStyle: 'none' } as object) : null,
+            style,
+          ]}
         />
         {suffix ? (
           <Text variant="secondary" color="textSecondary">

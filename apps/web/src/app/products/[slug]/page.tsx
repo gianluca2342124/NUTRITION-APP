@@ -10,6 +10,7 @@ import { Disclosure } from '@/components/disclosure';
 import { FoodImage } from '@/components/food-image';
 import { NutritionTable } from '@/components/nutrition-table';
 import { ScoreReasons, ScoreRing } from '@/components/score';
+import { NutrientGrid } from '@/components/stats';
 import { indexableProducts, productBySlug } from '@/lib/data';
 import { LOCALE, t } from '@/lib/site';
 
@@ -65,49 +66,48 @@ async function ProductContent({ params }: { params: PageProps<'/products/[slug]'
         ]}
       />
 
-      {/* Two columns: image | identity, score, reasons, actions */}
-      <div className="mt-6 grid grid-cols-1 items-start gap-8 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-        <div className="card overflow-hidden p-0 md:sticky md:top-24">
-          <FoodImage src={p.imageUrl} alt={name} fallback="product" fit="contain" className="aspect-square w-full" sizes="(min-width: 1024px) 40vw, 90vw" priority />
-        </div>
-        <div className="space-y-6">
-          <header>
-            {p.brand ? <p className="text-[13px] font-semibold uppercase tracking-[0.08em] text-muted">{p.brand}</p> : null}
-            <h1 className="mt-1 text-[34px] font-extrabold leading-tight tracking-[-0.03em] text-ink sm:text-[42px]">{name}</h1>
-            <p className="tabular mt-1 text-[15px] text-muted">{[p.quantityText, `EAN ${p.gtin}`].filter(Boolean).join(' · ')}</p>
-          </header>
-
-          <section aria-label={t.score.title} className="card flex flex-col gap-6 p-6 sm:flex-row sm:items-center md:flex-col md:items-stretch lg:flex-row lg:items-center lg:p-8">
-            <ScoreRing result={score} size={168} />
-            <div className="flex-1 space-y-4">
-              {score.status === 'scored' ? <ScoreReasons result={score} unit={unit} /> : null}
-              <Link href="/metodologia" className="inline-block text-[14px] font-semibold text-primary-text hover:underline">
-                {t.score.methodology}
-              </Link>
+      {/* Card hero: real photo and score side by side, identity right below */}
+      <div className="mt-6 grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
+        <div className="space-y-5">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="card overflow-hidden p-0">
+              <FoodImage src={p.imageUrl} alt={name} fallback="product" fit="contain" className="aspect-square w-full" sizes="(min-width: 1024px) 22vw, 45vw" priority />
             </div>
-          </section>
-
+            <ScoreRing result={score} size={150} />
+          </div>
+          <header>
+            <h1 className="text-[30px] font-extrabold leading-tight tracking-[-0.03em] text-ink sm:text-[36px]">{name}</h1>
+            <p className="tabular mt-1 text-[15px] text-muted">{[p.brand, p.quantityText, `EAN ${p.gtin}`].filter(Boolean).join(' · ')}</p>
+          </header>
           {p.allergens.length > 0 ? (
             <p className="rounded-2xl bg-warning-soft px-5 py-4 text-[15px] text-warning-text">
               <strong className="font-semibold">{t.product.allergens}:</strong> {p.allergens.map((a) => t.allergens[a]).join(', ')}
               {p.traces.length ? ` · ${t.product.traces}: ${p.traces.map((a) => t.allergens[a]).join(', ')}` : ''}
             </p>
           ) : null}
-
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <Link href="/#app" className="rounded-full bg-primary px-5 py-3 text-[15px] font-semibold text-on-primary hover:bg-primary-pressed">
               {t.product.compare}
             </Link>
-            <p className="self-center text-[14px] text-muted">{t.web.productActions}</p>
+            <p className="text-[14px] text-muted">{t.web.productActions}</p>
           </div>
         </div>
+        <div>{p.nutritionAvailable ? <NutrientGrid values={p.nutrientsPer100} basis={p.basis} /> : <p className="card p-5 text-[15px] text-muted">{t.product.nutritionMissing}</p>}</div>
       </div>
 
       {/* Details on demand */}
       <h2 className="mt-14 text-[26px] font-bold tracking-tight text-ink">{t.web.analysisTitle}</h2>
-      <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-2">
+      <div className="mt-4 grid grid-cols-1 items-start gap-3 lg:grid-cols-2">
+        {score.status === 'scored' ? (
+          <Disclosure title={t.score.factorsTitle} summary={t.score.factorsSummary} open>
+            <ScoreReasons result={score} unit={unit} />
+            <Link href="/metodologia" className="mt-4 inline-block text-[14px] font-semibold text-primary-text hover:underline">
+              {t.score.methodology}
+            </Link>
+          </Disclosure>
+        ) : null}
         {p.nutritionAvailable ? (
-          <Disclosure title={t.product.nutrition} summary={format(t.product.nutritionSummary, { kcal: formatNumber(p.nutrientsPer100.energy_kcal ?? 0, LOCALE), protein: formatNumber(p.nutrientsPer100.protein_g ?? 0, LOCALE, 1), unit })} open>
+          <Disclosure title={t.product.nutrition} summary={format(t.product.nutritionSummary, { kcal: formatNumber(p.nutrientsPer100.energy_kcal ?? 0, LOCALE), protein: formatNumber(p.nutrientsPer100.protein_g ?? 0, LOCALE, 1), unit })}>
             <NutritionTable columns={columns} />
           </Disclosure>
         ) : (
