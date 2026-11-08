@@ -20,7 +20,7 @@ submitted to any store).
 | Safe areas | iPhone with home indicator and with Dynamic Type at max | Last items of Hoy, Explorar and Perfil scroll clear of the navigation |
 | Images | Avatar and recipe photo pickers (private storage) | Upload works; images load through signed URLs; nothing public until published or the profile is made public |
 
-Build: `npx eas build --profile preview --platform ios` from `apps/mobile`
-(internal distribution; requires the owner's Expo and Apple developer
-accounts; not run from this environment). The server URL the app uses comes
-from `EXPO_PUBLIC_API_URL`.
+Run from Xcode on your own iPhone: `pnpm ios:xcode` (see `docs/run-on-iphone.md`).
+Or an internal build: `npx eas build --profile preview --platform ios` from
+`apps/mobile` (requires the owner's Expo and Apple developer accounts). The
+server URL the app uses comes from `EXPO_PUBLIC_API_URL`.

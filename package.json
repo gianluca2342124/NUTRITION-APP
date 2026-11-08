@@ -9,6 +9,7 @@
   "scripts": {
     "dev:web": "pnpm --filter @repo/web dev",
     "dev:mobile": "pnpm --filter @repo/mobile start",
+    "ios:xcode": "bash scripts/dev/iphone.sh",
     "build:web": "pnpm --filter @repo/web build",
     "typecheck": "pnpm -r --parallel typecheck",
     "lint": "pnpm -r --parallel lint",

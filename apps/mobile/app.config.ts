@@ -1,6 +1,13 @@
 import type { ExpoConfig } from 'expo/config';
 import { brand } from '@repo/config/brand';
 
+const CAMERA = 'La cámara se usa para leer códigos de barras y fotografiar comidas o etiquetas.';
+const MICROPHONE = 'El micrófono se usa para que puedas dictar lo que has comido.';
+const PHOTOS = 'Puedes elegir fotos de tu galería para analizar comidas o etiquetas, y para tu perfil o tus recetas.';
+
+/** A development build that talks to a backend on the local network (plain http). */
+const localBackend = /^http:\/\//.test(process.env.EXPO_PUBLIC_API_URL ?? '');
+
 /**
  * Dynamic app config. Names, scheme and colours come from the central brand
  * file; store identifiers come from the environment so nothing is assumed to
@@ -19,9 +26,11 @@ const config: ExpoConfig = {
     icon: './assets/app.icon',
     supportsTablet: false,
     infoPlist: {
-      NSCameraUsageDescription: 'La cámara se usa para leer códigos de barras y fotografiar comidas o etiquetas.',
-      NSMicrophoneUsageDescription: 'El micrófono se usa para que puedas dictar lo que has comido.',
-      NSPhotoLibraryUsageDescription: 'Puedes elegir una foto de tu galería para analizar una comida o una etiqueta.',
+      NSCameraUsageDescription: CAMERA,
+      NSMicrophoneUsageDescription: MICROPHONE,
+      NSPhotoLibraryUsageDescription: PHOTOS,
+      // Only for development builds that reach a backend on your computer.
+      ...(localBackend ? { NSLocalNetworkUsageDescription: 'En desarrollo, Fudyu se conecta a tu ordenador por la red local.' } : {}),
     },
   },
   android: {
@@ -52,17 +61,15 @@ const config: ExpoConfig = {
     ],
     [
       'expo-camera',
-      {
-        cameraPermission: 'La cámara se usa para leer códigos de barras y fotografiar comidas o etiquetas.',
-        microphonePermission: false,
-        recordAudioAndroid: false,
-      },
+      // The camera plugin removes the microphone string when this is false, and
+      // voice dictation (expo-audio) needs it: keep the same text here.
+      { cameraPermission: CAMERA, microphonePermission: MICROPHONE, recordAudioAndroid: false },
     ],
     [
       'expo-image-picker',
-      { photosPermission: 'Puedes elegir una foto de tu galería para analizar una comida o una etiqueta.' },
+      { photosPermission: PHOTOS },
     ],
-    ['expo-audio', { microphonePermission: 'El micrófono se usa para que puedas dictar lo que has comido.' }],
+    ['expo-audio', { microphonePermission: MICROPHONE }],
     'expo-localization',
     'expo-secure-store',
   ],
