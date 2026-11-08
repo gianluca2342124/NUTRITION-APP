@@ -96,3 +96,29 @@ universal "better" verdict.
 Indexed: generic food pages (verified data) and products with a name and
 nutrition data. Not indexed: search results, products without nutrition data,
 unreviewed additive records. Every page shows its source, licence and update date.
+
+## 7. Fudyu Score (v1.0.0)
+How packaged products are evaluated, and when they show "Sin puntuación": see [`fudyu-score.md`](fudyu-score.md).
+- **Base:** our Nutri-Score 2023 implementation, verified against Open Food Facts on 30 real products.
+- **Adjustments:** small, documented, and never based on nutrients, so nothing is counted twice.
+- **"Para ti":** personal fit (declared allergens, diet, goals) is computed separately and never changes the score.
+
+## 8. Streaks and achievements
+- **What counts:** an active day is a local calendar day with at least one eligible action:
+  - logging a meal
+  - analysing a product for the first time
+  - comparing a new pair of products
+  - opening an additive for the first time
+  - marking a recipe as made (once per recipe per day)
+- **Validation:** the server checks each event against real data (the meal is the user's, the product, additive or recipe exists). The same subject never counts twice.
+- **Dates:** the device's local date is accepted within ±1 day of the UTC date, which covers every time zone and travel.
+- **Grace day:** one missed day keeps the streak; two in a row end it. The streak counts active days, not calendar days.
+- **Single write path:** `public.record_activity` (SECURITY DEFINER) is the only way to write these tables; clients can only read their own rows.
+- **No pressure:** no paid repairs, no penalties, no alarming notifications. Gamification can be switched off in the profile, which stops tracking.
+- **Achievements:** awarded only for real events, with thresholds in `packages/core/src/streaks.ts` and the SQL function.
+
+## 9. Recipes
+- **Authorship:** editorial recipes written by the Fudyu team (`data/recipes/recipes.json`). There are no user-published recipes.
+- **Nutrition:** ingredients reference catalogue foods by slug, and nutrition is always computed from USDA values (`recipeNutrition`), never typed by hand.
+- **Tags:** "Alta en proteínas", "Fuente de fibra" and similar tags are shown only when the data meets the Regulation (EC) 1924/2006 thresholds.
+- **Photos:** recipe photos are licensed photos of the main ingredient, labelled "Foto ilustrativa". See [`images.md`](images.md).

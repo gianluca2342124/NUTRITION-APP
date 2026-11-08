@@ -66,8 +66,8 @@ async function ProductContent({ params }: { params: PageProps<'/products/[slug]'
       />
 
       {/* Two columns: image | identity, score, reasons, actions */}
-      <div className="mt-6 grid grid-cols-1 items-start gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-        <div className="card overflow-hidden p-0 lg:sticky lg:top-24">
+      <div className="mt-6 grid grid-cols-1 items-start gap-8 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+        <div className="card overflow-hidden p-0 md:sticky md:top-24">
           <FoodImage src={p.imageUrl} alt={name} fallback="product" fit="contain" className="aspect-square w-full" sizes="(min-width: 1024px) 40vw, 90vw" priority />
         </div>
         <div className="space-y-6">
@@ -77,7 +77,7 @@ async function ProductContent({ params }: { params: PageProps<'/products/[slug]'
             <p className="tabular mt-1 text-[15px] text-muted">{[p.quantityText, `EAN ${p.gtin}`].filter(Boolean).join(' · ')}</p>
           </header>
 
-          <section aria-label={t.score.title} className="card flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:p-8">
+          <section aria-label={t.score.title} className="card flex flex-col gap-6 p-6 sm:flex-row sm:items-center md:flex-col md:items-stretch lg:flex-row lg:items-center lg:p-8">
             <ScoreRing result={score} size={168} />
             <div className="flex-1 space-y-4">
               {score.status === 'scored' ? <ScoreReasons result={score} unit={unit} /> : null}

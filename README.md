@@ -2,9 +2,10 @@
 
 Food intelligence platform: an iOS/Android app and a public website that share one
 backend. Photograph a meal, scan a barcode or describe what you ate; review the
-result; save it to a private diary. Nutrient values always come from verifiable
-databases (USDA FoodData Central, Open Food Facts) — AI only identifies foods
-and amounts.
+result; save it to a private diary. Packaged products get a transparent Fudyu
+Score (0–100, built on the Nutri-Score 2023 with documented adjustments).
+Nutrient values always come from verifiable databases (USDA FoodData Central,
+Open Food Facts) — AI only identifies foods and amounts.
 
 > The name, domain and identifiers are provisional and live in
 > [`packages/config/src/brand.ts`](packages/config/src/brand.ts).
@@ -57,10 +58,18 @@ development build); on a physical device set `EXPO_PUBLIC_API_URL` to your
 computer's LAN address.
 
 Regenerate the catalogue seeds from the primary sources (downloads USDA SR
-Legacy and the Open Food Facts additives taxonomy into `data/raw/`):
+Legacy and the Open Food Facts additives taxonomy into `data/raw/`; editorial
+recipes come from `data/recipes/recipes.json`):
 
 ```bash
 pnpm seed:build
+```
+
+Rebuild the curated food photos (Wikimedia Commons, licence-checked; see
+[`docs/images.md`](docs/images.md)):
+
+```bash
+node scripts/images/build-food-images.mjs
 ```
 
 ## Checks
@@ -104,10 +113,14 @@ configurable (`AI_MODEL_*`, `AI_EFFORT_*`).
 - **Mobile:** EAS Build/Submit with `APP_IOS_BUNDLE_ID` / `APP_ANDROID_PACKAGE`
   set. Nothing is submitted or published automatically.
 
-See [`STATUS.md`](STATUS.md) for what is done, verified and pending, and
-[`docs/methodology.md`](docs/methodology.md) for data and calculation rules.
+See [`STATUS.md`](STATUS.md) for what is done, verified and pending,
+[`docs/methodology.md`](docs/methodology.md) for data and calculation rules,
+[`docs/fudyu-score.md`](docs/fudyu-score.md) for the score methodology and
+[`docs/design-2.0.md`](docs/design-2.0.md) for the design system.
 
 ## Data attribution
 
 Product and additive data © Open Food Facts contributors, under the Open
 Database License. Generic food data: USDA FoodData Central (public domain).
+Food photos: Wikimedia Commons authors under CC0 / CC BY / CC BY-SA (credits at
+`/creditos` and in `packages/data/src/food-images.generated.ts`).

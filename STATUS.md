@@ -1,71 +1,116 @@
 # STATUS
 
-Last updated: 2026-11-07 · Branch: `claude/nifty-mccarthy-v7012h`
+Last updated: 2026-11-08 · Branch: `claude/nifty-mccarthy-v7012h`
 
 ## Phases
 | Phase | State |
 | --- | --- |
 | 0 — Foundation | Done |
 | 1 — Core nutrition | Done in code. AI-backed features need credentials to run live (see below) |
-| 2 — Connected intelligence (Coach, recipes, plans, shopping lists) | Not started. The Coach tab says so; it does not pretend to be a chatbot |
-| 3 — Web & SEO | Partly done: home, search, ingredient, product and additive pages, sitemap, robots |
-| 4 — Community | Not started |
+| **2.0 — Product experience redesign** | Done: design system, Today, streaks and achievements, Fudyu Score, product, additives, scanner, progress, onboarding, Explore, recipes, Coach preview, web |
+| 2 — Connected intelligence (Coach, plans, shopping lists) | Not started. The Coach tab shows an honest preview and does not simulate answers |
+| 3 — Web & SEO | Partly done: home, search, food, product, additive, recipes, methodology, credits, sitemap |
+| 4 — Community | Not started. No user recipes, and none are pretended |
 | 5 — Commerce & growth | Not started |
 
-## What works
-- **Monorepo:** Expo SDK 58 app, Next.js 16 site + API, shared packages `@repo/{config,design,core,data,ai,i18n}`.
-- **Database:** Supabase migrations with RLS on every user table. Server-side nutrient snapshots, atomic idempotent `save_meal`, consent-gated health data (revoking consent deletes it), private photo buckets, search RPCs.
-- **Catalogue:** 204 USDA FoodData Central foods with household portions, plus 721 additives from Open Food Facts, all with provenance. Barcode lookups import from Open Food Facts on demand, cached and snapshotted.
-- **API:** health, search, product lookup, foods, additives, AI meal photo, AI label, AI text parsing, transcription, GDPR export, account deletion. Includes per-user AI quotas, an AI-processing consent check, a per-user analysis cache and CORS.
-- **AI layer:** Claude adapter with structured outputs, refusal handling and server-side fallbacks, plus an OpenAI-compatible transcription adapter. The models only perceive (which foods, how much); nutrients always come from the catalogue.
-- **Mobile:**
-  - Anonymous-first session that can be upgraded to an email account.
-  - Onboarding.
-  - Today screen.
-  - Scan: barcode, meal photo, label.
-  - Review and correct before saving.
-  - Voice and text logging.
-  - Product sheet with allergen warnings, generic food page, additive page.
-  - Comparison, entry editing, progress and weight, profile (targets, consents, export, delete).
-- **Web:** Spanish public pages using Cache Components, breadcrumbs JSON-LD and an indexing policy (see `docs/methodology.md`).
-- **Brand:** central `brand.ts`, original mark (v1 proposal), generated app and web icons, Icon Composer bundle.
+## What is new in 2.0
+- **Design system:**
+  - Palette with an evaluation scale (green, lime, amber, orange, coral) used only for data. Contrast-checked text tokens.
+  - The Fudyu character with 5 expressions, built from the brand mark.
+  - Original illustrations, motion helpers that respect Reduce Motion, bottom sheets, collapsible sections.
+  - See `docs/design-2.0.md`.
+- **Today:**
+  - Greeting, avatar and streak pill.
+  - Monday-first week strip with activity dots.
+  - Compact "Tu progreso de hoy" card with energy ring and macro bars.
+  - Meal cards with the user's photo, a product or food photo, or an illustration.
+  - The big scan button, secondary buttons and default banners are gone.
+- **Streaks and achievements (real):**
+  - New tables and a validated `record_activity` RPC: one day per local date, repeated subjects ignored, ±1 day time-zone window, one grace day, opt-out.
+  - Seven achievements, awarded only for real events. Celebrations happen only then.
+- **Fudyu Score v1.0.0:**
+  - Our Nutri-Score 2023 implementation reproduces Open Food Facts' score, grade and every component on 30 real products.
+  - Banded 0–100 mapping, documented non-nutrient adjustments (NOVA 4, additive not authorised in the EU, EFSA exposure findings).
+  - "Sin puntuación" when the data is not enough; 2–3 real reasons.
+  - "Para ti" is kept separate from the score (declared allergens, diet, goals).
+  - See `docs/fudyu-score.md`, which includes a calibration proposal.
+- **Product:**
+  - Order: hero, then the score, then reasons. Declared allergens are always visible.
+  - Compare and Add (in a bottom sheet) actions; details on demand.
+  - Score badges in the comparison view.
+- **Additives:**
+  - The understandable name first, a status chip and a short factual explanation, then "Qué significa", evidence and sources on demand.
+  - E171 is shown as "Uso no autorizado en alimentos" (Regulation (EU) 2022/63, EFSA 2021). The superseded 2016 evaluation is no longer linked.
+  - Editorial workflow states are hidden from users.
+- **Scanner:**
+  - Camera first, with minimal controls. Comida and Código are the main modes; Etiqueta is secondary.
+  - One-line permission state.
+  - "Thinking" reveal while analysing, and a reveal summary in the review screen.
+- **Progress:** weekly summary, activity calendar, a trend only with at least 3 logged days ("Tu historial empieza aquí" before that), achievements with honest progress, optional weight.
+- **Onboarding:** the same questions, grouped into 11 steps, with the character. The final screen is "¡Todo listo para empezar!" with goal, preferences and first activity, and the kcal target shown as secondary.
+- **Explore and recipes:**
+  - 10 editorial recipes, with nutrition computed from USDA and tags justified by EU claim thresholds.
+  - Collections, filters, recipe screen with "Añadir una ración" and "La he preparado" (counts for the streak).
+  - Discovery of foods with real photos and of additives.
+- **Web:**
+  - New header (Explorar, Recetas, search, Descargar app).
+  - Home with a real-data demo, real foods, products, additives and recipes; no numbered cards; no empty sections.
+  - Two-column product page with score and reasons, additive hero, food pages with licensed photos and a compact nutrition line.
+  - Recipe pages, methodology page, image credits page.
+- **Images:** 27 curated, licence-checked Wikimedia Commons photos with attribution (`docs/images.md`), and an original illustration fallback everywhere else.
 
 ## Verified in this session (commands actually run)
-- `pnpm check`: typecheck and lint pass for all 8 workspaces; 63 unit tests pass.
-- `pnpm test:db` against the local Supabase stack (Docker): 24 integration tests pass. They cover:
-  - RLS isolation, triggers and consent rules
-  - the data layer
-  - AI routes with a **stub** model provider and the real database
-  - account export and deletion
-- `next build` passes with database credentials (234 pages) and without them (honest empty states).
-- `expo export` passes for web and for Android (Hermes bytecode).
-- Browser E2E with Playwright at 390×844 against the local stack, with no page errors:
-  - onboarding and computed targets
-  - search, then add a food
-  - barcode product sheet (live Open Food Facts import), then add it
-  - Today totals and meals
-  - progress and the scan screen
-- Live Open Food Facts results: found (Nutella, Coca-Cola, per 100 ml); a valid but unknown EAN returns not found; a wrong check digit is rejected.
+- `pnpm check`: typecheck and lint for every workspace; **150 unit tests** pass. Before 2.0 there were 63; the new ones cover the score, Nutri-Score, streaks, personal fit and recipes.
+- `npx supabase db reset` then `pnpm test:db`: **33 integration tests** pass. They cover the earlier suites plus streaks:
+  - dedup, ownership, date window, grace day, achievements, opt-out, RLS and write protection
+  - recipe completion
+  - recipe data
+- `next build` (production): 248 pages.
+- `expo export`: web and Android (Hermes bytecode) both pass.
+- Mobile browser E2E (Playwright, mobile web build against the local stack) at **390×844 and 430×932**, with no page errors. It covers:
+  - the full onboarding
+  - Today (empty and logged)
+  - search and add
+  - product with live Open Food Facts import (Nutella, olive oil, oats), Fudyu Score and reasons
+  - allergen and trace warnings
+  - add-to-diary sheet
+  - achievements unlocked by real events: first scan, food curious, recipe discoverer
+  - streak sheet, methodology, E171 and E330, progress, scan permission state
+  - Explore, recipe, Coach
+  - in-app comparison with score badges
+- Web (production server) at **1440×900, 820×1180 and 390×844**:
+  - home, product, food, additive, recipes, recipe, search and methodology all render without page errors
+  - no horizontal overflow on 9 pages at 390, 430, 820 and 1440 px
 
-## Not verified / blocked on credentials or devices
-- **Real Claude calls** (meal photo, labels, text parsing): need `ANTHROPIC_API_KEY`. Only the pipeline is verified, using a stub. Recognition and portion accuracy have not been measured.
-- **Voice transcription:** needs an OpenAI-compatible endpoint (`TRANSCRIPTION_*`).
-- **iOS and Android on a device or simulator:** not run, as no simulator is available here. Unverified on hardware: camera, barcode scanning, microphone, haptics, Liquid Glass and the Icon Composer icon.
-- **Anonymous → email account upgrade:** implemented but not tested end to end.
-- **CI** (`.github/workflows/ci.yml`): committed but not yet run on GitHub.
+## Not verified / blocked
+- **Real Claude calls** (meal photo, labels, text) need `ANTHROPIC_API_KEY`; the pipeline is verified with a stub only. The food-photo reveal screen was not exercised end to end for the same reason.
+- **Voice transcription** needs `TRANSCRIPTION_*`.
+- **Native iOS and Android:**
+  - Not run on a device or simulator.
+  - Unverified there: camera and barcode, haptics, Liquid Glass, Reduce Motion behaviour, and the curated images loaded from the API origin.
+- **Dark mode:** tokens are defined, but the screens were not reviewed visually in dark mode.
+- **Anonymous → email account upgrade:** not tested end to end.
+- **CI on GitHub:** not run.
 
 ## Known limitations
-- The generic catalogue is US data (USDA SR Legacy). There is no Spanish composition database yet (BEDCA licence not verified). Spanish dishes are logged by their components.
-- No offline persistence of cached queries. When offline, screens show error states with retry.
-- No notifications. The onboarding question was removed until they are implemented.
-- The app language follows the device. There is no in-app switch.
-- The web is Spanish only: no hreflang or localised routes, no compare/recipe/article pages.
-- Additive pages show unreviewed Open Food Facts data plus one editorial override (E171).
-- The API rate limiter is in-memory, so it applies per instance. The AI quotas are database-backed.
-- No subscriptions or monetisation yet.
-- The brand mark is a proposal pending design review. Name, domain and store IDs are provisional.
+- **Fudyu Score:**
+  - It is an editorial summary, not a validated measure. The calibration study is still to do (`docs/fudyu-score.md`).
+  - Only products with Open Food Facts Nutri-Score inputs are scored; label-scanned products show "Sin puntuación".
+- **Web home:** static and revalidated hourly, so products imported after a build appear on the home page after revalidation.
+- **Recipes:** 10 editorial recipes, not yet reviewed by a dietitian. Their photos show the main ingredient (labelled as illustrative).
+- **Photos:** only 27 generic foods have a curated photo. No AI-generated images.
+- **Comparison list:** kept in memory, so it is lost when the app restarts.
+- **Carried over from 1.0:**
+  - US generic catalogue (USDA)
+  - no offline persistence
+  - no notifications
+  - Spanish-only web
+  - in-memory API rate limiter
+  - provisional brand, domain and store identifiers
 
 ## Next concrete tasks
-1. Configure `ANTHROPIC_API_KEY`, then build a small eval set (about 20 meal photos, 20 labels, 30 Spanish phrases) to measure food recognition and portion error before tuning prompts or effort.
-2. Run on devices with an EAS development build and fix any native issues.
-3. Phase 2: Nutrition Coach with tool calling over the existing data layer (`get_daily_log`, `search_products`, `compare_products`, `get_additive_evidence`), plus a recipes schema with ingredients linked to catalogue foods and products.
+1. Fudyu Score calibration on about 2,000 Spanish products from Open Food Facts, plus an expert ranking panel (see the methodology).
+2. Configure `ANTHROPIC_API_KEY` and build an evaluation set (photos, labels, Spanish phrases) before tuning prompts.
+3. EAS development build: verify camera, haptics, Liquid Glass, Reduce Motion and images on iOS and Android, then do a dark-mode visual pass.
+4. Dietitian review of the recipes; more curated photos for the most-viewed foods.
+5. Phase 2: Nutrition Coach with tool calling over the existing data layer.

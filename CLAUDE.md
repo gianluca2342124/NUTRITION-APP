@@ -30,8 +30,22 @@ progress lives in `STATUS.md`.
   deletes the data. AI calls require `ai_processing` consent (API-enforced).
 - Provenance (source, licence, update date) is shown wherever data is shown.
 
+## Fudyu 2.0 rules
+- Fudyu Score: `packages/core/src/score.ts` + `docs/fudyu-score.md`. Any change to
+  weights, bands or factors bumps `FUDYU_SCORE_VERSION` and updates the doc and
+  tests. Without the data it needs it returns "unscored" — never an invented 0.
+- Streaks/achievements are written only by `public.record_activity`; clients call
+  it through `trackActivity` (fire-and-forget) and never write those tables.
+- Evaluation colours (green/lime/amber/orange/coral) are for scores, states and
+  data-justified charts only; blue is brand/primary actions.
+- Images: never replace a user's meal photo; curated photos come from
+  `scripts/images/build-food-images.mjs` (licence-checked, generated manifest).
+- The character appears only on welcome, empty states, achievements, positive
+  results and completion.
+
 ## Conventions
-- Migrations: new file per change in `supabase/migrations/`; seeds are generated
+- Migrations: new file per change in `supabase/migrations/`; seeds (foods,
+  additives, editorial recipes from `data/recipes/recipes.json`) are generated
   by `scripts/seed/build-seed.mjs` (never edit generated SQL by hand).
 - Copy goes in `packages/i18n` (Spanish is the reference locale).
 - Tests: unit tests next to sources (`*.test.ts`); integration tests in
