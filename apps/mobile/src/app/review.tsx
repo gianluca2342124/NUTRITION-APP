@@ -14,7 +14,9 @@ import {
   type MealType,
 } from '@repo/core';
 import { AmountPicker, amountOptions } from '@/components/amount-picker';
+import { MacroTrio } from '@/components/cards';
 import { FoodPicker } from '@/components/food-picker';
+import { AnimatedCounter, Appear } from '@/components/motion';
 import { MacroLine } from '@/components/nutrition';
 import { Button, Card, Choice, EmptyState, Field, IconButton, Notice, Row, Screen, SegmentedControl, Text, haptic } from '@/components/ui';
 import { errorMessage } from '@/lib/errors';
@@ -155,9 +157,38 @@ export default function ReviewScreen() {
         <IconButton icon="close" label={t.common.close} onPress={() => router.back()} />
       </Row>
 
-      {pending?.photoUri ? (
-        <Image source={{ uri: pending.photoUri }} style={{ width: '100%', height: 180, borderRadius: 24, marginTop: space.md }} contentFit="cover" />
-      ) : null}
+      {/* Reveal: the estimate at a glance, then everything editable below. */}
+      <Appear index={0} style={{ marginTop: space.md }}>
+        {pending?.photoUri ? (
+          <Image source={{ uri: pending.photoUri }} style={{ width: '100%', height: 200, borderRadius: 24 }} contentFit="cover" />
+        ) : null}
+        <Card style={{ gap: space.sm, marginTop: pending?.photoUri ? -36 : 0, marginHorizontal: pending?.photoUri ? space.sm : 0 }}>
+          <Text variant="caption" color="textSecondary">
+            {t.review.total}
+          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 6 }}>
+            <AnimatedCounter value={Math.round(totals.values.energy_kcal ?? 0)} format={(n) => formatNumber(Math.round(n), locale)} variant="display" />
+            <Text variant="bodyStrong" color="textSecondary">
+              kcal
+            </Text>
+          </View>
+          <MacroTrio protein={totals.values.protein_g} carbs={totals.values.carbs_g} fat={totals.values.fat_g} />
+          {items.length ? (
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.xs, marginTop: space.xs }}>
+              {items.map((i) => (
+                <View key={i.key} style={{ backgroundColor: i.match ? p.primarySoft : p.warningSoft, borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 }}>
+                  <Text variant="caption" style={{ color: i.match ? p.primaryText : p.warningText }}>
+                    {i.label}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
+          <Text variant="caption" color="textTertiary">
+            {t.review.sourceNote}
+          </Text>
+        </Card>
+      </Appear>
       {draft.transcript ? (
         <Card style={{ marginTop: space.md }}>
           <Text variant="caption" color="textSecondary">
@@ -251,18 +282,6 @@ export default function ReviewScreen() {
 
       <Button title={t.review.addItem} icon="plus" variant="secondary" style={{ marginTop: space.md }} onPress={() => setPicker({ key: null, query: '', suggestions: [] })} />
 
-      <Card style={{ marginTop: space.lg, gap: space.xs }}>
-        <Text variant="caption" color="textSecondary">
-          {t.review.total}
-        </Text>
-        <Text variant="title" style={{ fontVariant: ['tabular-nums'] }}>
-          {formatNumber(totals.values.energy_kcal ?? 0, locale)} kcal
-        </Text>
-        <MacroLine values={totals.values} />
-        <Text variant="caption" color="textTertiary">
-          {t.review.sourceNote}
-        </Text>
-      </Card>
 
       {pending?.photoUri ? (
         <Row style={{ justifyContent: 'space-between', marginTop: space.md }}>

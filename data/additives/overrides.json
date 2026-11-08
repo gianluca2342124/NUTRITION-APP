@@ -1,5 +1,20 @@
 {
   "e171": {
+    "eu_status": "not_authorised",
+    "eu_status_since": "2022-08-07",
+    "eu_status_note_es": "Reglamento (UE) 2022/63: aplicable desde el 7 de febrero de 2022, con un periodo transitorio que terminó el 7 de agosto de 2022.",
+    "eu_status_note_en": "Regulation (EU) 2022/63: applicable since 7 February 2022, with a transition period that ended on 7 August 2022.",
+    "summary_es": "La Unión Europea retiró su autorización como aditivo alimentario tras una evaluación de seguridad de la EFSA.",
+    "summary_en": "The European Union withdrew its authorisation as a food additive following a safety assessment by EFSA.",
+    "implication_es": "No debería aparecer en alimentos vendidos hoy en la UE. Si figura en una ficha, puede tratarse de una receta antigua o de un producto de otro mercado.",
+    "implication_en": "It should not appear in food sold in the EU today. If a product sheet lists it, it may be an old recipe or a product from another market.",
+    "efsa": {
+      "title": "Safety assessment of titanium dioxide (E171) as a food additive",
+      "url": "https://doi.org/10.2903/j.efsa.2021.6585",
+      "date": "2021-05-06",
+      "adi": null,
+      "exposure_groups": []
+    },
     "note_es": "En 2021 la EFSA concluyó que el dióxido de titanio (E171) ya no puede considerarse seguro como aditivo alimentario, porque no pudo descartarse un riesgo de genotoxicidad. La Unión Europea prohibió su uso en alimentos mediante el Reglamento (UE) 2022/63, aplicable desde 2022. La evaluación de 2016 que figura en otras fuentes está superada.",
     "note_en": "In 2021 EFSA concluded that titanium dioxide (E171) can no longer be considered safe as a food additive, because a genotoxicity concern could not be ruled out. The European Union banned its use in food through Regulation (EU) 2022/63, applicable since 2022. The 2016 evaluation cited elsewhere has been superseded.",
     "sources": [

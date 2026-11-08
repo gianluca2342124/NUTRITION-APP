@@ -112,11 +112,41 @@ export function Spacer({ size = space.md }: { size?: number }) {
   return <View style={{ height: size }} />;
 }
 
-export function SectionHeader({ title, action }: { title: string; action?: ReactNode }) {
+export function SectionHeader({
+  title,
+  subtitle,
+  action,
+  onAction,
+  style,
+}: {
+  title: string;
+  subtitle?: string;
+  /** Either a custom node or a text label used with `onAction`. */
+  action?: ReactNode;
+  onAction?: () => void;
+  style?: StyleProp<ViewStyle>;
+}) {
   return (
-    <Row style={{ justifyContent: 'space-between', marginTop: space.xl, marginBottom: space.sm }}>
-      <Text variant="section">{title}</Text>
-      {action}
+    <Row style={[{ justifyContent: 'space-between', alignItems: 'flex-end', marginTop: space.xl, marginBottom: space.sm }, style]}>
+      <View style={{ flex: 1 }}>
+        <Text variant="section" accessibilityRole="header">
+          {title}
+        </Text>
+        {subtitle ? (
+          <Text variant="secondary" color="textSecondary">
+            {subtitle}
+          </Text>
+        ) : null}
+      </View>
+      {typeof action === 'string' && onAction ? (
+        <Pressable accessibilityRole="button" onPress={onAction} hitSlop={10} style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}>
+          <Text variant="secondaryStrong" color="primaryText">
+            {action}
+          </Text>
+        </Pressable>
+      ) : (
+        action
+      )}
     </Row>
   );
 }
@@ -146,7 +176,7 @@ export function PressableScale({ children, style, onPressIn, onPressOut, ...rest
   );
 }
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+type ButtonVariant = 'primary' | 'soft' | 'secondary' | 'ghost' | 'danger';
 
 export function Button({
   title,
@@ -157,6 +187,7 @@ export function Button({
   disabled,
   size = 'lg',
   style,
+  accessibilityLabel,
 }: {
   title: string;
   onPress?: () => void;
@@ -166,10 +197,12 @@ export function Button({
   disabled?: boolean;
   size?: 'lg' | 'md';
   style?: StyleProp<ViewStyle>;
+  accessibilityLabel?: string;
 }) {
   const p = usePalette();
   const colors: Record<ButtonVariant, { bg: string; fg: string; border?: string }> = {
     primary: { bg: p.primary, fg: p.onPrimary },
+    soft: { bg: p.primarySoft, fg: p.primaryText },
     secondary: { bg: p.surface, fg: p.ink, border: p.borderStrong },
     ghost: { bg: 'transparent', fg: p.primaryText },
     danger: { bg: p.errorSoft, fg: p.errorText },
@@ -179,6 +212,7 @@ export function Button({
   return (
     <PressableScale
       accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
       accessibilityState={{ disabled: !!inactive, busy: !!loading }}
       disabled={inactive}
       onPress={() => {
@@ -221,12 +255,12 @@ export function IconButton({
   icon: IconName;
   onPress: () => void;
   label: string;
-  tone?: 'surface' | 'primary' | 'clear';
+  tone?: 'surface' | 'primary' | 'soft' | 'clear';
   size?: number;
 }) {
   const p = usePalette();
-  const bg = tone === 'primary' ? p.primary : tone === 'surface' ? p.surface : 'transparent';
-  const fg = tone === 'primary' ? p.onPrimary : p.ink;
+  const bg = tone === 'primary' ? p.primary : tone === 'surface' ? p.surface : tone === 'soft' ? p.primarySoft : 'transparent';
+  const fg = tone === 'primary' ? p.onPrimary : tone === 'soft' ? p.primaryText : p.ink;
   return (
     <PressableScale
       accessibilityRole="button"
@@ -288,6 +322,37 @@ export function Choice({
           {hint}
         </Text>
       ) : null}
+    </PressableScale>
+  );
+}
+
+/** Filter capsule (single row of horizontally scrollable choices). */
+export function Chip({ label, selected, onPress, icon }: { label: string; selected: boolean; onPress: () => void; icon?: IconName }) {
+  const p = usePalette();
+  return (
+    <PressableScale
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
+      onPress={() => {
+        haptic.selection();
+        onPress();
+      }}
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        minHeight: 38,
+        paddingHorizontal: space.md,
+        borderRadius: radius.pill,
+        backgroundColor: selected ? p.primary : p.surface,
+        borderWidth: selected ? 0 : StyleSheet.hairlineWidth,
+        borderColor: p.borderStrong,
+      }}
+    >
+      {icon ? <Icon name={icon} size={16} color={selected ? p.onPrimary : p.textSecondary} /> : null}
+      <Text variant="secondaryStrong" style={{ color: selected ? p.onPrimary : p.ink }}>
+        {label}
+      </Text>
     </PressableScale>
   );
 }

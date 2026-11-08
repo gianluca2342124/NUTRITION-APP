@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSyncExternalStore } from 'react';
-import { EMPTY_ONBOARDING, type LabelDraft, type MealDraft, type OnboardingAnswers } from '@repo/core';
+import { EMPTY_ONBOARDING, type AchievementId, type LabelDraft, type MealDraft, type OnboardingAnswers } from '@repo/core';
 
 /** Minimal observable store (no extra dependency). */
 function createStore<T>(initial: T) {
@@ -70,3 +70,14 @@ export function updateOnboarding(patch: Partial<OnboardingAnswers>) {
 export function clearOnboarding() {
   AsyncStorage.removeItem(ONBOARDING_KEY).catch(() => undefined);
 }
+
+/* Celebrations (real achievements only) and gentle, auto-dismissing toasts. */
+export const celebrationStore = createStore<AchievementId[]>([]);
+export const useCelebration = () => useStore(celebrationStore);
+
+export interface Toast {
+  id: number;
+  kind: 'streakDay';
+}
+export const toastStore = createStore<Toast | null>(null);
+export const useToast = () => useStore(toastStore);

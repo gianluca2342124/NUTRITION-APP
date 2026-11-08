@@ -25,7 +25,7 @@ export function SearchForm({ defaultValue = '', size = 'lg' }: { defaultValue?: 
           required
           autoComplete="off"
           placeholder={t.web.searchPlaceholder}
-          className={`min-w-0 flex-1 bg-transparent text-ink outline-none placeholder:text-faint ${big ? 'text-[17px]' : 'text-[16px]'}`}
+          className={`w-0 min-w-0 flex-1 bg-transparent text-ink outline-none placeholder:text-faint ${big ? 'text-[17px]' : 'text-[16px]'}`}
         />
         <button
           type="submit"

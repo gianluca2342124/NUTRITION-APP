@@ -1,0 +1,88 @@
+{
+  "$comment": "Hand-picked Wikimedia Commons photos for generic foods. Each file was reviewed visually; licences are re-checked by scripts/images/build-food-images.mjs. Keys are generic food slugs. \"author\" overrides the Commons metadata when it is not a clean name.",
+  "foods": {
+    "aceite-de-oliva": {
+      "file": "File:Olive Oil (Unsplash).jpg"
+    },
+    "aguacate": {
+      "file": "File:Avocado Hass - single and halved.jpg"
+    },
+    "arandanos": {
+      "file": "File:Dish of blueberries.jpg"
+    },
+    "arroz-blanco-cocido": {
+      "file": "File:Cooked white rice.jpg"
+    },
+    "brocoli": {
+      "file": "File:Brocoli 03.jpg"
+    },
+    "cafe": {
+      "file": "File:Cup of coffee (Serbian cuisine, Grand kava).jpg"
+    },
+    "chocolate-negro": {
+      "file": "File:2023 Gorzka czekolada.jpg"
+    },
+    "copos-de-avena": {
+      "file": "File:Rolled oats 2.jpg"
+    },
+    "fresas": {
+      "file": "File:Garden strawberry (Fragaria × ananassa) single2.jpg"
+    },
+    "garbanzos-cocidos": {
+      "file": "File:Ordinary chickpeas in a ceramic bowl.jpg"
+    },
+    "huevo": {
+      "file": "File:A brown chicken egg on white background.png"
+    },
+    "hummus": {
+      "file": "File:Hummus from The Nile.jpg"
+    },
+    "kiwi": {
+      "file": "File:Kiwi (Actinidia chinensis) 1 Luc Viatour.jpg"
+    },
+    "lentejas-cocidas": {
+      "file": "File:Liat Portal for Foodie Disorder - Cooked Lentils with Caramelized Onions.jpg"
+    },
+    "manzana": {
+      "file": "File:Red Delicious Apple 2021.jpg"
+    },
+    "naranja": {
+      "file": "File:Orange-Fruit-Pieces.jpg"
+    },
+    "nueces": {
+      "file": "File:Whole walnut kernel and shell.jpg"
+    },
+    "pan-de-barra": {
+      "file": "File:Brot 001 2016 07 03.jpg"
+    },
+    "pasta-cocida": {
+      "file": "File:A plate of red sauce pasta.jpg",
+      "author": "Masum-al-Hasan Rocky"
+    },
+    "pechuga-de-pollo": {
+      "file": "File:Grilled Chicken Breasts (28905381261).jpg"
+    },
+    "pimiento-rojo": {
+      "file": "File:Red bell pepper.jpg"
+    },
+    "platano": {
+      "file": "File:Bananas on black background 02.jpg"
+    },
+    "salmon": {
+      "file": "File:Raw salmon fillets.jpg"
+    },
+    "tomate": {
+      "file": "File:Tomatoes 2026 G1.jpg"
+    },
+    "uvas": {
+      "file": "File:Pinot Grigio-20201027-RM-114053.jpg"
+    },
+    "yogur-natural": {
+      "file": "File:Joghurt.jpg",
+      "author": "Rainer Zenz"
+    },
+    "zanahoria": {
+      "file": "File:Carrots at Ljubljana Central Market.JPG"
+    }
+  }
+}

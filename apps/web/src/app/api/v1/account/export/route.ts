@@ -11,6 +11,10 @@ const TABLES = [
   'favorites',
   'contributions',
   'ai_usage',
+  'activity_events',
+  'streak_daily_activity',
+  'user_streaks',
+  'user_achievements',
 ] as const;
 
 /** GDPR data export (art. 15/20): everything the user owns, as JSON. */

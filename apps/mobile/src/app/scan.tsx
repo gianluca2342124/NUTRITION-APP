@@ -2,27 +2,34 @@ import { CameraView, useCameraPermissions, type BarcodeScanningResult } from 'ex
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useRef, useState } from 'react';
-import { ActivityIndicator, Linking, Modal, Platform, StyleSheet, View } from 'react-native';
+import { Linking, Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { normalizeBarcode } from '@repo/core';
+import { motion } from '@repo/design';
 import { AiConsentSheet, useAiConsent } from '@/components/ai-consent';
+import { FudyuCharacter } from '@/components/art';
 import { GlassSurface } from '@/components/glass';
-import { Icon } from '@/components/icons';
-import { Button, Card, Field, IconButton, Notice, PressableScale, SegmentedControl, Text, haptic } from '@/components/ui';
+import { ScanModeSwitch, ScannerControls, type ScanMode } from '@/components/scanner-controls';
+import { Button, Card, Field, IconButton, Notice, Text, haptic } from '@/components/ui';
 import { apiClient } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 import { useT } from '@/lib/i18n';
 import { fileForm, prepareImage } from '@/lib/images';
 import { draftStore, labelStore } from '@/lib/stores';
-import { space, usePalette } from '@/lib/theme';
+import { radius, space, usePalette } from '@/lib/theme';
 
-type Mode = 'food' | 'barcode' | 'label';
-
+/**
+ * Camera first: full-screen preview with minimal controls (close, mode,
+ * capture, gallery, microphone). Food and barcode are the main modes; the
+ * label mode is contextual (from a product that is not in the database) or
+ * one tap away at the top.
+ */
 export default function ScanScreen() {
   const { t } = useT();
   const p = usePalette();
-  const params = useLocalSearchParams<{ meal?: string; mode?: Mode; gtin?: string }>();
-  const [mode, setMode] = useState<Mode>(params.mode ?? 'food');
+  const params = useLocalSearchParams<{ meal?: string; mode?: ScanMode; gtin?: string }>();
+  const [mode, setMode] = useState<ScanMode>(params.mode ?? 'food');
   const [permission, requestPermission] = useCameraPermissions();
   const camera = useRef<CameraView>(null);
   const [busy, setBusy] = useState<string | null>(null);
@@ -55,7 +62,7 @@ export default function ScanScreen() {
       return;
     }
     setError(null);
-    setBusy(mode === 'label' ? t.scan.readingLabel : t.scan.analyzing);
+    setBusy(mode === 'label' ? t.scan.revealLabel : t.scan.revealFood);
     try {
       const prepared = await prepareImage(image.uri, image);
       const form = await fileForm('image', prepared.uri, 'photo.jpg', 'image/jpeg');
@@ -77,7 +84,6 @@ export default function ScanScreen() {
 
   const capture = async () => {
     if (!camera.current || busy) return;
-    haptic.light();
     try {
       const pic = await camera.current.takePictureAsync({ quality: 0.8, shutterSound: false });
       if (pic) await analyze({ uri: pic.uri, width: pic.width, height: pic.height });
@@ -89,14 +95,18 @@ export default function ScanScreen() {
   const pick = async () => {
     const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: 0.9 });
     const asset = res.canceled ? null : res.assets[0];
-    if (asset) await analyze({ uri: asset.uri, width: asset.width, height: asset.height });
+    if (!asset) return;
+    if (mode === 'barcode') setMode('food');
+    await analyze({ uri: asset.uri, width: asset.width, height: asset.height });
   };
 
+  const toVoice = () => router.replace({ pathname: '/voice', params: { meal: params.meal ?? '' } });
   const hint = mode === 'food' ? t.scan.foodHint : mode === 'barcode' ? t.scan.barcodeHint : t.scan.labelHint;
+  const granted = permission?.granted === true;
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#000' }}>
-      {permission?.granted ? (
+    <View style={{ flex: 1, backgroundColor: '#0B1020' }}>
+      {granted ? (
         <CameraView
           ref={camera}
           style={StyleSheet.absoluteFill}
@@ -108,83 +118,102 @@ export default function ScanScreen() {
       ) : null}
 
       <SafeAreaView style={{ flex: 1, justifyContent: 'space-between' }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: space.md }}>
+        {/* Top: close · label (secondary) */}
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: space.md }}>
           <IconButton icon="close" label={t.common.close} onPress={() => router.back()} />
-          <IconButton icon="mic" label={t.scan.modeVoice} onPress={() => router.replace({ pathname: '/voice', params: { meal: params.meal ?? '' } })} />
+          {granted ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ selected: mode === 'label' }}
+              onPress={() => {
+                haptic.selection();
+                setError(null);
+                setMode(mode === 'label' ? 'food' : 'label');
+              }}
+            >
+              <GlassSurface radius={radius.pill} style={{ paddingHorizontal: space.md, height: 40, justifyContent: 'center', backgroundColor: mode === 'label' ? 'rgba(255,255,255,0.95)' : undefined }}>
+                <Text variant="secondaryStrong" style={{ color: mode === 'label' ? '#172033' : '#FFFFFF' }}>
+                  {t.scan.modeLabel}
+                </Text>
+              </GlassSurface>
+            </Pressable>
+          ) : null}
         </View>
 
-        {!permission ? null : !permission.granted ? (
-          <Card style={{ margin: space.md, gap: space.md, padding: space.xl }}>
-            <Icon name="camera" size={36} color={p.primary} />
-            <Text variant="title">{t.scan.cameraPermissionTitle}</Text>
-            <Text variant="body" color="textSecondary">
-              {permission.canAskAgain ? t.scan.cameraPermissionBody : t.scan.cameraDenied}
+        {/* Middle: viewfinder or the one-line permission state */}
+        {!permission ? null : !granted ? (
+          <View style={{ paddingHorizontal: space.xl, alignItems: 'center', gap: space.lg }}>
+            <FudyuCharacter expression="curious" size={88} />
+            <Text variant="title" align="center" style={{ color: '#FFFFFF' }}>
+              {t.scan.permissionShort}
             </Text>
-            {permission.canAskAgain ? (
-              <Button title={t.scan.cameraPermissionCta} onPress={requestPermission} />
-            ) : (
-              Platform.OS !== 'web' && <Button title={t.scan.openSettings} onPress={() => Linking.openSettings()} />
-            )}
-            <Button title={t.scan.pickFromLibrary} variant="secondary" icon="image" onPress={pick} />
-            <Button title={t.scan.manualCode} variant="ghost" icon="keyboard" onPress={() => setManual(true)} />
-          </Card>
-        ) : (
+            <View style={{ alignSelf: 'stretch', gap: space.sm }}>
+              {permission.canAskAgain ? (
+                <Button title={t.common.continue} onPress={requestPermission} />
+              ) : Platform.OS !== 'web' ? (
+                <Button title={t.scan.openSettings} onPress={() => Linking.openSettings()} />
+              ) : null}
+              <Button title={t.scan.pickPhoto} variant="secondary" icon="image" onPress={pick} />
+            </View>
+          </View>
+        ) : busy ? null : (
           <View style={{ alignItems: 'center' }}>
             <View
               style={{
                 width: mode === 'barcode' ? 280 : 300,
-                height: mode === 'barcode' ? 160 : 300,
-                borderRadius: 28,
+                height: mode === 'barcode' ? 160 : mode === 'label' ? 360 : 300,
+                borderRadius: 32,
                 borderWidth: 3,
-                borderColor: 'rgba(255,255,255,0.9)',
+                borderColor: 'rgba(255,255,255,0.92)',
               }}
             />
             <Text variant="bodyStrong" style={{ color: '#fff', marginTop: space.md, textShadowColor: 'rgba(0,0,0,0.6)', textShadowRadius: 6 }}>
               {hint}
             </Text>
+            {mode === 'barcode' ? (
+              <Pressable accessibilityRole="button" onPress={() => setManual(true)} hitSlop={10} style={{ marginTop: space.sm }}>
+                <Text variant="secondaryStrong" style={{ color: 'rgba(255,255,255,0.85)', textDecorationLine: 'underline' }}>
+                  {t.scan.manualCodeLink}
+                </Text>
+              </Pressable>
+            ) : null}
           </View>
         )}
 
-        <View style={{ padding: space.md, gap: space.md }}>
-          {error && <Notice tone="error" text={error} />}
-          {busy ? (
-            <GlassSurface radius={24} style={{ padding: space.lg, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
-              <ActivityIndicator color={p.primary} />
-              <Text variant="bodyStrong">{busy}</Text>
+        {/* Analysing: an elegant, honest wait */}
+        {busy ? (
+          <Animated.View entering={FadeIn.duration(motion.base)} style={{ alignItems: 'center', paddingHorizontal: space.xl }}>
+            <GlassSurface radius={radius.xl} style={{ padding: space.xl, alignItems: 'center', gap: space.md, alignSelf: 'stretch' }}>
+              <FudyuCharacter expression="thinking" size={76} />
+              <Text variant="bodyStrong" align="center">
+                {busy}
+              </Text>
             </GlassSurface>
-          ) : (
+          </Animated.View>
+        ) : null}
+
+        {/* Bottom: errors, controls, mode switch */}
+        <View style={{ padding: space.md, gap: space.lg }}>
+          {error ? <Notice tone="error" text={error} /> : null}
+          {granted && !busy ? (
             <>
-              {permission?.granted && mode !== 'barcode' && (
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space.lg }}>
-                  <IconButton icon="image" label={t.scan.pickFromLibrary} onPress={pick} />
-                  <PressableScale
-                    accessibilityRole="button"
-                    accessibilityLabel={hint}
-                    onPress={capture}
-                    style={{ width: 78, height: 78, borderRadius: 39, borderWidth: 5, borderColor: '#fff', backgroundColor: 'rgba(255,255,255,0.25)' }}
-                  />
-                  <IconButton icon="keyboard" label={t.scan.typeInstead} onPress={() => router.replace({ pathname: '/voice', params: { meal: params.meal ?? '', typed: '1' } })} />
-                </View>
-              )}
-              {permission?.granted && mode === 'barcode' && (
-                <Button title={t.scan.manualCode} variant="secondary" icon="keyboard" onPress={() => setManual(true)} />
-              )}
-              <GlassSurface radius={24} style={{ padding: 4 }}>
-                <SegmentedControl
-                  value={mode}
-                  onChange={(m) => {
-                    setError(null);
-                    setMode(m);
-                  }}
-                  options={[
-                    { value: 'food', label: t.scan.modeFood },
-                    { value: 'barcode', label: t.scan.modeBarcode },
-                    { value: 'label', label: t.scan.modeLabel },
-                  ]}
-                />
-              </GlassSurface>
+              <ScannerControls showShutter={mode !== 'barcode'} onCapture={capture} onGallery={pick} onMic={toVoice} shutterLabel={hint} />
+              <ScanModeSwitch
+                mode={mode === 'label' ? 'food' : mode}
+                onChange={(m) => {
+                  setError(null);
+                  setMode(m);
+                }}
+              />
             </>
-          )}
+          ) : null}
+          {!granted && permission ? (
+            <Pressable accessibilityRole="button" onPress={() => setManual(true)} style={{ alignSelf: 'center' }} hitSlop={10}>
+              <Text variant="secondaryStrong" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                {t.scan.manualCode}
+              </Text>
+            </Pressable>
+          ) : null}
         </View>
       </SafeAreaView>
 

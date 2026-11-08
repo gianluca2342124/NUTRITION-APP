@@ -26,6 +26,11 @@ export interface DiaryItem {
   dataSource: DataSource;
   dataSourceRef: string | null;
   isEstimate: boolean;
+  /** Generic food slug (for curated images) and category (for fallbacks). */
+  foodSlug: string | null;
+  foodCategory: string | null;
+  /** Authentic product photo from the catalogue, if any. */
+  productImageUrl: string | null;
 }
 
 export interface DiaryEntry {
@@ -42,7 +47,7 @@ export interface DiaryEntry {
 }
 
 const ENTRY_SELECT =
-  'id, consumed_on, consumed_at, meal_type, title, method, photo_path, created_at, food_entry_items(id, entry_id, position, food_kind, generic_food_id, product_id, display_name, amount, quantity_label, basis, per100, energy_kcal, protein_g, carbs_g, sugars_g, fat_g, saturated_fat_g, fiber_g, salt_g, data_source, data_source_ref, is_estimate)';
+  'id, consumed_on, consumed_at, meal_type, title, method, photo_path, created_at, food_entry_items(id, entry_id, position, food_kind, generic_food_id, product_id, display_name, amount, quantity_label, basis, per100, energy_kcal, protein_g, carbs_g, sugars_g, fat_g, saturated_fat_g, fiber_g, salt_g, data_source, data_source_ref, is_estimate, generic_foods(slug, category), products(image_url))';
 
 type Row = Record<string, unknown>;
 
@@ -63,7 +68,16 @@ function mapItem(row: Row): DiaryItem {
     dataSource: row.data_source as DataSource,
     dataSourceRef: (row.data_source_ref as string | null) ?? null,
     isEstimate: row.is_estimate === true,
+    foodSlug: (embedded(row.generic_foods)?.slug as string | undefined) ?? null,
+    foodCategory: (embedded(row.generic_foods)?.category as string | undefined) ?? null,
+    productImageUrl: (embedded(row.products)?.image_url as string | undefined) ?? null,
   };
+}
+
+/** PostgREST returns to-one embeds as an object (or null); tolerate arrays too. */
+function embedded(value: unknown): Row | null {
+  if (Array.isArray(value)) return (value[0] as Row | undefined) ?? null;
+  return value && typeof value === 'object' ? (value as Row) : null;
 }
 
 function mapEntry(row: Row): DiaryEntry {

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { LabelDraftSchema, MealDraftSchema, TranscriptSchema } from './ai';
 import { GenericFoodSchema } from './foods';
-import { CatalogProductSchema, BASES } from './products';
+import { BASES, CatalogProductSchema, EU_ADDITIVE_STATUSES } from './products';
 
 /* --------------------------------- DTOs --------------------------------- */
 
@@ -41,6 +41,7 @@ export const AdditiveSourceSchema = z.object({
   publisher: z.string(),
   publishedOn: z.string().nullable(),
   kind: z.string(),
+  relation: z.string().optional(),
 });
 
 export const AdditiveSchema = z.object({
@@ -60,6 +61,17 @@ export const AdditiveSchema = z.object({
     .nullable(),
   editorialNoteEs: z.string().nullable(),
   editorialNoteEn: z.string().nullable(),
+  /** EU regulatory status — only when editorially verified ("unknown" otherwise). */
+  euStatus: z.enum(EU_ADDITIVE_STATUSES),
+  euStatusSince: z.string().nullable(),
+  euStatusNoteEs: z.string().nullable(),
+  euStatusNoteEn: z.string().nullable(),
+  /** Short editorial explanation and practical implication, when written. */
+  summaryEs: z.string().nullable(),
+  summaryEn: z.string().nullable(),
+  implicationEs: z.string().nullable(),
+  implicationEn: z.string().nullable(),
+  /** Editorial workflow state — for admin tools, never shown to users. */
   reviewStatus: z.enum(['not_reviewed', 'in_review', 'reviewed']),
   reviewedAt: z.string().nullable(),
   sources: z.array(AdditiveSourceSchema),

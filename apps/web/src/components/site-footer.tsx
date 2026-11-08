@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { brand } from '@repo/config';
 import { Logo } from './logo';
 import { t } from '@/lib/site';
@@ -27,6 +28,14 @@ export function SiteFooter() {
               USDA FoodData Central
             </a>
             .
+          </p>
+          <p className="flex flex-wrap gap-x-4 gap-y-1">
+            <Link href="/metodologia" className="underline decoration-line-strong underline-offset-2 hover:text-ink">
+              {t.web.methodologyLink}
+            </Link>
+            <Link href="/creditos" className="underline decoration-line-strong underline-offset-2 hover:text-ink">
+              {t.web.creditsLink}
+            </Link>
           </p>
           <p>{t.disclaimer.notMedical}</p>
           <p className="text-faint">© {brand.brandName}</p>

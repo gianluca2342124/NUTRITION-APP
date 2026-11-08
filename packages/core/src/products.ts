@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { EU_ALLERGENS } from './allergens';
 import { NutrientValuesSchema } from './nutrients';
+import { NutriScoreInputsSchema } from './nutriscore';
 
 export const BASES = ['100g', '100ml'] as const;
 export type Basis = (typeof BASES)[number];
@@ -46,6 +47,8 @@ export const ProductSchema = z.object({
   nutriscoreGrade: z.enum(['a', 'b', 'c', 'd', 'e']).nullable(),
   nutriscoreVersion: z.string().nullable(),
   novaGroup: z.number().int().min(1).max(4).nullable(),
+  /** Source-provided inputs for computing the Nutri-Score 2023 ourselves. */
+  nutriscoreInputs: NutriScoreInputsSchema.nullable(),
   imageUrl: z.string().nullable(),
   imageIngredientsUrl: z.string().nullable(),
   imageNutritionUrl: z.string().nullable(),
@@ -58,6 +61,23 @@ export const ProductSchema = z.object({
 });
 export type Product = z.infer<typeof ProductSchema>;
 
+export const EU_ADDITIVE_STATUSES = ['authorised', 'not_authorised', 'unknown'] as const;
+export type EuAdditiveStatus = (typeof EU_ADDITIVE_STATUSES)[number];
+
+/** What the evaluation needs to know about each additive in a product. */
+export const AdditiveInfoSchema = z.object({
+  code: z.string(),
+  eNumber: z.string(),
+  nameEs: z.string().nullable(),
+  nameEn: z.string().nullable(),
+  classes: z.array(z.string()),
+  /** Regulatory status in the EU, only when editorially verified ("unknown" otherwise). */
+  euStatus: z.enum(EU_ADDITIVE_STATUSES),
+  /** EFSA's re-evaluation estimated intakes above the ADI for some population groups. */
+  exposureConcern: z.boolean(),
+});
+export type AdditiveInfo = z.infer<typeof AdditiveInfoSchema>;
+
 /** Product as served by the API (adds catalogue identity + freshness). */
 export const CatalogProductSchema = ProductSchema.extend({
   id: z.string(),
@@ -65,6 +85,8 @@ export const CatalogProductSchema = ProductSchema.extend({
   importedAt: z.string(),
   updatedAt: z.string(),
   verificationStatus: z.enum(['imported', 'user_submitted', 'pending_review', 'verified', 'rejected']),
+  /** Catalogue data for the product's additives (absent when not loaded). */
+  additiveInfo: z.array(AdditiveInfoSchema).optional(),
 });
 export type CatalogProduct = z.infer<typeof CatalogProductSchema>;
 

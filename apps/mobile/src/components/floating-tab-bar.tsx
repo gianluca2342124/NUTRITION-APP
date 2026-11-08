@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import type { BottomTabBarProps } from 'expo-router/js-tabs';
-import { Pressable, View } from 'react-native';
+import { Pressable, useWindowDimensions, View } from 'react-native';
 import { GlassSurface } from './glass';
 import { Icon, type IconName } from './icons';
 import { PressableScale, Text, haptic } from './ui';
@@ -16,6 +16,9 @@ const ICONS: Record<string, IconName> = { index: 'home', explore: 'explore', coa
 export function FloatingTabBar({ state, descriptors, navigateToTab, insets }: BottomTabBarProps) {
   const p = usePalette();
   const { t } = useT();
+  // On narrow screens (or very large text) labels would collide: icons only, labels stay accessible.
+  const { width, fontScale } = useWindowDimensions();
+  const compact = width < 350 || fontScale > 1.35;
   return (
     <View
       pointerEvents="box-none"
@@ -58,10 +61,12 @@ export function FloatingTabBar({ state, descriptors, navigateToTab, insets }: Bo
                   backgroundColor: focused ? p.primarySoft : 'transparent',
                 }}
               >
-                <Icon name={ICONS[route.name] ?? 'home'} size={22} color={color} strokeWidth={focused ? 2.3 : 2} />
-                <Text variant="caption" style={{ color, fontSize: 11, lineHeight: 13 }} maxFontSizeMultiplier={1.2}>
-                  {title}
-                </Text>
+                <Icon name={ICONS[route.name] ?? 'home'} size={compact ? 24 : 22} color={color} strokeWidth={focused ? 2.3 : 2} />
+                {compact ? null : (
+                  <Text variant="caption" numberOfLines={1} style={{ color, fontSize: 11, lineHeight: 13, fontWeight: focused ? '700' : '500' }} maxFontSizeMultiplier={1.2}>
+                    {title}
+                  </Text>
+                )}
               </Pressable>
             );
           })}

@@ -1,8 +1,10 @@
 import {
   nutrients,
+  NutriScoreInputsSchema,
   type CatalogProduct,
   type GenericFood,
   type NutrientValues,
+  type NutriScoreInputs,
   type Portion,
   type Product,
 } from '@repo/core';
@@ -73,7 +75,7 @@ export function mapGenericFoodRow(row: Row): GenericFood {
 }
 
 export const PRODUCT_COLUMNS =
-  'id, gtin, slug, name, names, brand, quantity_text, net_quantity, net_quantity_unit, serving_size_text, serving_quantity, basis, energy_kcal, protein_g, carbs_g, sugars_g, fat_g, saturated_fat_g, fiber_g, salt_g, nutrition_available, categories, category_main, countries, ingredients_text, ingredients_texts, allergens, traces, additives, labels, nutriscore_grade, nutriscore_version, nova_group, image_url, image_ingredients_url, image_nutrition_url, source, source_id, source_url, license, source_last_modified, warnings, verification_status, imported_at, updated_at';
+  'id, gtin, slug, name, names, brand, quantity_text, net_quantity, net_quantity_unit, serving_size_text, serving_quantity, basis, energy_kcal, protein_g, carbs_g, sugars_g, fat_g, saturated_fat_g, fiber_g, salt_g, nutrition_available, categories, category_main, countries, ingredients_text, ingredients_texts, allergens, traces, additives, labels, nutriscore_grade, nutriscore_version, nova_group, nutriscore_inputs, image_url, image_ingredients_url, image_nutrition_url, source, source_id, source_url, license, source_last_modified, warnings, verification_status, imported_at, updated_at';
 
 export function mapProductRow(row: Row): CatalogProduct {
   return {
@@ -103,6 +105,7 @@ export function mapProductRow(row: Row): CatalogProduct {
     nutriscoreGrade: (s(row.nutriscore_grade) as CatalogProduct['nutriscoreGrade']) ?? null,
     nutriscoreVersion: s(row.nutriscore_version),
     novaGroup: n(row.nova_group) ?? null,
+    nutriscoreInputs: parseNutriscoreInputs(row.nutriscore_inputs),
     imageUrl: s(row.image_url),
     imageIngredientsUrl: s(row.image_ingredients_url),
     imageNutritionUrl: s(row.image_nutrition_url),
@@ -154,6 +157,7 @@ export function productToRow(p: Product, slug: string): Row {
     nutriscore_grade: p.nutriscoreGrade,
     nutriscore_version: p.nutriscoreVersion,
     nova_group: p.novaGroup,
+    nutriscore_inputs: p.nutriscoreInputs,
     image_url: p.imageUrl,
     image_ingredients_url: p.imageIngredientsUrl,
     image_nutrition_url: p.imageNutritionUrl,
@@ -180,4 +184,10 @@ export function productSlug(p: Pick<Product, 'gtin' | 'name' | 'brand'>): string
     .slice(0, 60)
     .replace(/-+$/g, '');
   return base ? `${base}-${p.gtin}` : p.gtin;
+}
+
+function parseNutriscoreInputs(value: unknown): NutriScoreInputs | null {
+  if (!value) return null;
+  const parsed = NutriScoreInputsSchema.safeParse(value);
+  return parsed.success ? parsed.data : null;
 }

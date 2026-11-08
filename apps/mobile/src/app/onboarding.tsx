@@ -18,8 +18,9 @@ import {
   minimumHealthyWeightKg,
   type Goal,
 } from '@repo/core';
-import { brand } from '@repo/config';
-import { BrandMark } from '@/components/brand';
+import type { CharacterExpression } from '@repo/design';
+import { BrandMark, FudyuCharacter } from '@/components/art';
+import { Icon, type IconName } from '@/components/icons';
 import { ProgressBar } from '@/components/rings';
 import { Button, Card, Choice, Field, Notice, Row, Text } from '@/components/ui';
 import { errorMessage } from '@/lib/errors';
@@ -28,7 +29,7 @@ import { useSaveOnboarding } from '@/lib/queries';
 import { clearOnboarding, updateOnboarding, useOnboardingAnswers } from '@/lib/stores';
 import { space, usePalette } from '@/lib/theme';
 
-type StepId = 'welcome' | 'goals' | 'primary' | 'health' | 'age' | 'sex' | 'body' | 'activity' | 'food' | 'likes' | 'habits' | 'where' | 'usage' | 'summary';
+type StepId = 'welcome' | 'goals' | 'primary' | 'health' | 'about' | 'body' | 'activity' | 'food' | 'likes' | 'habits' | 'where' | 'summary';
 
 const toggle = <T,>(list: readonly T[], v: T): T[] => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
 
@@ -48,10 +49,10 @@ export default function Onboarding() {
     if (a.goals.length > 1) steps.push('primary');
     steps.push('health');
     if (a.healthDataConsent) {
-      steps.push('age');
-      if (!isMinor) steps.push('sex', 'body', 'activity');
+      steps.push('about');
+      if (!isMinor) steps.push('body', 'activity');
     }
-    steps.push('food', 'likes', 'habits', 'where', 'usage', 'summary');
+    steps.push('food', 'likes', 'habits', 'where', 'summary');
     return steps;
   }, [a.goals.length, a.healthDataConsent, isMinor]);
 
@@ -82,15 +83,13 @@ export default function Onboarding() {
     goals: a.goals.length > 0,
     primary: a.goals.includes(a.primaryGoal),
     health: true,
-    age: a.ageYears != null && a.ageYears >= 13 && a.ageYears <= 110,
-    sex: a.sex != null,
+    about: a.ageYears != null && a.ageYears >= 13 && a.ageYears <= 110 && (isMinor || a.sex != null),
     body: a.heightCm != null && a.weightKg != null && !targetTooLow,
     activity: a.activity != null,
     food: true,
     likes: true,
     habits: true,
     where: true,
-    usage: true,
     summary: true,
   };
 
@@ -114,22 +113,25 @@ export default function Onboarding() {
     case 'welcome':
       body = (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: space.lg }}>
-          <BrandMark size={88} />
+          <FudyuCharacter expression="smile" size={148} />
           <Text variant="largeTitle" align="center">
             {t.onboarding.welcomeTitle}
           </Text>
-          <Text variant="body" color="textSecondary" align="center" style={{ maxWidth: 320 }}>
+          <Text variant="body" color="textSecondary" align="center" style={{ maxWidth: 300 }}>
             {t.onboarding.welcomeBody}
           </Text>
-          <Text variant="caption" color="textTertiary">
-            {brand.wordmark}
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs, marginTop: space.sm }}>
+            <BrandMark size={22} />
+            <Text variant="bodyStrong" color="textSecondary">
+              fudyu
+            </Text>
+          </View>
         </View>
       );
       break;
     case 'goals':
       body = (
-        <Question title={t.onboarding.goalsTitle} hint={t.onboarding.goalsHint}>
+        <Question title={t.onboarding.goalsTitle} hint={t.onboarding.goalsHint} expression="curious">
           {GOALS.map((g) => (
             <Choice
               key={g}
@@ -155,7 +157,7 @@ export default function Onboarding() {
       break;
     case 'health':
       body = (
-        <Question title={t.onboarding.healthIntroTitle} hint={t.onboarding.healthIntroBody}>
+        <Question title={t.onboarding.healthIntroTitle} hint={t.onboarding.healthIntroBody} expression="thinking">
           <Choice label={t.onboarding.healthConsent} selected={a.healthDataConsent} onPress={() => updateOnboarding({ healthDataConsent: !a.healthDataConsent })} />
           <Choice
             label={t.onboarding.healthSkip}
@@ -165,32 +167,40 @@ export default function Onboarding() {
         </Question>
       );
       break;
-    case 'age':
+    case 'about':
       body = (
-        <Question title={t.onboarding.ageTitle}>
+        <Question title={t.onboarding.aboutTitle} expression="smile">
           <Field
+            label={t.onboarding.ageTitle}
             keyboardType="number-pad"
             value={a.ageYears?.toString() ?? ''}
             onChangeText={(v) => updateOnboarding({ ageYears: num(v) })}
             suffix={locale === 'es' ? 'años' : 'years'}
             accessibilityLabel={t.onboarding.ageTitle}
           />
-          {isMinor && <Notice tone="info" text={t.onboarding.minorNotice} />}
-        </Question>
-      );
-      break;
-    case 'sex':
-      body = (
-        <Question title={t.onboarding.sexTitle} hint={t.onboarding.sexHint}>
-          {SEXES.map((s) => (
-            <Choice key={s} label={t.sex[s]} selected={a.sex === s} onPress={() => updateOnboarding({ sex: s })} />
-          ))}
+          {isMinor ? (
+            <Notice tone="info" text={t.onboarding.minorNotice} />
+          ) : (
+            <>
+              <Text variant="secondaryStrong" color="textSecondary" style={{ marginTop: space.sm }}>
+                {t.onboarding.sexTitle}
+              </Text>
+              <Row gap={space.xs} style={{ flexWrap: 'wrap' }}>
+                {SEXES.map((sx) => (
+                  <Choice key={sx} compact label={t.sex[sx]} selected={a.sex === sx} onPress={() => updateOnboarding({ sex: sx })} />
+                ))}
+              </Row>
+              <Text variant="caption" color="textTertiary">
+                {t.onboarding.sexHint}
+              </Text>
+            </>
+          )}
         </Question>
       );
       break;
     case 'body':
       body = (
-        <Question title={t.onboarding.bodyTitle}>
+        <Question title={t.onboarding.bodyTitle} expression="thinking">
           <Field label={t.onboarding.height} keyboardType="decimal-pad" value={a.heightCm?.toString() ?? ''} onChangeText={(v) => updateOnboarding({ heightCm: num(v) })} suffix="cm" />
           <Field label={t.onboarding.weight} keyboardType="decimal-pad" value={a.weightKg?.toString() ?? ''} onChangeText={(v) => updateOnboarding({ weightKg: num(v) })} suffix="kg" />
           {(a.goals.includes('lose_weight') || a.goals.includes('gain_weight')) && (
@@ -208,7 +218,7 @@ export default function Onboarding() {
       break;
     case 'activity':
       body = (
-        <Question title={t.onboarding.activityTitle}>
+        <Question title={t.onboarding.activityTitle} expression="smile">
           {ACTIVITY_LEVELS.map((lvl) => (
             <Choice key={lvl} label={t.activity[lvl]} hint={t.activity[`${lvl}Hint`]} selected={a.activity === lvl} onPress={() => updateOnboarding({ activity: lvl })} />
           ))}
@@ -225,7 +235,7 @@ export default function Onboarding() {
       break;
     case 'food':
       body = (
-        <Question title={t.onboarding.dietTitle}>
+        <Question title={t.onboarding.dietTitle} expression="attention">
           <Row gap={space.xs} style={{ flexWrap: 'wrap' }}>
             {DIET_PATTERNS.map((d) => (
               <Choice key={d} compact label={t.diet[d]} selected={a.diet === d} onPress={() => updateOnboarding({ diet: d })} />
@@ -247,7 +257,7 @@ export default function Onboarding() {
       break;
     case 'likes':
       body = (
-        <Question title={t.onboarding.likesTitle}>
+        <Question title={t.onboarding.likesTitle} expression="smile">
           <TagInput
             value={likeDraft}
             onChange={setLikeDraft}
@@ -274,7 +284,7 @@ export default function Onboarding() {
       break;
     case 'habits':
       body = (
-        <Question title={t.onboarding.mealsTitle}>
+        <Question title={t.onboarding.mealsTitle} expression="thinking">
           <Row gap={space.xs} style={{ flexWrap: 'wrap' }}>
             {[2, 3, 4, 5, 6].map((n) => (
               <Choice key={n} compact label={String(n)} selected={a.mealsPerDay === n} onPress={() => updateOnboarding({ mealsPerDay: n })} />
@@ -301,7 +311,13 @@ export default function Onboarding() {
       break;
     case 'where':
       body = (
-        <Question title={t.onboarding.countryTitle}>
+        <Question title={t.onboarding.usageTitle} expression="curious">
+          {USAGE_MODES.map((u) => (
+            <Choice key={u} label={t.usage[u]} selected={a.usage.includes(u)} onPress={() => updateOnboarding({ usage: toggle(a.usage, u) })} />
+          ))}
+          <Text variant="section" style={{ marginTop: space.lg }}>
+            {t.onboarding.countryTitle}
+          </Text>
           <Row gap={space.xs} style={{ flexWrap: 'wrap' }}>
             {(['ES', 'PT', 'FR', 'IT', 'DE', 'GB', 'US', 'MX'] as const).map((c) => (
               <Choice key={c} compact label={c} selected={a.country === c} onPress={() => updateOnboarding({ country: c })} />
@@ -326,59 +342,46 @@ export default function Onboarding() {
         </Question>
       );
       break;
-    case 'usage':
+    case 'summary': {
+      const prefs = [a.diet ? t.diet[a.diet] : null, ...a.usage.slice(0, 2).map((u) => t.usage[u])].filter(Boolean).join(' · ');
       body = (
-        <Question title={t.onboarding.usageTitle}>
-          {USAGE_MODES.map((u) => (
-            <Choice key={u} label={t.usage[u]} selected={a.usage.includes(u)} onPress={() => updateOnboarding({ usage: toggle(a.usage, u) })} />
-          ))}
-        </Question>
-      );
-      break;
-    case 'summary':
-      body = (
-        <Question title={t.onboarding.summaryTitle} hint={t.onboarding.summarySubtitle}>
-          <Card style={{ gap: space.xs }}>
-            <Text variant="caption" color="textSecondary">
-              {t.onboarding.summaryGoal}
+        <View style={{ gap: space.md, alignItems: 'stretch' }}>
+          <View style={{ alignItems: 'center', gap: space.sm, marginTop: space.md }}>
+            <FudyuCharacter expression="celebrate" size={112} />
+            <Text variant="largeTitle" align="center">
+              {t.onboarding.summaryTitle}
             </Text>
-            <Text variant="cardTitle">{t.goals[a.primaryGoal]}</Text>
-          </Card>
-          <Card style={{ gap: space.xs }}>
-            <Text variant="caption" color="textSecondary">
-              {t.onboarding.summaryTargets}
+            <Text variant="body" color="textSecondary" align="center">
+              {t.onboarding.summarySubtitle}
             </Text>
-            {targets.status === 'ok' && a.healthDataConsent && !isMinor ? (
-              <>
-                <Text variant="title" style={{ fontVariant: ['tabular-nums'] }}>
-                  {formatNumber(targets.energyKcal ?? 0, locale)} kcal
-                </Text>
-                <Text variant="secondary" color="textSecondary">
-                  {`${t.nutrients.protein_g} ${targets.proteinG} g · ${t.nutrients.carbs_g} ${targets.carbsG} g · ${t.nutrients.fat_g} ${targets.fatG} g · ${t.nutrients.fiber_g} ${targets.fiberG} g`}
-                </Text>
-                {targets.notes.map((n) => (
-                  <Notice key={n} tone="info" text={t.onboarding.targetNotes[n]} />
-                ))}
-                <Text variant="caption" color="textTertiary">
-                  {t.onboarding.methodology}
-                </Text>
-              </>
-            ) : (
-              <Text variant="secondary" color="textSecondary">
-                {isMinor ? t.onboarding.minorNotice : t.onboarding.summaryNoTargets}
+          </View>
+          <SummaryRow icon="leaf" label={t.onboarding.summaryGoal} value={t.goals[a.primaryGoal]} />
+          <SummaryRow
+            icon="heart"
+            label={t.onboarding.summaryPreferences}
+            value={prefs || t.onboarding.summaryNoPreferences}
+            note={a.allergies.length ? f(t.onboarding.summaryAllergies, { list: a.allergies.map((x) => t.allergens[x].toLowerCase()).join(', ') }) : undefined}
+          />
+          <SummaryRow icon="scan" label={t.onboarding.summaryFirstAction} value={t.onboarding.summaryFirstActionBody} />
+          {targets.status === 'ok' && a.healthDataConsent && !isMinor ? (
+            <View style={{ gap: space.xs }}>
+              <Text variant="caption" color="textSecondary" align="center">
+                {f(t.onboarding.summaryTargetLine, { kcal: formatNumber(targets.energyKcal ?? 0, locale) })}
               </Text>
-            )}
-          </Card>
-          <Card style={{ gap: space.xs }}>
-            <Text variant="caption" color="textSecondary">
-              {t.onboarding.summaryFirstAction}
+              {targets.notes.map((n) => (
+                <Notice key={n} tone="info" text={t.onboarding.targetNotes[n]} />
+              ))}
+            </View>
+          ) : (
+            <Text variant="caption" color="textSecondary" align="center">
+              {isMinor ? t.onboarding.minorNotice : t.onboarding.summaryNoTargets}
             </Text>
-            <Text variant="body">{t.onboarding.summaryFirstActionBody}</Text>
-          </Card>
+          )}
           {save.isError && <Notice tone="error" text={errorMessage(save.error, t)} />}
-        </Question>
+        </View>
       );
       break;
+    }
   }
 
   return (
@@ -392,7 +395,7 @@ export default function Onboarding() {
             </Text>
           </View>
         )}
-        <ScrollView contentContainerStyle={{ flexGrow: 1, padding: space.md, gap: space.sm }} keyboardShouldPersistTaps="handled">
+        <ScrollView key={step} contentContainerStyle={{ flexGrow: 1, padding: space.md, gap: space.sm }} keyboardShouldPersistTaps="handled">
           {body}
         </ScrollView>
         <View style={{ padding: space.md, gap: space.xs }}>
@@ -408,9 +411,10 @@ export default function Onboarding() {
   );
 }
 
-function Question({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
+function Question({ title, hint, children, expression }: { title: string; hint?: string; children: ReactNode; expression?: CharacterExpression }) {
   return (
     <View style={{ gap: space.sm }}>
+      {expression ? <FudyuCharacter expression={expression} size={56} style={{ marginTop: space.sm }} /> : null}
       <Text variant="title" style={{ marginTop: space.sm }}>
         {title}
       </Text>
@@ -460,5 +464,27 @@ function TagInput({
         ))}
       </Row>
     </View>
+  );
+}
+
+function SummaryRow({ icon, label, value, note }: { icon: IconName; label: string; value: string; note?: string }) {
+  const p = usePalette();
+  return (
+    <Card style={{ flexDirection: 'row', gap: space.sm, alignItems: 'center' }}>
+      <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: p.primarySoft, alignItems: 'center', justifyContent: 'center' }}>
+        <Icon name={icon} size={22} color={p.primaryText} />
+      </View>
+      <View style={{ flex: 1, gap: 2 }}>
+        <Text variant="caption" color="textSecondary">
+          {label}
+        </Text>
+        <Text variant="bodyStrong">{value}</Text>
+        {note ? (
+          <Text variant="caption" color="textSecondary">
+            {note}
+          </Text>
+        ) : null}
+      </View>
+    </Card>
   );
 }

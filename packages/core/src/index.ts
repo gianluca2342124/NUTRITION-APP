@@ -14,3 +14,8 @@ export * from './compare';
 export * from './ai';
 export * from './profile';
 export * from './api';
+export * from './streaks';
+export * from './nutriscore';
+export * from './score';
+export * from './personal';
+export * from './recipes';

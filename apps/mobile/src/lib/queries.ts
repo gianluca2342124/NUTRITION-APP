@@ -1,11 +1,16 @@
-import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { addDays, localDateString, type ConsentType, type OnboardingAnswers } from '@repo/core';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { addDays, type ConsentType, type OnboardingAnswers } from '@repo/core';
 import {
   dailyTotals,
   deleteEntry,
   deleteItem,
   getCurrentTarget,
+  getAdditiveInfo,
+  getGamification,
+  getGenericFoodsBySlugs,
   getProfile,
+  getRecipe,
+  listRecipes,
   latestConsents,
   listEntries,
   listWeights,
@@ -14,24 +19,20 @@ import {
   recordConsent,
   saveMeal,
   saveOnboarding,
+  setGamificationEnabled,
   setTarget,
   updateEntry,
   updateItemAmount,
   type NewMeal,
   type TargetRow,
 } from '@repo/data';
+import { trackActivity } from './activity';
 import { apiClient } from './api';
+import { queryClient, today } from './query-client';
 import { useSession } from './session';
 import { supabase } from './supabase';
 
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: { staleTime: 30_000, retry: 1, refetchOnWindowFocus: false },
-    mutations: { retry: 0 },
-  },
-});
-
-export const today = () => localDateString(new Date());
+export { queryClient, today };
 
 function useUserScope() {
   const { userId, status } = useSession();
@@ -75,6 +76,37 @@ export function useConsents() {
   return useQuery({ queryKey: ['consents', userId], queryFn: () => latestConsents(supabase()), enabled });
 }
 
+export function useGamification() {
+  const { userId, enabled } = useUserScope();
+  const day = today();
+  return useQuery({ queryKey: ['gamification', userId, day], queryFn: () => getGamification(supabase(), day), enabled });
+}
+
+export function useSetGamification() {
+  const qc = useQueryClient();
+  const { userId } = useSession();
+  return useMutation({
+    mutationFn: (enabled: boolean) => setGamificationEnabled(supabase(), userId!, enabled),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['gamification'] }),
+  });
+}
+
+export function useRecipes() {
+  return useQuery({ queryKey: ['recipes'], queryFn: () => listRecipes(supabase()), staleTime: 60 * 60_000 });
+}
+
+export function useRecipe(slug: string) {
+  return useQuery({ queryKey: ['recipe', slug], queryFn: () => getRecipe(supabase(), slug), staleTime: 60 * 60_000 });
+}
+
+export function useFoodsBySlugs(slugs: readonly string[]) {
+  return useQuery({ queryKey: ['foods-by-slug', slugs.join(',')], queryFn: () => getGenericFoodsBySlugs(supabase(), [...slugs]), staleTime: 60 * 60_000 });
+}
+
+export function useAdditiveCards(codes: readonly string[]) {
+  return useQuery({ queryKey: ['additive-cards', codes.join(',')], queryFn: () => getAdditiveInfo(supabase(), codes), staleTime: 60 * 60_000 });
+}
+
 export function useHealth() {
   return useQuery({ queryKey: ['health'], queryFn: () => apiClient().health(), staleTime: 5 * 60_000 });
 }
@@ -91,7 +123,13 @@ function useInvalidateDiary() {
 
 export function useSaveMeal() {
   const invalidate = useInvalidateDiary();
-  return useMutation({ mutationFn: (meal: NewMeal) => saveMeal(supabase(), meal), onSuccess: invalidate });
+  return useMutation({
+    mutationFn: (meal: NewMeal) => saveMeal(supabase(), meal),
+    onSuccess: async (_data, meal) => {
+      await invalidate();
+      trackActivity('meal_logged', meal.id);
+    },
+  });
 }
 
 export function useUpdateItem() {

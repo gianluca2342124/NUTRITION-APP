@@ -15,15 +15,30 @@ export const brand = {
   positioningEn: 'Your personal food intelligence platform.',
   positioningEs: 'Tu plataforma personal de inteligencia alimentaria.',
 
-  primaryColor: '#245CFF',
-  secondaryColor: '#17C995',
+  /** Brand and primary actions only. */
+  primaryColor: '#295BFF',
+  /** The seed of the mark; also the top of the evaluation scale. */
+  secondaryColor: '#20C78A',
   backgroundColor: '#F7F9FC',
   surfaceColor: '#FFFFFF',
   textColor: '#172033',
-  warningColor: '#F5A524',
-  errorColor: '#E45065',
+  warningColor: '#F4B23A',
+  errorColor: '#E65762',
   borderColor: '#E9EDF4',
   secondaryTextColor: '#66758B',
+  /**
+   * Evaluation scale — reserved for scores, states and data-justified charts.
+   * Never decorative.
+   */
+  scaleColors: {
+    green: '#20C78A',
+    lime: '#A4D950',
+    amber: '#F4B23A',
+    orange: '#F08042',
+    coral: '#E65762',
+  },
+  /** Gradient of the mark (top-left → bottom-right). */
+  markGradient: ['#4775FF', '#1F4FF0'],
 
   /**
    * Provisional defaults. Real values come from environment variables

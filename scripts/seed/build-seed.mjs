@@ -394,32 +394,41 @@ async function buildAdditives() {
       .map((s) => s.trim().replace(/^en:/, ''))
       .filter((s) => classesOk.has(s));
     const parent = (entry.parents ?? []).map(normalizeCode).find(Boolean) ?? null;
-    const adi = entry.efsa_evaluation_adi?.en != null ? Number(entry.efsa_evaluation_adi.en) : null;
-    const groups = (entry.efsa_evaluation_exposure_95th_greater_than_adi?.en ?? '')
-      .split(',')
-      .map((s) => s.trim().replace(/^en:/, ''))
-      .filter(Boolean);
+    const ov = overrides[code] ?? {};
+    // An editorial override can replace a superseded EFSA evaluation (e.g. E171: 2016 → 2021).
+    const efsaOv = ov.efsa ?? null;
+    const adi = efsaOv ? efsaOv.adi : entry.efsa_evaluation_adi?.en != null ? Number(entry.efsa_evaluation_adi.en) : null;
+    const groups = efsaOv
+      ? efsaOv.exposure_groups ?? []
+      : (entry.efsa_evaluation_exposure_95th_greater_than_adi?.en ?? '')
+          .split(',')
+          .map((s) => s.trim().replace(/^en:/, ''))
+          .filter(Boolean);
     const triState = (v) => (['yes', 'no', 'maybe'].includes(v) ? v : null);
-    const evalUrl = entry.efsa_evaluation_url?.en ?? null;
+    const evalUrl = efsaOv ? efsaOv.url : (entry.efsa_evaluation_url?.en ?? null);
     const doi = doiFromUrl(evalUrl);
     const normalizedUrl = doi ? `https://doi.org/${doi}` : evalUrl;
-    const ov = overrides[code] ?? {};
+    const evalTitle = efsaOv ? efsaOv.title : (entry.efsa_evaluation?.en ?? null);
+    const evalDate = efsaOv ? efsaOv.date : (entry.efsa_evaluation_date?.en ?? null);
     lines.push(
-      `insert into public.additives (code, e_number, name_es, name_en, classes, parent_code, efsa_evaluation_title, efsa_evaluation_url, efsa_evaluation_date, efsa_adi_mg_per_kg, efsa_exposure_above_adi_groups, vegan, vegetarian, wikidata_id, editorial_note_es, editorial_note_en, review_status, source, license) values (` +
+      `insert into public.additives (code, e_number, name_es, name_en, classes, parent_code, efsa_evaluation_title, efsa_evaluation_url, efsa_evaluation_date, efsa_adi_mg_per_kg, efsa_exposure_above_adi_groups, vegan, vegetarian, wikidata_id, editorial_note_es, editorial_note_en, review_status, source, license, eu_status, eu_status_since, eu_status_note_es, eu_status_note_en, summary_es, summary_en, implication_es, implication_en) values (` +
         [
           sql(code), sql(eNumber), sql(stripName(entry.name?.es, code)), sql(stripName(entry.name?.en, code)), sqlArray(classes),
-          sql(parent), sql(entry.efsa_evaluation?.en ?? null), sql(normalizedUrl), sql(entry.efsa_evaluation_date?.en ?? null),
+          sql(parent), sql(evalTitle), sql(normalizedUrl), sql(evalDate),
           sql(Number.isFinite(adi) ? adi : null), sqlArray(groups), sql(triState(entry.vegan?.en)), sql(triState(entry.vegetarian?.en)),
           sql(entry.wikidata?.en ?? null), sql(ov.note_es ?? null), sql(ov.note_en ?? null), sql('not_reviewed'),
           sql('open_food_facts'), sql(OFF_LICENSE),
+          sql(ov.eu_status ?? 'unknown'), sql(ov.eu_status_since ?? null), sql(ov.eu_status_note_es ?? null), sql(ov.eu_status_note_en ?? null),
+          sql(ov.summary_es ?? null), sql(ov.summary_en ?? null), sql(ov.implication_es ?? null), sql(ov.implication_en ?? null),
         ].join(', ') +
-        `) on conflict (code) do update set e_number = excluded.e_number, name_es = excluded.name_es, name_en = excluded.name_en, classes = excluded.classes, parent_code = excluded.parent_code, efsa_evaluation_title = excluded.efsa_evaluation_title, efsa_evaluation_url = excluded.efsa_evaluation_url, efsa_evaluation_date = excluded.efsa_evaluation_date, efsa_adi_mg_per_kg = excluded.efsa_adi_mg_per_kg, efsa_exposure_above_adi_groups = excluded.efsa_exposure_above_adi_groups, vegan = excluded.vegan, vegetarian = excluded.vegetarian, wikidata_id = excluded.wikidata_id, editorial_note_es = excluded.editorial_note_es, editorial_note_en = excluded.editorial_note_en, license = excluded.license;`,
+        `) on conflict (code) do update set e_number = excluded.e_number, name_es = excluded.name_es, name_en = excluded.name_en, classes = excluded.classes, parent_code = excluded.parent_code, efsa_evaluation_title = excluded.efsa_evaluation_title, efsa_evaluation_url = excluded.efsa_evaluation_url, efsa_evaluation_date = excluded.efsa_evaluation_date, efsa_adi_mg_per_kg = excluded.efsa_adi_mg_per_kg, efsa_exposure_above_adi_groups = excluded.efsa_exposure_above_adi_groups, vegan = excluded.vegan, vegetarian = excluded.vegetarian, wikidata_id = excluded.wikidata_id, editorial_note_es = excluded.editorial_note_es, editorial_note_en = excluded.editorial_note_en, license = excluded.license, eu_status = excluded.eu_status, eu_status_since = excluded.eu_status_since, eu_status_note_es = excluded.eu_status_note_es, eu_status_note_en = excluded.eu_status_note_en, summary_es = excluded.summary_es, summary_en = excluded.summary_en, implication_es = excluded.implication_es, implication_en = excluded.implication_en;`,
     );
     count += 1;
-    if (normalizedUrl) {
+    const overrideUrls = new Set((ov.sources ?? []).map((s) => s.url));
+    if (normalizedUrl && !overrideUrls.has(normalizedUrl)) {
       sources.push({
-        code, kind: 'regulatory_evaluation', relation: 'evaluation', title: entry.efsa_evaluation?.en ?? `EFSA evaluation of ${eNumber}`,
-        publisher: 'EFSA (European Food Safety Authority)', url: normalizedUrl, doi, published_on: entry.efsa_evaluation_date?.en ?? null,
+        code, kind: 'regulatory_evaluation', relation: 'evaluation', title: evalTitle ?? `EFSA evaluation of ${eNumber}`,
+        publisher: 'EFSA (European Food Safety Authority)', url: normalizedUrl, doi, published_on: evalDate,
       });
     }
     for (const s of ov.sources ?? []) sources.push({ code, ...s });
@@ -434,6 +443,38 @@ async function buildAdditives() {
   return { sql: lines.join('\n'), count, sources: sources.length };
 }
 
+/* --------------------------------- recipes -------------------------------- */
+
+/** Editorial recipes; ingredients must reference existing generic food slugs. */
+function buildRecipes() {
+  const { recipes } = JSON.parse(readFileSync(join(ROOT, 'data/recipes/recipes.json'), 'utf8'));
+  const foods = new Set(
+    readFileSync(join(ROOT, 'data/generic-foods/foods.csv'), 'utf8')
+      .split('\n')
+      .slice(1)
+      .map((l) => l.split(',')[1])
+      .filter(Boolean),
+  );
+  const lines = ['-- Generated by scripts/seed/build-seed.mjs — do not edit by hand.', '-- Source: data/recipes/recipes.json (editorial recipes).', 'begin;'];
+  for (const r of recipes) {
+    for (const i of r.ingredients) if (!foods.has(i.food)) throw new Error(`recipe ${r.slug}: unknown food ${i.food}`);
+    lines.push(
+      `insert into public.recipes (slug, title_es, title_en, summary_es, summary_en, minutes, servings, meal_types, vegetarian, steps_es, steps_en, image_key) values (${[
+        sql(r.slug), sql(r.title_es), sql(r.title_en), sql(r.summary_es), sql(r.summary_en), sql(r.minutes), sql(r.servings),
+        sqlArray(r.meals), sql(r.vegetarian), sqlArray(r.steps_es), sqlArray(r.steps_en), sql(r.image ?? null),
+      ].join(', ')}) on conflict (slug) do update set title_es = excluded.title_es, title_en = excluded.title_en, summary_es = excluded.summary_es, summary_en = excluded.summary_en, minutes = excluded.minutes, servings = excluded.servings, meal_types = excluded.meal_types, vegetarian = excluded.vegetarian, steps_es = excluded.steps_es, steps_en = excluded.steps_en, image_key = excluded.image_key;`,
+      `delete from public.recipe_ingredients where recipe_id = (select id from public.recipes where slug = ${sql(r.slug)});`,
+    );
+    r.ingredients.forEach((i, position) => {
+      lines.push(
+        `insert into public.recipe_ingredients (recipe_id, position, generic_food_id, grams, label_es, label_en) select r.id, ${position}, g.id, ${sql(i.grams)}, ${sql(i.label_es)}, ${sql(i.label_en)} from public.recipes r, public.generic_foods g where r.slug = ${sql(r.slug)} and g.slug = ${sql(i.food)};`,
+      );
+    });
+  }
+  lines.push('commit;', '');
+  return { sql: lines.join('\n'), count: recipes.length };
+}
+
 /* ---------------------------------- main ---------------------------------- */
 
 const outDir = join(ROOT, 'supabase/seeds');
@@ -442,5 +483,7 @@ const foods = await buildGenericFoods();
 writeFileSync(join(outDir, '01_generic_foods.sql'), foods.sql);
 const additives = await buildAdditives();
 writeFileSync(join(outDir, '02_additives.sql'), additives.sql);
-console.log(`Wrote ${foods.count} generic foods and ${additives.count} additives (${additives.sources} source links).`);
+const recipes = buildRecipes();
+writeFileSync(join(outDir, '03_recipes.sql'), recipes.sql);
+console.log(`Wrote ${foods.count} generic foods, ${additives.count} additives (${additives.sources} source links) and ${recipes.count} recipes.`);
 void createWriteStream;

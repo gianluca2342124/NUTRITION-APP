@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import type { Allergen } from '@repo/core';
+import type { Allergen, DietPattern } from '@repo/core';
 import { useSession } from './session';
 import { supabase } from './supabase';
 
@@ -36,6 +36,20 @@ export function useHealthProfile() {
         activity: data.activity_level,
         allergies: (data.allergies ?? []) as Allergen[],
       };
+    },
+  });
+}
+
+/** Declared eating pattern (user_preferences.diet), used only for "Para ti". */
+export function useDiet() {
+  const { userId, status } = useSession();
+  return useQuery({
+    queryKey: ['diet', userId],
+    enabled: status === 'ready' && !!userId,
+    queryFn: async (): Promise<DietPattern | null> => {
+      const { data, error } = await supabase().from('user_preferences').select('diet').maybeSingle();
+      if (error) throw error;
+      return (data?.diet as DietPattern | null | undefined) ?? null;
     },
   });
 }

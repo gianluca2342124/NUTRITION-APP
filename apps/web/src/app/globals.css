@@ -24,6 +24,24 @@
   --color-error: var(--fy-error);
   --color-error-soft: var(--fy-error-soft);
   --color-error-text: var(--fy-error-text);
+  --color-primary-tint: var(--fy-primary-tint);
+  --color-scale-green: var(--fy-scale-green);
+  --color-scale-green-soft: var(--fy-scale-green-soft);
+  --color-scale-green-text: var(--fy-scale-green-text);
+  --color-scale-lime: var(--fy-scale-lime);
+  --color-scale-lime-soft: var(--fy-scale-lime-soft);
+  --color-scale-lime-text: var(--fy-scale-lime-text);
+  --color-scale-amber: var(--fy-scale-amber);
+  --color-scale-amber-soft: var(--fy-scale-amber-soft);
+  --color-scale-amber-text: var(--fy-scale-amber-text);
+  --color-scale-orange: var(--fy-scale-orange);
+  --color-scale-orange-soft: var(--fy-scale-orange-soft);
+  --color-scale-orange-text: var(--fy-scale-orange-text);
+  --color-scale-coral: var(--fy-scale-coral);
+  --color-scale-coral-soft: var(--fy-scale-coral-soft);
+  --color-scale-coral-text: var(--fy-scale-coral-text);
+  --color-streak: var(--fy-streak);
+  --color-streak-soft: var(--fy-streak-soft);
   --color-protein: var(--fy-protein);
   --color-carbs: var(--fy-carbs);
   --color-fat: var(--fy-fat);
@@ -45,8 +63,43 @@ body {
 .card {
   background: var(--fy-surface);
   border: 1px solid var(--fy-border);
-  border-radius: 24px;
-  box-shadow: 0 8px 24px -16px color-mix(in srgb, var(--fy-shadow) 22%, transparent);
+  border-radius: 28px;
+  box-shadow: 0 12px 32px -20px color-mix(in srgb, var(--fy-shadow) 24%, transparent);
+}
+
+.float {
+  box-shadow: 0 24px 48px -24px color-mix(in srgb, var(--fy-shadow) 35%, transparent);
+}
+
+/* Score ring: the arc draws itself once (respects reduced motion below). */
+@keyframes fy-ring {
+  from {
+    stroke-dashoffset: var(--fy-ring-from);
+  }
+}
+.fy-ring-arc {
+  animation: fy-ring 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes fy-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+.fy-rise {
+  animation: fy-rise 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+details > summary {
+  list-style: none;
+  cursor: pointer;
+}
+details > summary::-webkit-details-marker {
+  display: none;
+}
+details[open] .fy-chevron {
+  transform: rotate(180deg);
 }
 
 .glass {

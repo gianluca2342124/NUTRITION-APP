@@ -37,6 +37,12 @@ const PATHS = {
   logout: ['M14.5 4.5h4v15h-4', 'M10 8l-4 4 4 4', 'M6 12h9.5'],
   globe: ['M3.5 12h17', 'M12 3.5c2.4 2.5 3.5 5.3 3.5 8.5s-1.1 6-3.5 8.5c-2.4-2.5-3.5-5.3-3.5-8.5s1.1-6 3.5-8.5z'],
   scale: ['M6 4.5h12a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 18V6A1.5 1.5 0 0 1 6 4.5z', 'M9 9.5a4 4 0 0 1 6 0l-2 2'],
+  drop: ['M12 3.5c3 4 6 7.2 6 10.5a6 6 0 0 1-12 0c0-3.3 3-6.5 6-10.5z'],
+  flask: ['M9.5 3.5h5', 'M10.5 3.5V9l-5 9a1.8 1.8 0 0 0 1.6 2.5h9.8a1.8 1.8 0 0 0 1.6-2.5l-5-9V3.5', 'M7.8 14.5h8.4'],
+  cube: ['M12 3.5l7.5 4.2v8.6L12 20.5l-7.5-4.2V7.7z', 'M4.5 7.7 12 12l7.5-4.3', 'M12 12v8.5'],
+  clock: ['M12 7.5V12l3 2'],
+  book: ['M5 5.5A1.5 1.5 0 0 1 6.5 4H19v14H6.5A1.5 1.5 0 0 0 5 19.5z', 'M5 19.5A1.5 1.5 0 0 0 6.5 21H19'],
+  share: ['M12 4v11', 'M8 8l4-4 4 4', 'M6 13v5.5A1.5 1.5 0 0 0 7.5 20h9a1.5 1.5 0 0 0 1.5-1.5V13'],
 } as const;
 
 const CIRCLES: Partial<Record<IconName, [number, number, number][]>> = {
@@ -47,6 +53,7 @@ const CIRCLES: Partial<Record<IconName, [number, number, number][]>> = {
   user: [[12, 8, 3.8]],
   image: [[9, 9.5, 1.6]],
   globe: [[12, 12, 8.5]],
+  clock: [[12, 12, 8.5]],
 };
 
 const RECTS: Partial<Record<IconName, [number, number, number, number, number][]>> = {

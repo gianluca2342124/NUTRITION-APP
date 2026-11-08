@@ -18,7 +18,10 @@ export function AddToDiaryCard({
   meal: initialMeal,
   method,
   onSaved,
+  bare = false,
 }: {
+  /** Inside a bottom sheet: no card chrome and no repeated title. */
+  bare?: boolean;
   match: FoodMatch;
   defaultGrams: number;
   netQuantity?: number | null;
@@ -61,9 +64,9 @@ export function AddToDiaryCard({
     onSaved?.();
   };
 
-  return (
-    <Card style={{ gap: space.md }}>
-      <Text variant="cardTitle">{t.food.addTitle}</Text>
+  const body = (
+    <>
+      {bare ? null : <Text variant="cardTitle">{t.food.addTitle}</Text>}
       <AmountPicker
         value={grams}
         basis={match.basis}
@@ -96,6 +99,7 @@ export function AddToDiaryCard({
       ) : (
         <Button title={t.product.addToDiary} icon="plus" onPress={onSave} loading={save.isPending} />
       )}
-    </Card>
+    </>
   );
+  return bare ? <View style={{ gap: space.md }}>{body}</View> : <Card style={{ gap: space.md }}>{body}</Card>;
 }

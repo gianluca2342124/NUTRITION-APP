@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { CelebrationHost, ToastHost } from '@/components/feedback';
 import { queryClient } from '@/lib/queries';
 import { SessionProvider } from '@/lib/session';
 import { restoreOnboarding } from '@/lib/stores';
@@ -53,7 +54,11 @@ export default function RootLayout() {
                 <Stack.Screen name="compare" />
                 <Stack.Screen name="progress" />
                 <Stack.Screen name="profile" />
+                <Stack.Screen name="methodology" />
+                <Stack.Screen name="recipe/[slug]" />
               </Stack>
+              <ToastHost />
+              <CelebrationHost />
             </ThemeProvider>
           </SessionProvider>
         </QueryClientProvider>

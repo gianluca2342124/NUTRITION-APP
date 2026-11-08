@@ -2,6 +2,7 @@ import { allergensFromOffTags } from './allergens';
 import { normalizeAdditiveCode } from './additives';
 import { normalizeBarcode } from './gtin';
 import { kjToKcal, nutrients, round, sodiumToSalt, type NutrientValues } from './nutrients';
+import type { NutriScoreGrade, NutriScoreInputs } from './nutriscore';
 import type { Basis, Product, ProductWarning } from './products';
 import { parseQuantity } from './units';
 import { checkNutrientPlausibility } from './label';
@@ -46,6 +47,7 @@ export const OFF_FIELDS = [
   'labels_tags',
   'nutriscore_grade',
   'nutriscore_version',
+  'nutriscore',
   'nova_group',
   'image_front_url',
   'image_ingredients_url',
@@ -218,6 +220,7 @@ export function normalizeOffProduct(p: OffProduct): Product | null {
     nutriscoreGrade: grade && ['a', 'b', 'c', 'd', 'e'].includes(grade) ? (grade as Product['nutriscoreGrade']) : null,
     nutriscoreVersion: str(p.nutriscore_version),
     novaGroup: nova && nova >= 1 && nova <= 4 ? Math.round(nova) : null,
+    nutriscoreInputs: nutriscoreInputsFromOff(p),
     imageUrl: str(p.image_front_url),
     imageIngredientsUrl: str(p.image_ingredients_url),
     imageNutritionUrl: str(p.image_nutrition_url),
@@ -227,6 +230,57 @@ export function normalizeOffProduct(p: OffProduct): Product | null {
     license: OFF_LICENSE,
     sourceLastModified: lastModified ? new Date(lastModified * 1000).toISOString() : null,
     warnings: Array.from(warnings),
+  };
+}
+
+/**
+ * Inputs for the Nutri-Score 2023 that only the source can provide (category,
+ * fruit/vegetable/legume share, sweeteners, declared kJ) plus its own result
+ * for audit. Values computed on prepared products are not used, because the
+ * catalogue stores values as sold.
+ */
+export function nutriscoreInputsFromOff(p: OffProduct): NutriScoreInputs | null {
+  const block = (p.nutriscore as Record<string, unknown> | undefined)?.['2023'];
+  if (!block || typeof block !== 'object') return null;
+  const ns = block as Record<string, unknown>;
+  if (str(ns.preparation) === 'prepared') return null;
+  const data = (ns.data ?? {}) as Record<string, unknown>;
+  const groups = (data.components ?? {}) as { negative?: unknown; positive?: unknown };
+  const components = [...(Array.isArray(groups.negative) ? groups.negative : []), ...(Array.isArray(groups.positive) ? groups.positive : [])] as Record<string, unknown>[];
+  const value = (id: string) => num(components.find((c) => c.id === id)?.value);
+  const applicable = num(ns.nutriscore_applicable) !== 0;
+  const flag = (k: string) => num(data[k]) === 1;
+  const category: NutriScoreInputs['category'] =
+    num(ns.category_available) === 0
+      ? null
+      : flag('is_water')
+        ? 'water'
+        : flag('is_beverage')
+          ? 'beverage'
+          : flag('is_fat_oil_nuts_seeds')
+            ? 'fats_oils_nuts_seeds'
+            : flag('is_cheese')
+              ? 'cheese'
+              : flag('is_red_meat_product')
+                ? 'red_meat'
+                : 'general';
+  const grade = str(ns.grade)?.toLowerCase();
+  const score = num(ns.score);
+  const fvl = value('fruits_vegetables_legumes');
+  const sweeteners = value('non_nutritive_sweeteners');
+  const energyKj = value('energy') ?? num(p.nutriments?.['energy-kj_100g']);
+  return {
+    version: '2023',
+    applicable,
+    notApplicableReason: applicable ? null : (str(ns.not_applicable_category) ?? null),
+    category,
+    fvlPercent: fvl == null ? null : Math.min(100, Math.max(0, fvl)),
+    sweeteners: sweeteners == null ? null : Math.max(0, Math.round(sweeteners)),
+    energyKj: energyKj == null || energyKj < 0 ? null : energyKj,
+    reference:
+      num(ns.nutriscore_computed) === 1 && score != null && grade && ['a', 'b', 'c', 'd', 'e'].includes(grade)
+        ? { score, grade: grade as NutriScoreGrade }
+        : null,
   };
 }
 

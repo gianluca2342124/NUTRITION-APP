@@ -1,7 +1,7 @@
 import 'server-only';
 import { cacheLife } from 'next/cache';
-import type { Additive, CatalogProduct, GenericFood, SearchHit, SearchKind } from '@repo/core';
-import { getGenericFood, getProductBySlug, mapGenericFoodRow, GENERIC_FOOD_COLUMNS } from '@repo/data';
+import { computeFudyuScore, scoreInputFromProduct, type Additive, type AdditiveInfo, type CatalogProduct, type FudyuScoreResult, type GenericFood, type Recipe, type SearchHit, type SearchKind } from '@repo/core';
+import { getAdditive, getAdditiveInfo, getGenericFood, getProductBySlug, getRecipe, listRecipes, mapGenericFoodRow, GENERIC_FOOD_COLUMNS } from '@repo/data';
 import { supabaseConfigured } from '@/server/env';
 import { publicClient } from '@/server/supabase';
 
@@ -60,44 +60,7 @@ export async function additiveByCode(code: string): Promise<Additive | null> {
   'use cache';
   cacheLife('hours');
   if (!supabaseConfigured()) return null;
-  const { data } = await publicClient()
-    .from('additives')
-    .select('*, additive_sources(relation, scientific_sources(title, url, publisher, published_on, kind))')
-    .eq('code', code)
-    .maybeSingle();
-  if (!data) return null;
-  const sources = ((data.additive_sources ?? []) as { scientific_sources: Record<string, unknown> | null }[])
-    .map((s) => s.scientific_sources)
-    .filter((s): s is Record<string, unknown> => !!s)
-    .map((s) => ({
-      title: String(s.title),
-      url: (s.url as string | null) ?? null,
-      publisher: String(s.publisher),
-      publishedOn: (s.published_on as string | null) ?? null,
-      kind: String(s.kind),
-    }));
-  return {
-    code: data.code,
-    eNumber: data.e_number,
-    nameEs: data.name_es,
-    nameEn: data.name_en,
-    classes: data.classes ?? [],
-    efsa:
-      data.efsa_evaluation_url || data.efsa_adi_mg_per_kg != null
-        ? {
-            title: data.efsa_evaluation_title,
-            url: data.efsa_evaluation_url,
-            date: data.efsa_evaluation_date,
-            adiMgPerKgBw: data.efsa_adi_mg_per_kg == null ? null : Number(data.efsa_adi_mg_per_kg),
-            exposureAboveAdiGroups: data.efsa_exposure_above_adi_groups ?? [],
-          }
-        : null,
-    editorialNoteEs: data.editorial_note_es,
-    editorialNoteEn: data.editorial_note_en,
-    reviewStatus: data.review_status,
-    reviewedAt: data.reviewed_at,
-    sources,
-  };
+  return getAdditive(publicClient(), code);
 }
 
 export async function searchCatalog(q: string, kinds?: SearchKind[]): Promise<SearchHit[]> {
@@ -122,4 +85,65 @@ export async function searchCatalog(q: string, kinds?: SearchKind[]): Promise<Se
     basis: r.basis === '100ml' ? '100ml' : r.basis === '100g' ? '100g' : null,
     score: Number(r.score),
   }));
+}
+
+export interface ScoredProduct {
+  product: CatalogProduct;
+  score: FudyuScoreResult;
+}
+
+/**
+ * Products already in the catalogue with a photo and a computable score,
+ * best first. Used to show real examples — never placeholders.
+ */
+export async function scoredProducts(limit = 8): Promise<ScoredProduct[]> {
+  'use cache';
+  cacheLife('hours');
+  if (!supabaseConfigured()) return [];
+  const { data } = await publicClient()
+    .from('products')
+    .select('slug')
+    .eq('nutrition_available', true)
+    .not('image_url', 'is', null)
+    .not('nutriscore_inputs', 'is', null)
+    .not('name', 'is', null)
+    .order('updated_at', { ascending: false })
+    .limit(60);
+  const products = (await Promise.all((data ?? []).map((r) => getProductBySlug(publicClient(), String(r.slug))))).filter(
+    (p): p is CatalogProduct => !!p,
+  );
+  return products
+    .map((product) => ({ product, score: computeFudyuScore(scoreInputFromProduct(product)) }))
+    .filter((x) => x.score.status === 'scored')
+    .sort((a, b) => (b.score.status === 'scored' ? b.score.score : 0) - (a.score.status === 'scored' ? a.score.score : 0))
+    .slice(0, limit);
+}
+
+export async function additiveCards(codes: readonly string[]): Promise<AdditiveInfo[]> {
+  'use cache';
+  cacheLife('hours');
+  if (!supabaseConfigured()) return [];
+  try {
+    return (await getAdditiveInfo(publicClient(), codes)).filter((a) => a.nameEs || a.nameEn);
+  } catch {
+    return [];
+  }
+}
+
+export async function allRecipes(): Promise<Recipe[]> {
+  'use cache';
+  cacheLife('hours');
+  if (!supabaseConfigured()) return [];
+  try {
+    return await listRecipes(publicClient());
+  } catch {
+    return [];
+  }
+}
+
+export async function recipeBySlug(slug: string): Promise<Recipe | null> {
+  'use cache';
+  cacheLife('hours');
+  if (!supabaseConfigured()) return null;
+  return getRecipe(publicClient(), slug);
 }

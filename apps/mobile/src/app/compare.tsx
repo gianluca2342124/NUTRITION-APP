@@ -1,9 +1,12 @@
 import { useQueries } from '@tanstack/react-query';
-import { Image } from 'expo-image';
 import { router } from 'expo-router';
+import { useEffect } from 'react';
 import { View } from 'react-native';
-import { compareItems, formatNutrient, localizedName, type CatalogProduct } from '@repo/core';
+import { compareItems, computeFudyuScore, formatNutrient, localizedName, scoreInputFromProduct, type CatalogProduct } from '@repo/core';
+import { FoodImage } from '@/components/food-image';
+import { ScoreBadge } from '@/components/score';
 import { Button, Card, Divider, EmptyState, IconButton, Notice, Row, Screen, Text } from '@/components/ui';
+import { trackActivity } from '@/lib/activity';
 import { apiClient } from '@/lib/api';
 import { useT } from '@/lib/i18n';
 import { useProfile } from '@/lib/queries';
@@ -18,6 +21,11 @@ export default function CompareScreen() {
     queries: ids.map((id) => ({ queryKey: ['product-id', id], queryFn: () => apiClient().getProductById(id) })),
   });
   const products = results.map((r) => r.data).filter((x): x is CatalogProduct => !!x);
+  const pairKey = products.length >= 2 ? products.map((x) => x.id).sort().join(',') : null;
+
+  useEffect(() => {
+    if (pairKey) trackActivity('comparison', pairKey);
+  }, [pairKey]);
 
   const header = (
     <Row style={{ justifyContent: 'space-between', paddingTop: space.sm }}>
@@ -67,13 +75,14 @@ export default function CompareScreen() {
       <Row gap={space.sm} style={{ marginTop: space.md, alignItems: 'stretch' }}>
         {products.map((x, i) => (
           <Card key={x.id} style={{ flex: 1, alignItems: 'center', gap: space.xs }}>
-            {x.imageUrl ? <Image source={{ uri: x.imageUrl }} style={{ width: 72, height: 72 }} contentFit="contain" /> : null}
+            <FoodImage uri={x.imageUrl} fallback="product" width={84} height={84} fit="contain" radius={16} />
             <Text variant="secondaryStrong" align="center" numberOfLines={2}>
               {names[i]}
             </Text>
             <Text variant="caption" color="textSecondary" align="center" numberOfLines={1}>
               {x.brand}
             </Text>
+            <CompareScore product={x} />
             <Button title={t.common.remove} variant="ghost" size="md" onPress={() => compareStore.set(ids.filter((id) => id !== x.id))} />
           </Card>
         ))}
@@ -154,4 +163,9 @@ export default function CompareScreen() {
       </Text>
     </Screen>
   );
+}
+
+function CompareScore({ product }: { product: CatalogProduct }) {
+  const r = computeFudyuScore(scoreInputFromProduct(product));
+  return r.status === 'scored' ? <ScoreBadge score={r.score} level={r.level} /> : <ScoreBadge score={null} level={null} />;
 }

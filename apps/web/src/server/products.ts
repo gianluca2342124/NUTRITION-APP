@@ -15,9 +15,14 @@ export type LookupResult =
   | { status: 'found'; origin: 'cache' | 'open_food_facts'; product: CatalogProduct }
   | { status: 'not_found'; gtin: string };
 
+/** Products imported before the Fudyu Score inputs existed are refreshed once. */
+const SCORE_INPUTS_SINCE = Date.parse('2026-11-08T00:00:00Z');
+
 function isFresh(p: CatalogProduct): boolean {
   const days = env().OFF_CACHE_DAYS;
-  return Date.now() - new Date(p.updatedAt).getTime() < days * 86_400_000;
+  const updated = new Date(p.updatedAt).getTime();
+  if (p.nutriscoreInputs == null && updated < SCORE_INPUTS_SINCE) return false;
+  return Date.now() - updated < days * 86_400_000;
 }
 
 async function fetchFromOff(gtin: string): Promise<OffProduct | null | 'unavailable'> {

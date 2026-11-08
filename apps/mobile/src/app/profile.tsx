@@ -1,15 +1,15 @@
 import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Platform, Share, View } from 'react-native';
+import { Alert, Platform, Share, Switch, View } from 'react-native';
 import { formatNumber } from '@repo/core';
 import { Button, Card, Divider, Field, IconButton, ListRow, Notice, Row, Screen, Text } from '@/components/ui';
 import { apiClient } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 import { useT } from '@/lib/i18n';
-import { queryClient, today, useConsents, useRecordConsent, useSetTarget, useTarget } from '@/lib/queries';
+import { queryClient, today, useConsents, useGamification, useRecordConsent, useSetGamification, useSetTarget, useTarget } from '@/lib/queries';
 import { useSession } from '@/lib/session';
-import { space } from '@/lib/theme';
+import { space, usePalette } from '@/lib/theme';
 
 function ask(message: string, onYes: () => void, yes: string, no: string) {
   if (Platform.OS === 'web') {
@@ -26,6 +26,9 @@ export default function ProfileScreen() {
   const { t, f, locale } = useT();
   const session = useSession();
   const consents = useConsents();
+  const game = useGamification();
+  const setGame = useSetGamification();
+  const p = usePalette();
   const record = useRecordConsent();
   const target = useTarget(today());
   const setTarget = useSetTarget();
@@ -199,6 +202,20 @@ export default function ProfileScreen() {
                 onPress={() => ask(t.profile.revokeHealth + '?', () => record.mutate({ type: 'health_data', granted: false }), t.common.remove, t.common.cancel)}
               />
             ) : undefined
+          }
+        />
+        <Divider />
+        <ListRow
+          title={t.profile.gamification}
+          subtitle={t.profile.gamificationHint}
+          right={
+            <Switch
+              value={game.data?.enabled !== false}
+              disabled={!game.data || setGame.isPending}
+              onValueChange={(v) => setGame.mutate(v)}
+              trackColor={{ true: p.primary, false: p.borderStrong }}
+              accessibilityLabel={t.profile.gamification}
+            />
           }
         />
         <Divider />

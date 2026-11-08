@@ -1,0 +1,2613 @@
+{
+ "$source": "Open Food Facts (https://world.openfoodfacts.org), data under the Open Database License (ODbL 1.0). Excerpts used only to verify the Nutri-Score 2023 implementation. Fetched 2026-11-07.",
+ "products": [
+  {
+   "code": "20003166",
+   "product_name": "FLOCONS D'AVOINE",
+   "brands": "Crownfield",
+   "nutriments": {
+    "energy-kj_100g": 1566,
+    "energy-kcal_100g": 372,
+    "energy_100g": 1566,
+    "fat_100g": 7,
+    "saturated-fat_100g": 1.3,
+    "carbohydrates_100g": 58.7,
+    "sugars_100g": 0.7,
+    "fiber_100g": 10,
+    "proteins_100g": 13.5,
+    "salt_100g": 0.02,
+    "sodium_100g": 0.008
+   },
+   "nova_group": null,
+   "nutriscore": {
+    "2023": {
+     "score": -5,
+     "grade": "a",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 5,
+      "positive_points": 10,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 1566,
+         "points": 4,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 0.7,
+         "points": 0,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat",
+         "value": 1.3,
+         "points": 1,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0.02,
+         "points": 0,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 13.5,
+         "points": 5,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 10,
+         "points": 5,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "20724696",
+   "product_name": "Amandes décortiquées",
+   "brands": "Alesto",
+   "nutriments": {
+    "energy-kj_100g": 2567,
+    "energy-kcal_100g": 621,
+    "energy_100g": 2567,
+    "fat_100g": 53.3,
+    "saturated-fat_100g": 4.3,
+    "carbohydrates_100g": 4.8,
+    "sugars_100g": 4.8,
+    "fiber_100g": 12.1,
+    "proteins_100g": 24.5,
+    "salt_100g": 0.01,
+    "sodium_100g": 0.004
+   },
+   "nova_group": 1,
+   "nutriscore": {
+    "2023": {
+     "score": -10,
+     "grade": "a",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 1,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 2,
+      "positive_points": 12,
+      "components": {
+       "negative": [
+        {
+         "id": "energy_from_saturated_fat",
+         "value": 159.1,
+         "points": 1,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 4.8,
+         "points": 1,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat_ratio",
+         "value": 8.1,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0.01,
+         "points": 0,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 24.5,
+         "points": 7,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 12.1,
+         "points": 5,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "3017624010701",
+   "product_name": "Nutella",
+   "brands": "Ferrero",
+   "nutriments": {
+    "energy-kj_100g": 2228,
+    "energy-kcal_100g": 539,
+    "energy_100g": 2228,
+    "fat_100g": 30.9,
+    "saturated-fat_100g": 10.6,
+    "carbohydrates_100g": 57.5,
+    "sugars_100g": 56.3,
+    "proteins_100g": 6.3,
+    "salt_100g": 0.1075,
+    "sodium_100g": 0.043
+   },
+   "nova_group": null,
+   "nutriscore": {
+    "2023": {
+     "score": 31,
+     "grade": "e",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 0,
+      "negative_points": 31,
+      "positive_points": 0,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 2228,
+         "points": 6,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 56.3,
+         "points": 15,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat",
+         "value": 10.6,
+         "points": 10,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0.11,
+         "points": 0,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "fiber",
+         "value": null,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "3161711001971",
+   "product_name": "Fromage de France",
+   "brands": "BG SAS, Caprice des Dieux",
+   "nutriments": {
+    "energy-kj_100g": 1378.6,
+    "energy-kcal_100g": 339.388145315487,
+    "energy_100g": 1378.6,
+    "fat_100g": 30,
+    "saturated-fat_100g": 21,
+    "carbohydrates_100g": 0.8,
+    "sugars_100g": 0.1,
+    "proteins_100g": 15,
+    "salt_100g": 1.3775,
+    "sodium_100g": 0.551
+   },
+   "nova_group": 3,
+   "nutriscore": {
+    "2023": {
+     "score": 14,
+     "grade": "d",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 1,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 20,
+      "positive_points": 6,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 1378.6,
+         "points": 4,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 0.1,
+         "points": 0,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat",
+         "value": 21,
+         "points": 10,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 1.38,
+         "points": 6,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 15,
+         "points": 6,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 1.67,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "3168930009078",
+   "product_name": "Flocons d'avoine complète",
+   "brands": "Quaker",
+   "nutriments": {
+    "energy-kj_100g": 1570,
+    "energy-kcal_100g": 395,
+    "energy_100g": 1570,
+    "fat_100g": 8,
+    "saturated-fat_100g": 1.5,
+    "carbohydrates_100g": 60,
+    "sugars_100g": 1.1,
+    "fiber_100g": 9,
+    "proteins_100g": 11,
+    "salt_100g": 0.01,
+    "sodium_100g": 0.004
+   },
+   "nova_group": 1,
+   "nutriscore": {
+    "2023": {
+     "score": -4,
+     "grade": "a",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 5,
+      "positive_points": 9,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 1570,
+         "points": 4,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 1.1,
+         "points": 0,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat",
+         "value": 1.5,
+         "points": 1,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0.01,
+         "points": 0,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 11,
+         "points": 4,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 9,
+         "points": 5,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "3168930010265",
+   "product_name": "cruesly mélange de noix",
+   "brands": "Cruesli, Quaker",
+   "nutriments": {
+    "energy-kj_100g": 1913,
+    "energy-kcal_100g": 462,
+    "energy_100g": 1913,
+    "fat_100g": 19,
+    "saturated-fat_100g": 2,
+    "carbohydrates_100g": 57,
+    "sugars_100g": 12,
+    "fiber_100g": 10,
+    "proteins_100g": 8.5,
+    "salt_100g": 0,
+    "sodium_100g": 0
+   },
+   "nova_group": 4,
+   "nutriscore": {
+    "2023": {
+     "score": 1,
+     "grade": "b",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 9,
+      "positive_points": 8,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 1913,
+         "points": 5,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 12,
+         "points": 3,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat",
+         "value": 2,
+         "points": 1,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0,
+         "points": 0,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 8.5,
+         "points": 3,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 10,
+         "points": 5,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "3229820019307",
+   "product_name": "Flocons d'avoine",
+   "brands": "Bjorg",
+   "nutriments": {
+    "energy-kj_100g": 1524,
+    "energy-kcal_100g": 362,
+    "energy_100g": 1524,
+    "fat_100g": 7.1,
+    "saturated-fat_100g": 1.3,
+    "carbohydrates_100g": 58,
+    "sugars_100g": 1.7,
+    "fiber_100g": 11,
+    "proteins_100g": 11,
+    "salt_100g": 0.02,
+    "sodium_100g": 0.008
+   },
+   "nova_group": 1,
+   "nutriscore": {
+    "2023": {
+     "score": -4,
+     "grade": "a",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 5,
+      "positive_points": 9,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 1524,
+         "points": 4,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 1.7,
+         "points": 0,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat",
+         "value": 1.3,
+         "points": 1,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0.02,
+         "points": 0,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 11,
+         "points": 4,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 11,
+         "points": 5,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "3229820129488",
+   "product_name": "muesli raisin,datte,figue",
+   "brands": "Bjorg",
+   "nutriments": {
+    "energy-kj_100g": 1485,
+    "energy-kcal_100g": 352,
+    "energy_100g": 1485,
+    "fat_100g": 5.8,
+    "saturated-fat_100g": 0.9,
+    "carbohydrates_100g": 59,
+    "sugars_100g": 14,
+    "fiber_100g": 10,
+    "proteins_100g": 11,
+    "salt_100g": 0.03,
+    "sodium_100g": 0.012
+   },
+   "nova_group": 3,
+   "nutriscore": {
+    "2023": {
+     "score": -2,
+     "grade": "a",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 7,
+      "positive_points": 9,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 1485,
+         "points": 4,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 14,
+         "points": 3,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat",
+         "value": 0.9,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0.03,
+         "points": 0,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 11,
+         "points": 4,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 10,
+         "points": 5,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 23,
+         "points": 0,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "3533636760002",
+   "product_name": "Lait sans Lactose",
+   "brands": "Candia",
+   "nutriments": {
+    "energy-kj_100g": 174.7,
+    "energy-kcal_100g": 41,
+    "energy_100g": 174.7,
+    "fat_100g": 1,
+    "saturated-fat_100g": 0.6,
+    "carbohydrates_100g": 4.8,
+    "sugars_100g": 4.8,
+    "proteins_100g": 3.3,
+    "salt_100g": 0.1,
+    "sodium_100g": 0.04
+   },
+   "nova_group": 1,
+   "nutriscore": {
+    "2023": {
+     "score": -1,
+     "grade": "b",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 1,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 6,
+      "positive_points": 7,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 174.7,
+         "points": 3,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 4.8,
+         "points": 3,
+         "points_max": 10
+        },
+        {
+         "id": "saturated_fat",
+         "value": 0.6,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0.1,
+         "points": 0,
+         "points_max": 20
+        },
+        {
+         "id": "non_nutritive_sweeteners",
+         "value": 0,
+         "points": 0,
+         "points_max": 4
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 3.3,
+         "points": 7,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": null,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 6
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "3596710375561",
+   "product_name": "Huile d'olive vierge extra Espagne",
+   "brands": "Auchan, Auchan Bio",
+   "nutriments": {
+    "energy-kj_100g": 3700,
+    "energy-kcal_100g": 900,
+    "energy_100g": 3700,
+    "fat_100g": 100,
+    "saturated-fat_100g": 17,
+    "carbohydrates_100g": 0,
+    "sugars_100g": 0,
+    "fiber_100g": 0,
+    "proteins_100g": 0,
+    "salt_100g": 0,
+    "sodium_100g": 0
+   },
+   "nova_group": 2,
+   "nutriscore": {
+    "2023": {
+     "score": 2,
+     "grade": "b",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 1,
+      "is_red_meat_product": 0,
+      "count_proteins": 0,
+      "negative_points": 7,
+      "positive_points": 5,
+      "components": {
+       "negative": [
+        {
+         "id": "energy_from_saturated_fat",
+         "value": 629,
+         "points": 5,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 0,
+         "points": 0,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat_ratio",
+         "value": 17,
+         "points": 2,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0,
+         "points": 0,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "fiber",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 100,
+         "points": 5,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "4056489102977",
+   "product_name": "Extra Virgin Olive Oil",
+   "brands": "Primadonna",
+   "nutriments": {
+    "energy-kj_100g": 3404,
+    "energy-kcal_100g": 828,
+    "energy_100g": 3404,
+    "fat_100g": 92,
+    "saturated-fat_100g": 14,
+    "carbohydrates_100g": 0,
+    "sugars_100g": 0,
+    "fiber_100g": 0,
+    "proteins_100g": 0,
+    "salt_100g": 0,
+    "sodium_100g": 0
+   },
+   "nova_group": 2,
+   "nutriscore": {
+    "2023": {
+     "score": 0,
+     "grade": "b",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 1,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 5,
+      "positive_points": 5,
+      "components": {
+       "negative": [
+        {
+         "id": "energy_from_saturated_fat",
+         "value": 518,
+         "points": 4,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 0,
+         "points": 0,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat_ratio",
+         "value": 15.2,
+         "points": 1,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0,
+         "points": 0,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 0,
+         "points": 0,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 100,
+         "points": 5,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "4056489440116",
+   "product_name": "Amandes Décortiquées",
+   "brands": "Alesto, 03 x Lidl 07.25, 04 x Lidl 07.25, 05 x Lidl 07.25, LIDL, LIDL Alesto",
+   "nutriments": {
+    "energy-kj_100g": 2567,
+    "energy-kcal_100g": 621,
+    "energy_100g": 2567,
+    "fat_100g": 53.3,
+    "saturated-fat_100g": 4.3,
+    "carbohydrates_100g": 4.8,
+    "sugars_100g": 4.8,
+    "fiber_100g": 12.1,
+    "proteins_100g": 24.5,
+    "salt_100g": 0.01,
+    "sodium_100g": 0.04
+   },
+   "nova_group": 1,
+   "nutriscore": {
+    "2023": {
+     "score": -10,
+     "grade": "a",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 1,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 2,
+      "positive_points": 12,
+      "components": {
+       "negative": [
+        {
+         "id": "energy_from_saturated_fat",
+         "value": 159.1,
+         "points": 1,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 4.8,
+         "points": 1,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat_ratio",
+         "value": 8.1,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0.01,
+         "points": 0,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 24.5,
+         "points": 7,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 12.1,
+         "points": 5,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "5053990156009",
+   "product_name": "Pringles Original",
+   "brands": "Pringles",
+   "nutriments": {
+    "energy-kj_100g": 2227,
+    "energy-kcal_100g": 528,
+    "energy_100g": 2227,
+    "fat_100g": 31,
+    "saturated-fat_100g": 3,
+    "carbohydrates_100g": 54,
+    "sugars_100g": 0.9,
+    "fiber_100g": 4.1,
+    "proteins_100g": 6.2,
+    "salt_100g": 1,
+    "sodium_100g": 0.4
+   },
+   "nova_group": 4,
+   "nutriscore": {
+    "2023": {
+     "score": 11,
+     "grade": "d",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 0,
+      "negative_points": 12,
+      "positive_points": 1,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 2227,
+         "points": 6,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 0.9,
+         "points": 0,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat",
+         "value": 3,
+         "points": 2,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 1,
+         "points": 4,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "fiber",
+         "value": 4.1,
+         "points": 1,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "5449000000996",
+   "product_name": "Coca-Cola Original",
+   "brands": "COCA-COLA SERVICES SA/NV",
+   "nutriments": {
+    "energy-kj_100g": 180,
+    "energy-kcal_100g": 42.4,
+    "energy_100g": 180,
+    "fat_100g": 0,
+    "saturated-fat_100g": 0,
+    "carbohydrates_100g": 10.6,
+    "sugars_100g": 10.6,
+    "proteins_100g": 0,
+    "salt_100g": 0,
+    "sodium_100g": 0
+   },
+   "nova_group": 4,
+   "nutriscore": {
+    "2023": {
+     "score": 12,
+     "grade": "e",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 1,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 12,
+      "positive_points": 0,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 180,
+         "points": 3,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 10.6,
+         "points": 9,
+         "points_max": 10
+        },
+        {
+         "id": "saturated_fat",
+         "value": 0,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0,
+         "points": 0,
+         "points_max": 20
+        },
+        {
+         "id": "non_nutritive_sweeteners",
+         "value": 0,
+         "points": 0,
+         "points_max": 4
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 0,
+         "points": 0,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": null,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 6
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "5449000131805",
+   "product_name": "Coca-Cola Zero Sugar",
+   "brands": "Coca-Cola",
+   "nutriments": {
+    "energy-kj_100g": 0.9,
+    "energy-kcal_100g": 0,
+    "energy_100g": 0.9,
+    "fat_100g": 0,
+    "saturated-fat_100g": 0,
+    "carbohydrates_100g": 0,
+    "sugars_100g": 0,
+    "proteins_100g": 0,
+    "salt_100g": 0.02,
+    "sodium_100g": 0.01
+   },
+   "nova_group": 4,
+   "nutriscore": {
+    "2023": {
+     "score": 4,
+     "grade": "c",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 1,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 4,
+      "positive_points": 0,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 0.9,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 0,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "saturated_fat",
+         "value": 0,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0.02,
+         "points": 0,
+         "points_max": 20
+        },
+        {
+         "id": "non_nutritive_sweeteners",
+         "value": 2,
+         "points": 4,
+         "points_max": 4
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 0,
+         "points": 0,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": null,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 6
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "5449000214911",
+   "product_name": "Coca-Cola Original",
+   "brands": "Coca-Cola",
+   "nutriments": {
+    "energy-kj_100g": 180,
+    "energy-kcal_100g": 42,
+    "energy_100g": 180,
+    "fat_100g": 0,
+    "saturated-fat_100g": 0,
+    "carbohydrates_100g": 10.6,
+    "sugars_100g": 10.6,
+    "proteins_100g": 0,
+    "salt_100g": 0,
+    "sodium_100g": 0
+   },
+   "nova_group": 4,
+   "nutriscore": {
+    "2023": {
+     "score": 12,
+     "grade": "e",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 1,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 12,
+      "positive_points": 0,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 180,
+         "points": 3,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 10.6,
+         "points": 9,
+         "points_max": 10
+        },
+        {
+         "id": "saturated_fat",
+         "value": 0,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0,
+         "points": 0,
+         "points_max": 20
+        },
+        {
+         "id": "non_nutritive_sweeteners",
+         "value": 0,
+         "points": 0,
+         "points_max": 4
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 0,
+         "points": 0,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": null,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 6
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "7300400481588",
+   "product_name": "Fibres",
+   "brands": "wasa, Barilla Sverige AB",
+   "nutriments": {
+    "energy-kj_100g": 1397,
+    "energy-kcal_100g": 333,
+    "energy_100g": 1397,
+    "fat_100g": 5,
+    "saturated-fat_100g": 1,
+    "carbohydrates_100g": 47,
+    "sugars_100g": 2,
+    "fiber_100g": 26,
+    "proteins_100g": 12,
+    "salt_100g": 1.2,
+    "sodium_100g": 0.48
+   },
+   "nova_group": 3,
+   "nutriscore": {
+    "2023": {
+     "score": 0,
+     "grade": "a",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 9,
+      "positive_points": 9,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 1397,
+         "points": 4,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 2,
+         "points": 0,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat",
+         "value": 1,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 1.2,
+         "points": 5,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 12,
+         "points": 4,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 26,
+         "points": 5,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "7300400481595",
+   "product_name": "AUTHENTIQUE",
+   "brands": "wasa, Barilla Sverige AB",
+   "nutriments": {
+    "energy-kj_100g": 1415,
+    "energy-kcal_100g": 336,
+    "energy_100g": 1415,
+    "fat_100g": 1.5,
+    "saturated-fat_100g": 0.4,
+    "carbohydrates_100g": 62,
+    "sugars_100g": 1,
+    "fiber_100g": 19,
+    "proteins_100g": 9,
+    "salt_100g": 1,
+    "sodium_100g": 0.4
+   },
+   "nova_group": 3,
+   "nutriscore": {
+    "2023": {
+     "score": 0,
+     "grade": "a",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 8,
+      "positive_points": 8,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 1415,
+         "points": 4,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 1,
+         "points": 0,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat",
+         "value": 0.4,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 1,
+         "points": 4,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 9,
+         "points": 3,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 19,
+         "points": 5,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "7622210103314",
+   "product_name": "Queso cremoso",
+   "brands": "Mondelez Schweiz GmbH",
+   "nutriments": {
+    "energy-kj_100g": 1028,
+    "energy-kcal_100g": 249,
+    "energy_100g": 1028,
+    "fat_100g": 25,
+    "saturated-fat_100g": 16,
+    "carbohydrates_100g": 2.8,
+    "sugars_100g": 2.8,
+    "fiber_100g": 0.2,
+    "proteins_100g": 3.7,
+    "salt_100g": 1.06,
+    "sodium_100g": 0.424
+   },
+   "nova_group": 4,
+   "nutriscore": {
+    "2023": {
+     "score": 17,
+     "grade": "d",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 1,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 18,
+      "positive_points": 1,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 1028,
+         "points": 3,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 2.8,
+         "points": 0,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat",
+         "value": 16,
+         "points": 10,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 1.06,
+         "points": 5,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 3.7,
+         "points": 1,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 0.2,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "7622300441937",
+   "product_name": "Philadelphia Original",
+   "brands": "Mondelez Schweiz GmbH",
+   "nutriments": {
+    "energy-kj_100g": 943.5,
+    "energy-kcal_100g": 226,
+    "energy_100g": 943.5,
+    "fat_100g": 21,
+    "saturated-fat_100g": 14,
+    "carbohydrates_100g": 4.3,
+    "sugars_100g": 4.3,
+    "fiber_100g": 0.2,
+    "proteins_100g": 5.4,
+    "salt_100g": 0.7375,
+    "sodium_100g": 0.295
+   },
+   "nova_group": 4,
+   "nutriscore": {
+    "2023": {
+     "score": 14,
+     "grade": "d",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 1,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 16,
+      "positive_points": 2,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 943.5,
+         "points": 2,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 4.3,
+         "points": 1,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat",
+         "value": 14,
+         "points": 10,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0.74,
+         "points": 3,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 5.4,
+         "points": 2,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 0.2,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "8020141800002",
+   "product_name": "Acqua minerale naturale Sant'Anna",
+   "brands": "Acqua Sant'Anna SpA, Sant'Anna",
+   "nutriments": {
+    "salt_100g": 0.000375,
+    "sodium_100g": 0.00015
+   },
+   "nova_group": 1,
+   "nutriscore": {
+    "2023": {
+     "score": 0,
+     "grade": "a",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 1,
+      "is_water": 1,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 0,
+      "positive_points": 0,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 0,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 0,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "saturated_fat",
+         "value": 0,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0,
+         "points": 0,
+         "points_max": 20
+        },
+        {
+         "id": "non_nutritive_sweeteners",
+         "value": 0,
+         "points": 0,
+         "points_max": 4
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 0,
+         "points": 0,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 6
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "8410128000400",
+   "product_name": "mineral water",
+   "brands": "CALIDAD PASCUAL S.A.",
+   "nutriments": {
+    "energy-kj_100g": 0,
+    "energy-kcal_100g": 0,
+    "energy_100g": 0,
+    "fat_100g": 0,
+    "saturated-fat_100g": 0,
+    "carbohydrates_100g": 0,
+    "sugars_100g": 0,
+    "fiber_100g": 0,
+    "proteins_100g": 0,
+    "salt_100g": 0.00051,
+    "sodium_100g": 0.000204
+   },
+   "nova_group": 1,
+   "nutriscore": {
+    "2023": {
+     "score": 0,
+     "grade": "a",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 1,
+      "is_water": 1,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 0,
+      "positive_points": 0,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 0,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 0,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "saturated_fat",
+         "value": 0,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0,
+         "points": 0,
+         "points_max": 20
+        },
+        {
+         "id": "non_nutritive_sweeteners",
+         "value": 0,
+         "points": 0,
+         "points_max": 4
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 0,
+         "points": 0,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 6
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "8410297012150",
+   "product_name": "Leche Semidesnatada",
+   "brands": "Central Lechera Asturiana",
+   "nutriments": {
+    "energy-kj_100g": 193.5,
+    "energy-kcal_100g": 46,
+    "energy_100g": 193.5,
+    "fat_100g": 1.6,
+    "saturated-fat_100g": 1.1,
+    "carbohydrates_100g": 4.7,
+    "sugars_100g": 4.7,
+    "proteins_100g": 3.2,
+    "salt_100g": 0.1,
+    "sodium_100g": 0.04
+   },
+   "nova_group": 1,
+   "nutriscore": {
+    "2023": {
+     "score": 0,
+     "grade": "b",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 1,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 7,
+      "positive_points": 7,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 193.5,
+         "points": 3,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 4.7,
+         "points": 3,
+         "points_max": 10
+        },
+        {
+         "id": "saturated_fat",
+         "value": 1.1,
+         "points": 1,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0.1,
+         "points": 0,
+         "points_max": 20
+        },
+        {
+         "id": "non_nutritive_sweeteners",
+         "value": 0,
+         "points": 0,
+         "points_max": 4
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 3.2,
+         "points": 7,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 6
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "8410843005810",
+   "product_name": "Sobrasada",
+   "brands": "ELPOZO ALIMENTACION S.A.",
+   "nutriments": {
+    "energy-kj_100g": 2344,
+    "energy-kcal_100g": 569.2,
+    "energy_100g": 2344,
+    "fat_100g": 60,
+    "saturated-fat_100g": 20,
+    "carbohydrates_100g": 0.5,
+    "sugars_100g": 0.5,
+    "proteins_100g": 7.3,
+    "salt_100g": 2.4,
+    "sodium_100g": 0.96
+   },
+   "nova_group": 4,
+   "nutriscore": {
+    "2023": {
+     "score": 27,
+     "grade": "e",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 1,
+      "count_proteins": 0,
+      "negative_points": 27,
+      "positive_points": 0,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 2344,
+         "points": 6,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 0.5,
+         "points": 0,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat",
+         "value": 20,
+         "points": 10,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 2.4,
+         "points": 11,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "fiber",
+         "value": null,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "8412042502312",
+   "product_name": "Agua Mineral Natural",
+   "brands": "Mondariz, PREMIUM MIX GROUP S.L.",
+   "nutriments": {
+    "energy-kj_100g": 0,
+    "energy-kcal_100g": 0,
+    "energy_100g": 0,
+    "fat_100g": 0,
+    "saturated-fat_100g": 0,
+    "carbohydrates_100g": 0,
+    "sugars_100g": 0,
+    "proteins_100g": 0,
+    "salt_100g": 0.119,
+    "sodium_100g": 0.0476
+   },
+   "nova_group": 1,
+   "nutriscore": {
+    "2023": {
+     "score": 0,
+     "grade": "a",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 1,
+      "is_water": 1,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 0,
+      "positive_points": 0,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 0,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 0,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "saturated_fat",
+         "value": 0,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0.12,
+         "points": 0,
+         "points_max": 20
+        },
+        {
+         "id": "non_nutritive_sweeteners",
+         "value": 0,
+         "points": 0,
+         "points_max": 4
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 0,
+         "points": 0,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 6
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "8480000047403",
+   "product_name": "Aceite de oliva virgen extra",
+   "brands": "Hacendado, MERCADONA",
+   "nutriments": {
+    "energy-kj_100g": 3442,
+    "energy-kcal_100g": 822,
+    "energy_100g": 3442,
+    "fat_100g": 91,
+    "saturated-fat_100g": 13,
+    "carbohydrates_100g": 0,
+    "sugars_100g": 0,
+    "fiber_100g": 0,
+    "proteins_100g": 0,
+    "salt_100g": 0,
+    "sodium_100g": 0
+   },
+   "nova_group": 2,
+   "nutriscore": {
+    "2023": {
+     "score": 0,
+     "grade": "b",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 1,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 5,
+      "positive_points": 5,
+      "components": {
+       "negative": [
+        {
+         "id": "energy_from_saturated_fat",
+         "value": 481,
+         "points": 4,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 0,
+         "points": 0,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat_ratio",
+         "value": 14.3,
+         "points": 1,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0,
+         "points": 0,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 0,
+         "points": 0,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 100,
+         "points": 5,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "8480000106780",
+   "product_name": "Leche desnatada Proteínas y Calcio",
+   "brands": "MERCADONA",
+   "nutriments": {
+    "energy-kj_100g": 187.6,
+    "energy-kcal_100g": 44,
+    "energy_100g": 187.6,
+    "fat_100g": 0.2,
+    "saturated-fat_100g": 0.1,
+    "carbohydrates_100g": 4.6,
+    "sugars_100g": 4.6,
+    "fiber_100g": 0,
+    "proteins_100g": 6,
+    "salt_100g": 0.13,
+    "sodium_100g": 0.05
+   },
+   "nova_group": 1,
+   "nutriscore": {
+    "2023": {
+     "score": -1,
+     "grade": "b",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 1,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 6,
+      "positive_points": 7,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 187.6,
+         "points": 3,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 4.6,
+         "points": 3,
+         "points_max": 10
+        },
+        {
+         "id": "saturated_fat",
+         "value": 0.1,
+         "points": 0,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0.13,
+         "points": 0,
+         "points_max": 20
+        },
+        {
+         "id": "non_nutritive_sweeteners",
+         "value": 0,
+         "points": 0,
+         "points_max": 4
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 6,
+         "points": 7,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 6
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "8480000542090",
+   "product_name": "Chorizo dulce",
+   "brands": "MERCADONA",
+   "nutriments": {
+    "energy-kj_100g": 1834.4,
+    "energy-kcal_100g": 443,
+    "energy_100g": 1834.4,
+    "fat_100g": 38,
+    "saturated-fat_100g": 14.2,
+    "carbohydrates_100g": 0.2,
+    "sugars_100g": 0.2,
+    "proteins_100g": 25,
+    "salt_100g": 3.1,
+    "sodium_100g": 1.24
+   },
+   "nova_group": 3,
+   "nutriscore": {
+    "2023": {
+     "score": 30,
+     "grade": "e",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 1,
+      "count_proteins": 0,
+      "negative_points": 30,
+      "positive_points": 0,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 1834.4,
+         "points": 5,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 0.2,
+         "points": 0,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat",
+         "value": 14.2,
+         "points": 10,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 3.1,
+         "points": 15,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "fiber",
+         "value": null,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 3.8,
+         "points": 0,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "8480000606990",
+   "product_name": "Chorizo ibérico",
+   "brands": "MERCADONA",
+   "nutriments": {
+    "energy-kj_100g": 2042,
+    "energy-kcal_100g": 493.5,
+    "energy_100g": 2042,
+    "fat_100g": 43.6,
+    "saturated-fat_100g": 17.7,
+    "carbohydrates_100g": 1.3,
+    "sugars_100g": 0.8,
+    "proteins_100g": 24,
+    "salt_100g": 3.6,
+    "sodium_100g": 1.44
+   },
+   "nova_group": 4,
+   "nutriscore": {
+    "2023": {
+     "score": 33,
+     "grade": "e",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 0,
+      "is_red_meat_product": 0,
+      "count_proteins": 0,
+      "negative_points": 33,
+      "positive_points": 0,
+      "components": {
+       "negative": [
+        {
+         "id": "energy",
+         "value": 2042,
+         "points": 6,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 0.8,
+         "points": 0,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat",
+         "value": 17.7,
+         "points": 10,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 3.6,
+         "points": 17,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "fiber",
+         "value": null,
+         "points": 0,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "code": "8480000868091",
+   "product_name": "Cocktail Natural",
+   "brands": "MERCADONA",
+   "nutriments": {
+    "energy-kj_100g": 2627,
+    "energy-kcal_100g": 636,
+    "energy_100g": 2627,
+    "fat_100g": 57,
+    "saturated-fat_100g": 6.9,
+    "carbohydrates_100g": 5.7,
+    "sugars_100g": 5.7,
+    "fiber_100g": 11,
+    "proteins_100g": 20.4,
+    "salt_100g": 0,
+    "sodium_100g": 0
+   },
+   "nova_group": 1,
+   "nutriscore": {
+    "2023": {
+     "score": -8,
+     "grade": "a",
+     "nutriscore_applicable": 1,
+     "nutriscore_computed": 1,
+     "category_available": 1,
+     "preparation": "as_sold",
+     "data": {
+      "is_beverage": 0,
+      "is_water": 0,
+      "is_cheese": 0,
+      "is_fat_oil_nuts_seeds": 1,
+      "is_red_meat_product": 0,
+      "count_proteins": 1,
+      "negative_points": 4,
+      "positive_points": 12,
+      "components": {
+       "negative": [
+        {
+         "id": "energy_from_saturated_fat",
+         "value": 255.3,
+         "points": 2,
+         "points_max": 10
+        },
+        {
+         "id": "sugars",
+         "value": 5.7,
+         "points": 1,
+         "points_max": 15
+        },
+        {
+         "id": "saturated_fat_ratio",
+         "value": 12.1,
+         "points": 1,
+         "points_max": 10
+        },
+        {
+         "id": "salt",
+         "value": 0,
+         "points": 0,
+         "points_max": 20
+        }
+       ],
+       "positive": [
+        {
+         "id": "proteins",
+         "value": 20.4,
+         "points": 7,
+         "points_max": 7
+        },
+        {
+         "id": "fiber",
+         "value": 11,
+         "points": 5,
+         "points_max": 5
+        },
+        {
+         "id": "fruits_vegetables_legumes",
+         "value": 0,
+         "points": 0,
+         "points_max": 5
+        }
+       ]
+      }
+     }
+    }
+   }
+  }
+ ]
+}

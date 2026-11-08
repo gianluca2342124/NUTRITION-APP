@@ -1,17 +1,21 @@
 import { Redirect, router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, View } from 'react-native';
-import { addDays, formatNumber, MEAL_TYPES, parseLocalDate, sumNutrients, type MealType } from '@repo/core';
-import type { DiaryEntry } from '@repo/data';
+import { addDays, formatNumber, MEAL_TYPES, parseLocalDate, sumNutrients, weekDays } from '@repo/core';
+import { MealCard, VisualMetric } from '@/components/cards';
 import { Icon } from '@/components/icons';
-import { MacroLine, MacroTiles } from '@/components/nutrition';
+import { AnimatedCounter, Appear } from '@/components/motion';
+import { NutrientTable } from '@/components/nutrition';
 import { MetricRing } from '@/components/rings';
-import { Button, Card, Divider, EmptyState, ErrorState, IconButton, Notice, Row, Screen, Skeleton, Text } from '@/components/ui';
+import { BottomSheet } from '@/components/sheet';
+import { StreakCalendar, StreakHero, StreakPill } from '@/components/streak';
+import { Button, Card, EmptyState, ErrorState, Notice, PressableScale, Screen, Skeleton, Text } from '@/components/ui';
+import { WeeklyDayStrip } from '@/components/week-strip';
 import { errorMessage } from '@/lib/errors';
 import { useT } from '@/lib/i18n';
-import { today, useDiary, useProfile, useTarget } from '@/lib/queries';
+import { today, useDiary, useGamification, useProfile, useTarget, useTotals } from '@/lib/queries';
 import { useSession } from '@/lib/session';
-import { space, usePalette } from '@/lib/theme';
+import { radius, space, usePalette } from '@/lib/theme';
 
 function greeting(t: ReturnType<typeof useT>['t']): string {
   const h = new Date().getHours();
@@ -22,14 +26,20 @@ export default function TodayScreen() {
   const { t, f, locale } = useT();
   const p = usePalette();
   const session = useSession();
-  const [date, setDate] = useState(today());
+  const todayStr = today();
+  const [date, setDate] = useState(todayStr);
+  const [sheet, setSheet] = useState<'streak' | 'day' | null>(null);
   const profile = useProfile();
   const diary = useDiary(date);
   const target = useTarget(date);
+  const week = weekDays(date);
+  const weekTotals = useTotals(week[0]!, week[6]!);
+  const game = useGamification();
 
   const entries = useMemo(() => diary.data ?? [], [diary.data]);
   const totals = useMemo(() => sumNutrients(entries.flatMap((e) => e.items.map((i) => i.nutrients))), [entries]);
-  const hasEstimates = entries.some((e) => e.items.some((i) => i.isEstimate));
+  const activeDays = useMemo(() => new Set((weekTotals.data ?? []).filter((d) => d.entryCount > 0).map((d) => d.date)), [weekTotals.data]);
+  const streakDays = useMemo(() => new Set(game.data?.activeDays ?? []), [game.data]);
 
   if (session.status === 'unconfigured') return <BackendNotConfigured />;
   if (session.status === 'error') {
@@ -50,159 +60,191 @@ export default function TodayScreen() {
 
   const energy = totals.values.energy_kcal ?? 0;
   const targetKcal = target.data?.energyKcal ?? null;
-  const isToday = date === today();
-  const dateLabel = isToday
-    ? t.common.today
-    : date === addDays(today(), -1)
+  const isToday = date === todayStr;
+  const hasEstimates = entries.some((e) => e.items.some((i) => i.isEstimate));
+  const name = profile.data?.displayName?.trim();
+  const gamification = game.data?.enabled !== false;
+  const dayTitle = isToday
+    ? t.today.progressTitle
+    : date === addDays(todayStr, -1)
       ? t.common.yesterday
       : parseLocalDate(date).toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long' });
 
   return (
     <Screen
-      refreshControl={<RefreshControl refreshing={diary.isRefetching} onRefresh={() => {
-        void diary.refetch();
-      }} tintColor={p.primary} />}
-    >
-      <Row style={{ justifyContent: 'space-between', paddingTop: space.sm }}>
-        <View>
-          <Text variant="secondaryStrong" color="textSecondary">
-            {greeting(t)}
-          </Text>
-          <Text variant="largeTitle">{t.nav.today}</Text>
-        </View>
-        <IconButton icon="user" label={t.profile.title} onPress={() => router.push('/profile')} />
-      </Row>
-
-      <Row style={{ justifyContent: 'space-between', marginTop: space.md }}>
-        <IconButton icon="chevronLeft" tone="clear" label="−1" onPress={() => setDate(addDays(date, -1))} size={36} />
-        <Pressable onPress={() => setDate(today())} accessibilityRole="button">
-          <Text variant="bodyStrong" style={{ textTransform: 'capitalize' }}>
-            {dateLabel}
-          </Text>
-        </Pressable>
-        <IconButton icon="chevronRight" tone="clear" label="+1" onPress={() => !isToday && setDate(addDays(date, 1))} size={36} />
-      </Row>
-
-      <Card style={{ marginTop: space.md, paddingVertical: space.lg }}>
-        <Row style={{ justifyContent: 'space-between' }}>
-          <View style={{ flex: 1 }}>
-            {diary.isLoading ? (
-              <Skeleton height={44} width={140} />
-            ) : (
-              <Text variant="display" style={{ fontVariant: ['tabular-nums'] }}>
-                {formatNumber(energy, locale)}
-                {targetKcal ? (
-                  <Text variant="cardTitle" color="textSecondary">
-                    {' '}
-                    / {formatNumber(targetKcal, locale)}
-                  </Text>
-                ) : null}
-              </Text>
-            )}
-            <Text variant="secondary" color="textSecondary">
-              {t.today.caloriesEaten}
-            </Text>
-            {targetKcal ? (
-              <Text variant="secondaryStrong" color="primaryText" style={{ marginTop: space.xs }}>
-                {energy <= targetKcal
-                  ? f(t.today.remaining, { value: `${formatNumber(targetKcal - energy, locale)} kcal` })
-                  : f(t.today.over, { value: `${formatNumber(energy - targetKcal, locale)} kcal` })}
-              </Text>
-            ) : (
-              <Pressable onPress={() => router.push('/profile')} accessibilityRole="link">
-                <Text variant="secondaryStrong" color="primaryText" style={{ marginTop: space.xs }}>
-                  {t.today.noTarget} · {t.today.setTarget}
-                </Text>
-              </Pressable>
-            )}
-          </View>
-          <MetricRing size={104} stroke={11} progress={targetKcal ? energy / targetKcal : null} color={p.energy} label={t.today.caloriesEaten}>
-            <Icon name="flame" size={30} color={p.ink} />
-          </MetricRing>
-        </Row>
-      </Card>
-
-      <View style={{ marginTop: space.sm }}>
-        <MacroTiles
-          values={totals.values}
-          targets={{ protein_g: target.data?.proteinG ?? null, carbs_g: target.data?.carbsG ?? null, fat_g: target.data?.fatG ?? null }}
+      refreshControl={
+        <RefreshControl
+          refreshing={diary.isRefetching}
+          onRefresh={() => {
+            void diary.refetch();
+            void game.refetch();
+          }}
+          tintColor={p.primary}
         />
+      }
+    >
+      {/* 1 · Greeting, avatar, streak */}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingTop: space.sm }}>
+        <PressableScale
+          accessibilityRole="button"
+          accessibilityLabel={t.today.profile}
+          onPress={() => router.push('/profile')}
+          style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: p.primarySoft, alignItems: 'center', justifyContent: 'center' }}
+        >
+          {name ? (
+            <Text variant="bodyStrong" color="primaryText">
+              {name.charAt(0).toUpperCase()}
+            </Text>
+          ) : (
+            <Icon name="user" size={22} color={p.primaryText} />
+          )}
+        </PressableScale>
+        <View style={{ flex: 1 }}>
+          <Text variant="secondary" color="textSecondary" numberOfLines={1}>
+            {greeting(t)}
+            {name ? `, ${name}` : ''}
+          </Text>
+          <Text variant="title" numberOfLines={1}>
+            {t.nav.today}
+          </Text>
+        </View>
+        {gamification && game.data ? <StreakPill count={game.data.streak.current} onPress={() => setSheet('streak')} /> : null}
       </View>
 
-      {(hasEstimates || totals.incomplete.length > 0) && (
-        <View style={{ marginTop: space.sm, gap: space.xs }}>
-          {hasEstimates && <Notice tone="info" text={t.today.estimatesNote} />}
-          {totals.incomplete.length > 0 && <Notice tone="info" text={t.today.incompleteNote} />}
+      {/* 2 · Week */}
+      <View style={{ marginTop: space.md }}>
+        <WeeklyDayStrip selected={date} today={todayStr} activeDays={activeDays} onSelect={setDate} />
+      </View>
+
+      {/* 3–4 · Progress (energy + macros) */}
+      <Appear index={0}>
+        <PressableScale accessibilityRole="button" accessibilityLabel={`${dayTitle}. ${t.today.progressDetail}`} onPress={() => setSheet('day')} style={{ marginTop: space.md }}>
+          <Card style={{ gap: space.md, paddingVertical: space.lg }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
+              <View style={{ flex: 1, gap: 2 }}>
+                <Text variant="secondaryStrong" color="textSecondary" style={{ textTransform: isToday ? 'none' : 'capitalize' }}>
+                  {dayTitle}
+                </Text>
+                {diary.isLoading ? (
+                  <Skeleton height={40} width={130} />
+                ) : (
+                  <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 6 }}>
+                    <AnimatedCounter value={energy} format={(n) => formatNumber(Math.round(n), locale)} variant="display" />
+                    <Text variant="bodyStrong" color="textSecondary">
+                      kcal
+                    </Text>
+                  </View>
+                )}
+                {targetKcal ? (
+                  <Text variant="secondary" color="textSecondary">
+                    {f(t.today.progressOf, { target: formatNumber(targetKcal, locale) })}
+                  </Text>
+                ) : (
+                  <Pressable onPress={() => router.push('/profile')} accessibilityRole="link" hitSlop={8}>
+                    <Text variant="secondaryStrong" color="primaryText">
+                      {t.today.progressNoTarget} · {t.today.setTarget}
+                    </Text>
+                  </Pressable>
+                )}
+              </View>
+              <MetricRing size={88} stroke={10} progress={targetKcal ? energy / targetKcal : null} color={p.energy} label={dayTitle}>
+                {targetKcal ? (
+                  <Text variant="secondaryStrong" style={{ fontVariant: ['tabular-nums'] }}>
+                    {Math.round((energy / targetKcal) * 100)}%
+                  </Text>
+                ) : (
+                  <Icon name="bolt" size={26} color={p.primaryText} />
+                )}
+              </MetricRing>
+            </View>
+            <View style={{ flexDirection: 'row', gap: space.md }}>
+              <VisualMetric label={t.nutrients.protein_g} value={macro(entries, totals.values.protein_g)} target={target.data?.proteinG ?? null} unit="g" color={p.protein} />
+              <VisualMetric label={t.nutrients.carbs_g} value={macro(entries, totals.values.carbs_g)} target={target.data?.carbsG ?? null} unit="g" color={p.carbs} />
+              <VisualMetric label={t.nutrients.fat_g} value={macro(entries, totals.values.fat_g)} target={target.data?.fatG ?? null} unit="g" color={p.fat} />
+            </View>
+          </Card>
+        </PressableScale>
+      </Appear>
+
+      {/* 5 · Meals */}
+      {diary.isError ? (
+        <ErrorState message={errorMessage(diary.error, t)} onRetry={() => diary.refetch()} retryLabel={t.common.retry} />
+      ) : (
+        <View style={{ gap: space.sm, marginTop: space.md }}>
+          {MEAL_TYPES.map((meal, i) => (
+            <Appear key={meal} index={i + 1}>
+              <MealCard
+                meal={meal}
+                entries={entries.filter((e) => e.mealType === meal)}
+                onAdd={() => router.push({ pathname: '/scan', params: { meal } })}
+                onOpenEntry={(id) => router.push(`/entry/${id}`)}
+              />
+            </Appear>
+          ))}
         </View>
       )}
 
-      <Button title={t.today.scanCta} icon="scan" onPress={() => router.push('/scan')} style={{ marginTop: space.lg }} />
-      <Row gap={space.sm} style={{ marginTop: space.sm }}>
-        <Button title={t.scan.modeVoice} icon="mic" variant="secondary" size="md" style={{ flex: 1 }} onPress={() => router.push('/voice')} />
-        <Button title={t.common.search} icon="search" variant="secondary" size="md" style={{ flex: 1 }} onPress={() => router.push('/explore')} />
-      </Row>
+      {/* 6 · Progress access */}
+      <PressableScale
+        accessibilityRole="button"
+        onPress={() => router.push('/progress')}
+        style={{ marginTop: space.md, flexDirection: 'row', alignItems: 'center', gap: space.sm, padding: space.md, borderRadius: radius.lg, backgroundColor: p.primarySoft }}
+      >
+        <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: p.surface, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name="chart" size={20} color={p.primaryText} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text variant="bodyStrong">{t.today.weekLink}</Text>
+          <Text variant="secondary" color="textSecondary">
+            {t.today.weekLinkBody}
+          </Text>
+        </View>
+        <Icon name="chevronRight" size={18} color={p.primaryText} />
+      </PressableScale>
 
-      {diary.isError ? (
-        <ErrorState message={errorMessage(diary.error, t)} onRetry={() => diary.refetch()} retryLabel={t.common.retry} />
-      ) : !diary.isLoading && entries.length === 0 ? (
-        <EmptyState icon="leaf" title={t.today.emptyDayTitle} body={t.today.emptyDayBody} />
-      ) : (
-        MEAL_TYPES.map((meal) => <MealSection key={meal} meal={meal} entries={entries.filter((e) => e.mealType === meal)} />)
-      )}
+      <BottomSheet visible={sheet === 'streak'} onClose={() => setSheet(null)} title={t.streak.title}>
+        {game.data ? (
+          <View style={{ gap: space.lg }}>
+            <StreakHero summary={game.data.streak} />
+            <StreakCalendar activeDays={streakDays} today={todayStr} />
+            <Notice tone="info" icon="info" text={t.streak.howBody} />
+            <Button
+              title={t.streak.seeAchievements}
+              variant="soft"
+              onPress={() => {
+                setSheet(null);
+                router.push('/progress');
+              }}
+            />
+            <Text variant="caption" color="textTertiary" align="center">
+              {t.streak.optOut}
+            </Text>
+          </View>
+        ) : null}
+      </BottomSheet>
 
-      <Button title={t.today.historyLink} icon="chart" variant="ghost" size="md" style={{ marginTop: space.lg }} onPress={() => router.push('/progress')} />
+      <BottomSheet visible={sheet === 'day'} onClose={() => setSheet(null)} title={t.today.dayDetailTitle}>
+        <View style={{ gap: space.md }}>
+          {entries.length === 0 ? (
+            <EmptyState icon="leaf" title={t.today.emptyDayTitle} body={t.today.emptyDayBody} />
+          ) : (
+            <NutrientTable columns={[{ title: t.common.total, values: totals.values }]} />
+          )}
+          {hasEstimates ? <Notice tone="info" text={t.today.estimatesNote} /> : null}
+          {totals.incomplete.length > 0 ? <Notice tone="info" text={t.today.incompleteNote} /> : null}
+        </View>
+      </BottomSheet>
     </Screen>
   );
 }
 
-function MealSection({ meal, entries }: { meal: MealType; entries: DiaryEntry[] }) {
-  const { t, locale } = useT();
-  const p = usePalette();
-  const kcal = entries.reduce((s, e) => s + (e.totals.values.energy_kcal ?? 0), 0);
-  return (
-    <Card style={{ marginTop: space.sm }}>
-      <Row style={{ justifyContent: 'space-between' }}>
-        <Text variant="cardTitle">{t.meals[meal]}</Text>
-        <Row gap={space.sm}>
-          {entries.length > 0 && (
-            <Text variant="secondaryStrong" color="textSecondary" style={{ fontVariant: ['tabular-nums'] }}>
-              {formatNumber(kcal, locale)} kcal
-            </Text>
-          )}
-          <IconButton icon="plus" size={32} label={`${t.today.addFood} ${t.meals[meal]}`} onPress={() => router.push({ pathname: '/scan', params: { meal } })} />
-        </Row>
-      </Row>
-      {entries.length === 0 ? (
-        <Text variant="secondary" color="textTertiary" style={{ marginTop: space.xs }}>
-          {t.today.emptyMeal}
-        </Text>
-      ) : (
-        entries.map((entry) => (
-          <Pressable key={entry.id} accessibilityRole="button" onPress={() => router.push(`/entry/${entry.id}`)} style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}>
-            <Divider />
-            <Row style={{ paddingVertical: space.sm, justifyContent: 'space-between', gap: space.sm }}>
-              <View style={{ flex: 1 }}>
-                <Text variant="bodyStrong" numberOfLines={1}>
-                  {entry.title || entry.items.map((i) => i.displayName).join(', ')}
-                </Text>
-                <MacroLine values={entry.totals.values} />
-              </View>
-              <View style={{ alignItems: 'flex-end' }}>
-                <Text variant="bodyStrong" style={{ fontVariant: ['tabular-nums'] }}>
-                  {formatNumber(entry.totals.values.energy_kcal ?? 0, locale)} kcal
-                </Text>
-                {entry.items.some((i) => i.isEstimate) && (
-                  <Text variant="caption" style={{ color: p.warningText }}>
-                    {t.common.estimate}
-                  </Text>
-                )}
-              </View>
-            </Row>
-          </Pressable>
-        ))
-      )}
-    </Card>
-  );
+function round(v: number | null): number | null {
+  return v == null ? null : Math.round(v);
+}
+
+/** Nothing logged means zero, not "unknown". */
+function macro(entries: unknown[], v: number | null): number | null {
+  return entries.length === 0 ? 0 : round(v);
 }
 
 function BackendNotConfigured() {

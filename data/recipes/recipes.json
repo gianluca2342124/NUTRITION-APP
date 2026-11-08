@@ -1,0 +1,287 @@
+{
+  "$comment": "Editorial recipes written by the Fudyu team. Ingredients reference generic food slugs; nutrition is computed from the catalogue (USDA FoodData Central), never typed by hand. Grams are per recipe (all servings).",
+  "recipes": [
+    {
+      "slug": "avena-con-platano-y-nueces",
+      "title_es": "Avena con plátano y nueces",
+      "title_en": "Oats with banana and walnuts",
+      "summary_es": "Un desayuno templado y saciante que se prepara en cinco minutos.",
+      "summary_en": "A warm, filling breakfast ready in five minutes.",
+      "minutes": 5,
+      "servings": 1,
+      "meals": ["breakfast"],
+      "vegetarian": true,
+      "image": "copos-de-avena",
+      "ingredients": [
+        { "food": "copos-de-avena", "grams": 50, "label_es": "50 g de copos de avena", "label_en": "50 g rolled oats" },
+        { "food": "leche-semidesnatada", "grams": 206, "label_es": "200 ml de leche semidesnatada", "label_en": "200 ml semi-skimmed milk" },
+        { "food": "platano", "grams": 100, "label_es": "1 plátano pequeño", "label_en": "1 small banana" },
+        { "food": "nueces", "grams": 15, "label_es": "15 g de nueces", "label_en": "15 g walnuts" }
+      ],
+      "steps_es": [
+        "Calienta la leche con la avena a fuego medio durante 3–4 minutos, removiendo.",
+        "Corta el plátano en rodajas y trocea las nueces.",
+        "Sirve la avena y añade el plátano y las nueces por encima."
+      ],
+      "steps_en": [
+        "Heat the milk with the oats over medium heat for 3–4 minutes, stirring.",
+        "Slice the banana and chop the walnuts.",
+        "Serve the oats topped with the banana and walnuts."
+      ]
+    },
+    {
+      "slug": "tostadas-con-aguacate-y-huevo",
+      "title_es": "Tostadas integrales con aguacate y huevo",
+      "title_en": "Wholemeal toast with avocado and egg",
+      "summary_es": "Pan integral, aguacate y un huevo a la plancha para empezar con energía.",
+      "summary_en": "Wholemeal bread, avocado and a fried egg to start the day.",
+      "minutes": 10,
+      "servings": 1,
+      "meals": ["breakfast"],
+      "vegetarian": true,
+      "image": "aguacate",
+      "ingredients": [
+        { "food": "pan-integral", "grams": 60, "label_es": "2 rebanadas de pan integral", "label_en": "2 slices wholemeal bread" },
+        { "food": "aguacate", "grams": 70, "label_es": "½ aguacate", "label_en": "½ avocado" },
+        { "food": "huevo", "grams": 50, "label_es": "1 huevo grande", "label_en": "1 large egg" },
+        { "food": "tomate", "grams": 40, "label_es": "Unas rodajas de tomate", "label_en": "A few tomato slices" },
+        { "food": "aceite-de-oliva", "grams": 3, "label_es": "Unas gotas de aceite de oliva", "label_en": "A few drops of olive oil" }
+      ],
+      "steps_es": [
+        "Tuesta el pan.",
+        "Haz el huevo a la plancha con unas gotas de aceite.",
+        "Machaca el aguacate sobre las tostadas y añade el tomate y el huevo."
+      ],
+      "steps_en": [
+        "Toast the bread.",
+        "Fry the egg with a few drops of oil.",
+        "Mash the avocado onto the toast and top with tomato and the egg."
+      ]
+    },
+    {
+      "slug": "yogur-griego-con-fresas-y-avena",
+      "title_es": "Yogur griego con fresas y avena",
+      "title_en": "Greek yogurt with strawberries and oats",
+      "summary_es": "Cremoso, fresco y con mucha proteína. Ideal para el desayuno o la merienda.",
+      "summary_en": "Creamy, fresh and high in protein. Great for breakfast or a snack.",
+      "minutes": 3,
+      "servings": 1,
+      "meals": ["breakfast", "snack"],
+      "vegetarian": true,
+      "image": "fresas",
+      "ingredients": [
+        { "food": "yogur-griego-0", "grams": 170, "label_es": "1 yogur griego 0 % (170 g)", "label_en": "1 fat-free Greek yogurt (170 g)" },
+        { "food": "fresas", "grams": 100, "label_es": "6–7 fresas", "label_en": "6–7 strawberries" },
+        { "food": "copos-de-avena", "grams": 20, "label_es": "2 cucharadas de copos de avena", "label_en": "2 tablespoons rolled oats" }
+      ],
+      "steps_es": [
+        "Lava y corta las fresas.",
+        "Sirve el yogur con las fresas y la avena por encima."
+      ],
+      "steps_en": [
+        "Wash and slice the strawberries.",
+        "Serve the yogurt topped with the strawberries and oats."
+      ]
+    },
+    {
+      "slug": "ensalada-de-garbanzos-y-atun",
+      "title_es": "Ensalada de garbanzos y atún",
+      "title_en": "Chickpea and tuna salad",
+      "summary_es": "Legumbre, pescado y verdura en un plato que se monta en diez minutos.",
+      "summary_en": "Legumes, fish and vegetables in a plate ready in ten minutes.",
+      "minutes": 10,
+      "servings": 2,
+      "meals": ["lunch"],
+      "vegetarian": false,
+      "image": "garbanzos-cocidos",
+      "ingredients": [
+        { "food": "garbanzos-cocidos", "grams": 300, "label_es": "300 g de garbanzos cocidos", "label_en": "300 g cooked chickpeas" },
+        { "food": "atun-al-natural", "grams": 160, "label_es": "2 latas de atún al natural, escurridas", "label_en": "2 cans tuna in water, drained" },
+        { "food": "tomate", "grams": 200, "label_es": "2 tomates", "label_en": "2 tomatoes" },
+        { "food": "pepino", "grams": 160, "label_es": "1 pepino", "label_en": "1 cucumber" },
+        { "food": "cebolla", "grams": 40, "label_es": "¼ de cebolla", "label_en": "¼ onion" },
+        { "food": "aceite-de-oliva", "grams": 15, "label_es": "1 cucharada de aceite de oliva", "label_en": "1 tablespoon olive oil" }
+      ],
+      "steps_es": [
+        "Enjuaga y escurre los garbanzos.",
+        "Trocea el tomate, el pepino y la cebolla.",
+        "Mezcla todo con el atún y aliña con el aceite y una pizca de sal."
+      ],
+      "steps_en": [
+        "Rinse and drain the chickpeas.",
+        "Chop the tomato, cucumber and onion.",
+        "Mix everything with the tuna and dress with the oil and a pinch of salt."
+      ]
+    },
+    {
+      "slug": "salmon-al-horno-con-brocoli-y-patata",
+      "title_es": "Salmón al horno con brócoli y patata",
+      "title_en": "Baked salmon with broccoli and potato",
+      "summary_es": "Una bandeja, poco trabajo y una cena completa.",
+      "summary_en": "One tray, little effort and a complete dinner.",
+      "minutes": 30,
+      "servings": 2,
+      "meals": ["dinner"],
+      "vegetarian": false,
+      "image": "salmon",
+      "ingredients": [
+        { "food": "salmon", "grams": 300, "label_es": "2 lomos de salmón (300 g)", "label_en": "2 salmon fillets (300 g)" },
+        { "food": "brocoli", "grams": 300, "label_es": "1 brócoli pequeño en ramilletes", "label_en": "1 small broccoli in florets" },
+        { "food": "patata-asada", "grams": 300, "label_es": "2 patatas medianas", "label_en": "2 medium potatoes" },
+        { "food": "aceite-de-oliva", "grams": 15, "label_es": "1 cucharada de aceite de oliva", "label_en": "1 tablespoon olive oil" }
+      ],
+      "steps_es": [
+        "Precalienta el horno a 200 °C.",
+        "Corta las patatas en gajos y hornéalas 15 minutos con la mitad del aceite.",
+        "Añade el brócoli y el salmón con el resto del aceite y hornea 12–15 minutos más."
+      ],
+      "steps_en": [
+        "Preheat the oven to 200 °C.",
+        "Cut the potatoes into wedges and bake for 15 minutes with half the oil.",
+        "Add the broccoli and salmon with the rest of the oil and bake 12–15 minutes more."
+      ]
+    },
+    {
+      "slug": "lentejas-con-verduras",
+      "title_es": "Lentejas con verduras",
+      "title_en": "Lentils with vegetables",
+      "summary_es": "Un guiso rápido con lentejas ya cocidas y verduras de temporada.",
+      "summary_en": "A quick stew with cooked lentils and seasonal vegetables.",
+      "minutes": 20,
+      "servings": 2,
+      "meals": ["lunch", "dinner"],
+      "vegetarian": true,
+      "image": "lentejas-cocidas",
+      "ingredients": [
+        { "food": "lentejas-cocidas", "grams": 400, "label_es": "400 g de lentejas cocidas", "label_en": "400 g cooked lentils" },
+        { "food": "zanahoria", "grams": 100, "label_es": "1 zanahoria", "label_en": "1 carrot" },
+        { "food": "cebolla", "grams": 80, "label_es": "½ cebolla", "label_en": "½ onion" },
+        { "food": "pimiento-rojo", "grams": 80, "label_es": "½ pimiento rojo", "label_en": "½ red pepper" },
+        { "food": "tomate", "grams": 120, "label_es": "1 tomate", "label_en": "1 tomato" },
+        { "food": "aceite-de-oliva", "grams": 15, "label_es": "1 cucharada de aceite de oliva", "label_en": "1 tablespoon olive oil" }
+      ],
+      "steps_es": [
+        "Pica la verdura y sofríela en el aceite 8 minutos.",
+        "Añade las lentejas escurridas y un vaso de agua.",
+        "Cuece 8–10 minutos a fuego suave y ajusta de sal."
+      ],
+      "steps_en": [
+        "Chop the vegetables and sauté them in the oil for 8 minutes.",
+        "Add the drained lentils and a glass of water.",
+        "Simmer for 8–10 minutes and season with salt."
+      ]
+    },
+    {
+      "slug": "pollo-salteado-con-arroz-y-verduras",
+      "title_es": "Pollo salteado con arroz y verduras",
+      "title_en": "Chicken stir-fry with rice and vegetables",
+      "summary_es": "Un salteado sencillo con mucha proteína para comida o cena.",
+      "summary_en": "A simple, protein-rich stir-fry for lunch or dinner.",
+      "minutes": 20,
+      "servings": 2,
+      "meals": ["lunch", "dinner"],
+      "vegetarian": false,
+      "image": "pechuga-de-pollo",
+      "ingredients": [
+        { "food": "pechuga-de-pollo", "grams": 300, "label_es": "300 g de pechuga de pollo", "label_en": "300 g chicken breast" },
+        { "food": "arroz-blanco-cocido", "grams": 300, "label_es": "300 g de arroz cocido", "label_en": "300 g cooked rice" },
+        { "food": "calabacin", "grams": 160, "label_es": "1 calabacín pequeño", "label_en": "1 small courgette" },
+        { "food": "pimiento-verde", "grams": 100, "label_es": "1 pimiento verde", "label_en": "1 green pepper" },
+        { "food": "salsa-de-soja", "grams": 16, "label_es": "1 cucharada de salsa de soja", "label_en": "1 tablespoon soy sauce" },
+        { "food": "aceite-de-oliva", "grams": 15, "label_es": "1 cucharada de aceite de oliva", "label_en": "1 tablespoon olive oil" }
+      ],
+      "steps_es": [
+        "Corta el pollo y las verduras en tiras.",
+        "Saltea el pollo en el aceite a fuego fuerte 5 minutos y añade las verduras.",
+        "Incorpora el arroz y la salsa de soja y saltea 2 minutos más."
+      ],
+      "steps_en": [
+        "Cut the chicken and vegetables into strips.",
+        "Stir-fry the chicken in the oil over high heat for 5 minutes, then add the vegetables.",
+        "Add the rice and soy sauce and stir-fry 2 more minutes."
+      ]
+    },
+    {
+      "slug": "tortilla-francesa-con-espinacas",
+      "title_es": "Tortilla francesa con espinacas y feta",
+      "title_en": "Spinach and feta omelette",
+      "summary_es": "Una cena ligera y rápida con dos huevos y un puñado de espinacas.",
+      "summary_en": "A light, quick dinner with two eggs and a handful of spinach.",
+      "minutes": 10,
+      "servings": 1,
+      "meals": ["dinner"],
+      "vegetarian": true,
+      "image": "huevo",
+      "ingredients": [
+        { "food": "huevo", "grams": 100, "label_es": "2 huevos grandes", "label_en": "2 large eggs" },
+        { "food": "espinacas", "grams": 40, "label_es": "Un puñado de espinacas", "label_en": "A handful of spinach" },
+        { "food": "queso-feta", "grams": 20, "label_es": "20 g de queso feta", "label_en": "20 g feta cheese" },
+        { "food": "aceite-de-oliva", "grams": 5, "label_es": "1 cucharadita de aceite de oliva", "label_en": "1 teaspoon olive oil" }
+      ],
+      "steps_es": [
+        "Saltea las espinacas en el aceite 1 minuto.",
+        "Bate los huevos, viértelos en la sartén y cuaja a fuego medio.",
+        "Añade el feta desmenuzado, dobla la tortilla y sirve."
+      ],
+      "steps_en": [
+        "Sauté the spinach in the oil for 1 minute.",
+        "Beat the eggs, pour them into the pan and cook over medium heat.",
+        "Add the crumbled feta, fold the omelette and serve."
+      ]
+    },
+    {
+      "slug": "hummus-con-crudites",
+      "title_es": "Hummus con crudités",
+      "title_en": "Hummus with crudités",
+      "summary_es": "Un snack crujiente y fácil de llevar.",
+      "summary_en": "A crunchy snack that travels well.",
+      "minutes": 5,
+      "servings": 1,
+      "meals": ["snack"],
+      "vegetarian": true,
+      "image": "hummus",
+      "ingredients": [
+        { "food": "hummus", "grams": 60, "label_es": "4 cucharadas de hummus", "label_en": "4 tablespoons hummus" },
+        { "food": "zanahoria", "grams": 60, "label_es": "1 zanahoria en bastones", "label_en": "1 carrot in sticks" },
+        { "food": "pepino", "grams": 60, "label_es": "½ pepino en bastones", "label_en": "½ cucumber in sticks" },
+        { "food": "pimiento-rojo", "grams": 40, "label_es": "Unas tiras de pimiento rojo", "label_en": "A few strips of red pepper" }
+      ],
+      "steps_es": [
+        "Corta las verduras en bastones.",
+        "Sírvelas junto al hummus para mojar."
+      ],
+      "steps_en": [
+        "Cut the vegetables into sticks.",
+        "Serve them with the hummus for dipping."
+      ]
+    },
+    {
+      "slug": "pasta-integral-con-tomate-y-atun",
+      "title_es": "Pasta integral con tomate y atún",
+      "title_en": "Wholemeal pasta with tomato and tuna",
+      "summary_es": "El clásico de despensa, con pasta integral para sumar fibra.",
+      "summary_en": "The pantry classic, with wholemeal pasta for extra fibre.",
+      "minutes": 15,
+      "servings": 2,
+      "meals": ["lunch"],
+      "vegetarian": false,
+      "image": "pasta-cocida",
+      "ingredients": [
+        { "food": "pasta-integral-cocida", "grams": 360, "label_es": "160 g de pasta integral (en crudo)", "label_en": "160 g wholemeal pasta (dry)" },
+        { "food": "salsa-de-tomate", "grams": 160, "label_es": "160 g de tomate frito o salsa de tomate", "label_en": "160 g tomato sauce" },
+        { "food": "atun-al-natural", "grams": 120, "label_es": "1 lata grande de atún al natural", "label_en": "1 large can tuna in water" },
+        { "food": "aceite-de-oliva", "grams": 10, "label_es": "2 cucharaditas de aceite de oliva", "label_en": "2 teaspoons olive oil" }
+      ],
+      "steps_es": [
+        "Cuece la pasta según el envase y escúrrela.",
+        "Calienta la salsa con el aceite y añade el atún escurrido.",
+        "Mezcla con la pasta y sirve."
+      ],
+      "steps_en": [
+        "Cook the pasta as directed on the pack and drain.",
+        "Warm the sauce with the oil and add the drained tuna.",
+        "Toss with the pasta and serve."
+      ]
+    }
+  ]
+}
