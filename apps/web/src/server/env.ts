@@ -16,12 +16,14 @@ const EnvSchema = z.object({
   API_ALLOWED_ORIGINS: z.string().default('http://localhost:8081,http://localhost:19006'),
 
   ANTHROPIC_API_KEY: optional,
+  // The most capable model only where perception is hard (meal photos); reading
+  // a printed label and parsing a short sentence use cheaper models (2.2).
   AI_MODEL_VISION: z.string().default('claude-opus-5-5'),
-  AI_MODEL_EXTRACTION: z.string().default('claude-opus-5-5'),
-  AI_MODEL_CLASSIFICATION: z.string().default('claude-opus-5-5'),
+  AI_MODEL_EXTRACTION: z.string().default('claude-sonnet-5-5'),
+  AI_MODEL_CLASSIFICATION: z.string().default('claude-haiku-5-5'),
   AI_MODEL_CONVERSATION: z.string().default('claude-opus-5-5'),
   AI_EFFORT_VISION: effort.default('medium'),
-  AI_EFFORT_EXTRACTION: effort.default('medium'),
+  AI_EFFORT_EXTRACTION: effort.default('low'),
   AI_EFFORT_CLASSIFICATION: effort.default('low'),
   AI_EFFORT_CONVERSATION: effort.default('medium'),
   AI_FALLBACKS: z.enum(['default', 'off']).default('default'),

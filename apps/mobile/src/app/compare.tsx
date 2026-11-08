@@ -5,16 +5,18 @@ import { View } from 'react-native';
 import { compareItems, computeFudyuScore, formatNutrient, localizedName, scoreInputFromProduct, type CatalogProduct } from '@repo/core';
 import { FoodImage } from '@/components/food-image';
 import { ScoreDial } from '@/components/score';
-import { Button, Card, Divider, EmptyState, IconButton, Notice, Row, Screen, Text } from '@/components/ui';
+import { Icon } from '@/components/icons';
+import { Button, Card, Divider, IconButton, Notice, PressableScale, Row, Screen, Text, haptic } from '@/components/ui';
 import { trackActivity } from '@/lib/activity';
 import { apiClient } from '@/lib/api';
 import { useT } from '@/lib/i18n';
 import { useProfile } from '@/lib/queries';
 import { compareStore, useCompareIds } from '@/lib/stores';
-import { space } from '@/lib/theme';
+import { radius, space, usePalette } from '@/lib/theme';
 
 export default function CompareScreen() {
   const { t, f, locale } = useT();
+  const p = usePalette();
   const ids = useCompareIds();
   const profile = useProfile();
   const results = useQueries({
@@ -35,28 +37,44 @@ export default function CompareScreen() {
     </Row>
   );
 
+  const scanAnother = () => {
+    haptic.light();
+    router.push({ pathname: '/scan', params: { mode: 'barcode', compare: '1' } });
+  };
+
   if (products.length < 2) {
+    const first = products[0];
     return (
       <Screen>
         {header}
-        {products[0] && (
-          <Card style={{ marginTop: space.md }}>
-            <Text variant="bodyStrong">{localizedName(products[0], locale) ?? products[0].gtin}</Text>
-            <Text variant="secondary" color="textSecondary">
-              {products[0].brand}
-            </Text>
-          </Card>
-        )}
-        <EmptyState
-          icon="compare"
-          title={t.compare.pickTwo}
-          action={
-            <View style={{ gap: space.sm }}>
-              <Button title={t.scan.modeBarcode} icon="barcode" onPress={() => router.push({ pathname: '/scan', params: { mode: 'barcode' } })} />
-              <Button title={t.common.search} icon="search" variant="secondary" onPress={() => router.push('/explore')} />
+        <Row gap={space.sm} style={{ marginTop: space.md, alignItems: 'stretch' }}>
+          {first ? (
+            <Card style={{ flex: 1, alignItems: 'center', gap: space.xs }}>
+              <FoodImage uri={first.imageUrl} fallback="product" width={84} height={84} fit="contain" radius={16} />
+              <Text variant="secondaryStrong" align="center" numberOfLines={2}>
+                {localizedName(first, locale) ?? first.gtin}
+              </Text>
+              <CompareScore product={first} />
+            </Card>
+          ) : null}
+          <PressableScale
+            accessibilityRole="button"
+            accessibilityLabel={t.compare.scanAnother}
+            onPress={scanAnother}
+            style={{ flex: 1, minHeight: 220, borderRadius: radius.lg, borderWidth: 2, borderStyle: 'dashed', borderColor: p.borderStrong, alignItems: 'center', justifyContent: 'center', gap: space.sm, padding: space.md }}
+          >
+            <View style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: p.primary, alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="barcode" size={28} color={p.onPrimary} />
             </View>
-          }
-        />
+            <Text variant="bodyStrong" align="center" style={{ color: p.primaryText }}>
+              {first ? t.compare.scanAnother : t.compare.scanFirst}
+            </Text>
+          </PressableScale>
+        </Row>
+        <Text variant="secondary" color="textSecondary" align="center" style={{ marginTop: space.md }}>
+          {t.compare.pickTwo}
+        </Text>
+        <Button title={t.common.search} icon="search" variant="ghost" size="md" style={{ marginTop: space.xs }} onPress={() => router.navigate('/explore')} />
       </Screen>
     );
   }
@@ -68,6 +86,9 @@ export default function CompareScreen() {
     profile.data?.primaryGoal ?? null,
   );
   const unit = result.basis === '100ml' ? 'ml' : 'g';
+  // Only the score is compared here: the higher Fudyu Score gets a small badge.
+  const [sa, sb] = products.map((x) => computeFudyuScore(scoreInputFromProduct(x)));
+  const best = sa?.status === 'scored' && sb?.status === 'scored' && sa.score !== sb.score ? (sa.score > sb.score ? 0 : 1) : -1;
 
   return (
     <Screen>
@@ -83,6 +104,14 @@ export default function CompareScreen() {
               {x.brand}
             </Text>
             <CompareScore product={x} />
+            {best === i ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: p.secondarySoft, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 4 }}>
+                <Icon name="check" size={12} color={p.secondaryText} strokeWidth={2.6} />
+                <Text variant="micro" style={{ color: p.secondaryText }}>
+                  {t.compare.higherScore}
+                </Text>
+              </View>
+            ) : null}
             <Button title={t.common.remove} variant="ghost" size="md" onPress={() => compareStore.set(ids.filter((id) => id !== x.id))} />
           </Card>
         ))}

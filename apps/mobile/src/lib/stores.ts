@@ -41,9 +41,29 @@ export interface PendingLabel {
 export const labelStore = createStore<PendingLabel | null>(null);
 export const useLabelDraft = () => useStore(labelStore);
 
-/* Products selected for comparison (catalogue ids). */
+/* Products selected for comparison (catalogue ids), kept across restarts. */
+const COMPARE_KEY = 'compare.ids.v1';
 export const compareStore = createStore<string[]>([]);
 export const useCompareIds = () => useStore(compareStore);
+compareStore.subscribe(() => {
+  AsyncStorage.setItem(COMPARE_KEY, JSON.stringify(compareStore.get())).catch(() => undefined);
+});
+
+export async function restoreCompare(): Promise<void> {
+  try {
+    const raw = await AsyncStorage.getItem(COMPARE_KEY);
+    const ids = raw ? (JSON.parse(raw) as unknown) : null;
+    if (Array.isArray(ids)) compareStore.set(ids.filter((x): x is string => typeof x === 'string').slice(-2));
+  } catch {
+    // Unavailable storage: start empty.
+  }
+}
+/** Adds a product for comparison (keeps the last two; never removes it). */
+export function addToCompare(id: string) {
+  const ids = compareStore.get();
+  if (!ids.includes(id)) compareStore.set([...ids.slice(-1), id]);
+}
+
 export function toggleCompare(id: string) {
   const ids = compareStore.get();
   compareStore.set(ids.includes(id) ? ids.filter((x) => x !== id) : [...ids.slice(-1), id]);

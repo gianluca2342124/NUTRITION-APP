@@ -7,6 +7,7 @@ import { Field, IconButton, ListRow, Notice, Row, Text } from './ui';
 import { apiClient } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 import { useT } from '@/lib/i18n';
+import { foodImageUri } from '@/lib/media';
 import { matchFromFood, matchFromProduct } from '@/lib/matches';
 import { space, usePalette } from '@/lib/theme';
 
@@ -21,7 +22,8 @@ export function FoodPicker({
   visible: boolean;
   initialQuery?: string;
   suggestions?: FoodMatch[];
-  onPick: (match: FoodMatch) => void;
+  /** The second argument carries the food's picture (curated photo or product photo). */
+  onPick: (match: FoodMatch, visual: { imageUri: string | null; category: string | null }) => void;
   onClose: () => void;
 }) {
   const { t, locale } = useT();
@@ -40,14 +42,16 @@ export function FoodPicker({
     setLoadingId(hit.id);
     setError(null);
     try {
-      if (hit.kind === 'generic_food') onPick(matchFromFood(await apiClient().getGenericFood(hit.id), locale));
-      else {
+      if (hit.kind === 'generic_food') {
+        const food = await apiClient().getGenericFood(hit.id);
+        onPick(matchFromFood(food, locale), { imageUri: foodImageUri(food.slug), category: food.category });
+      } else {
         const product = await apiClient().getProductById(hit.id);
         if (!product.nutritionAvailable) {
           setError(t.product.nutritionMissing);
           return;
         }
-        onPick(matchFromProduct(product, locale));
+        onPick(matchFromProduct(product, locale), { imageUri: product.imageUrl, category: null });
       }
     } catch (e) {
       setError(errorMessage(e, t));
@@ -79,7 +83,7 @@ export function FoodPicker({
                   {t.review.alternatives}
                 </Text>
                 {suggestions.map((s) => (
-                  <ListRow key={s.id} title={s.name} subtitle={`${formatNumber(s.nutrientsPer100.energy_kcal ?? 0, locale)} kcal · ${t.common.per100g}`} onPress={() => onPick(s)} />
+                  <ListRow key={s.id} title={s.name} subtitle={`${formatNumber(s.nutrientsPer100.energy_kcal ?? 0, locale)} kcal · ${t.common.per100g}`} onPress={() => onPick(s, { imageUri: null, category: null })} />
                 ))}
               </View>
             ) : search.isFetching ? (

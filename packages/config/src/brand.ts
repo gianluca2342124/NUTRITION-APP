@@ -25,7 +25,7 @@ export const brand = {
   warningColor: '#F4B23A',
   errorColor: '#E65762',
   borderColor: '#E9EDF4',
-  secondaryTextColor: '#66758B',
+  secondaryTextColor: '#546177',
   /**
    * Evaluation scale — reserved for scores, states and data-justified charts.
    * Never decorative.

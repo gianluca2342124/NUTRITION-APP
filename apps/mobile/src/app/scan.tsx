@@ -16,7 +16,8 @@ import { apiClient } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
 import { useT } from '@/lib/i18n';
 import { fileForm, prepareImage } from '@/lib/images';
-import { draftStore, labelStore } from '@/lib/stores';
+import { trackScan } from '@/lib/queries';
+import { addToCompare, draftStore, labelStore, manualLabelDraft } from '@/lib/stores';
 import { radius, space, usePalette } from '@/lib/theme';
 
 /**
@@ -28,7 +29,7 @@ import { radius, space, usePalette } from '@/lib/theme';
 export default function ScanScreen() {
   const { t } = useT();
   const p = usePalette();
-  const params = useLocalSearchParams<{ meal?: string; mode?: ScanMode; gtin?: string }>();
+  const params = useLocalSearchParams<{ meal?: string; mode?: ScanMode; gtin?: string; compare?: string }>();
   const [mode, setMode] = useState<ScanMode>(params.mode ?? 'food');
   const [permission, requestPermission] = useCameraPermissions();
   const camera = useRef<CameraView>(null);
@@ -48,7 +49,33 @@ export default function ScanScreen() {
     }
     scanned.current = true;
     haptic.success();
+    if (params.compare) {
+      void addScannedToCompare(gtin);
+      return;
+    }
     router.replace({ pathname: '/product/[code]', params: { code: gtin, meal: params.meal ?? '', from: 'barcode' } });
+  };
+
+  // From "Comparar": look the product up and go straight back to the comparison.
+  const addScannedToCompare = async (gtin: string) => {
+    setBusy(t.scan.revealProduct);
+    setError(null);
+    try {
+      const result = await apiClient().lookupProduct(gtin);
+      if (result.status !== 'found') {
+        setError(result.status === 'invalid_code' ? t.scan.invalidCode : t.product.notFoundTitle);
+        scanned.current = false;
+        return;
+      }
+      addToCompare(result.product.id);
+      trackScan(result.product.id, 'barcode');
+      router.back();
+    } catch (e) {
+      setError(errorMessage(e, t));
+      scanned.current = false;
+    } finally {
+      setBusy(null);
+    }
   };
 
   const onBarcode = (result: BarcodeScanningResult) => {
@@ -174,6 +201,21 @@ export default function ScanScreen() {
               <Pressable accessibilityRole="button" onPress={() => setManual(true)} hitSlop={10} style={{ marginTop: space.sm }}>
                 <Text variant="secondaryStrong" style={{ color: 'rgba(255,255,255,0.85)', textDecorationLine: 'underline' }}>
                   {t.scan.manualCodeLink}
+                </Text>
+              </Pressable>
+            ) : mode === 'label' ? (
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => {
+                  // No photo, no AI: the person types the values from the package.
+                  labelStore.set({ draft: manualLabelDraft(), gtin: params.gtin || null, manual: true });
+                  router.replace('/label');
+                }}
+                hitSlop={10}
+                style={{ marginTop: space.sm }}
+              >
+                <Text variant="secondaryStrong" style={{ color: 'rgba(255,255,255,0.85)', textDecorationLine: 'underline' }}>
+                  {t.scan.manualLabelLink}
                 </Text>
               </Pressable>
             ) : null}

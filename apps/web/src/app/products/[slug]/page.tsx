@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { computeFudyuScore, formatNumber, localizedName, scaleNutrients, scoreInputFromProduct } from '@repo/core';
+import { computeFudyuScore, formatNumber, localizedName, quantityLabel, scaleNutrients, scoreInputFromProduct } from '@repo/core';
 import { format } from '@repo/i18n';
 import { PageSkeleton } from '@/components/page-skeleton';
 import { Breadcrumbs } from '@/components/breadcrumbs';
@@ -77,7 +77,7 @@ async function ProductContent({ params }: { params: PageProps<'/products/[slug]'
           </div>
           <header>
             <h1 className="text-[30px] font-extrabold leading-tight tracking-[-0.03em] text-ink sm:text-[36px]">{name}</h1>
-            <p className="tabular mt-1 text-[15px] text-muted">{[p.brand, p.quantityText, `EAN ${p.gtin}`].filter(Boolean).join(' · ')}</p>
+            <p className="tabular mt-1 text-[15px] text-muted">{[p.brand, quantityLabel(p.quantityText), `EAN ${p.gtin}`].filter(Boolean).join(' · ')}</p>
           </header>
           {p.allergens.length > 0 ? (
             <p className="rounded-2xl bg-warning-soft px-5 py-4 text-[15px] text-warning-text">

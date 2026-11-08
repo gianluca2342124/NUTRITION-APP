@@ -1,17 +1,17 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Linking, Pressable, View } from 'react-native';
 import {
   computeFudyuScore,
   formatNumber,
   localizedName,
   personalNotes,
+  quantityLabel,
   scaleNutrients,
   scoreInputFromProduct,
   type CatalogProduct,
   type MealType,
-  type NutrientKey,
 } from '@repo/core';
 import { linkProductScan, type ScanSource } from '@repo/data';
 import { AddToDiaryCard } from '@/components/add-to-diary';
@@ -21,12 +21,12 @@ import { FoodImage } from '@/components/food-image';
 import { Icon } from '@/components/icons';
 import { Appear } from '@/components/motion';
 import { NutrientTable } from '@/components/nutrition';
-import { NutrientEditSheet } from '@/components/nutrient-edit';
+import { AmountSheet, CorrectionSheet } from '@/components/nutrient-edit';
 import { AdditiveRow, PersonalFit, ScoreDial, ScoreExplanation } from '@/components/score';
 import { BottomSheet } from '@/components/sheet';
 import { BasisToggle, NutrientGrid } from '@/components/stats';
 import { FriendlyEmptyState } from '@/components/states';
-import { Button, ErrorState, IconButton, Notice, Row, Screen, Skeleton, Text } from '@/components/ui';
+import { Button, ErrorState, IconButton, Notice, Row, Screen, Skeleton, Text, haptic } from '@/components/ui';
 import { trackActivity } from '@/lib/activity';
 import { apiClient } from '@/lib/api';
 import { errorMessage } from '@/lib/errors';
@@ -36,7 +36,8 @@ import { useDiet, useHealthProfile } from '@/lib/profile-data';
 import { markScanLinked } from '@/lib/feed';
 import { today, trackScan, useProfile } from '@/lib/queries';
 import { supabase } from '@/lib/supabase';
-import { toggleCompare, useCompareIds } from '@/lib/stores';
+import { shareProductCard } from '@/lib/share';
+import { showToast, toggleCompare, useCompareIds } from '@/lib/stores';
 import { radius, shadow, space, usePalette } from '@/lib/theme';
 
 export default function ProductScreen() {
@@ -92,10 +93,10 @@ export default function ProductScreen() {
     );
   }
   const source: ScanSource | null = from === 'barcode' || from === 'search' || from === 'label' ? from : null;
-  return <ProductDetail product={result.product} meal={(meal as MealType) || null} source={source} header={header} />;
+  return <ProductDetail product={result.product} meal={(meal as MealType) || null} source={source} />;
 }
 
-function ProductDetail({ product, meal, source, header }: { product: CatalogProduct; meal: MealType | null; source: ScanSource | null; header: ReactNode }) {
+function ProductDetail({ product, meal, source }: { product: CatalogProduct; meal: MealType | null; source: ScanSource | null }) {
   const { t, f, locale } = useT();
   const p = usePalette();
   const qc = useQueryClient();
@@ -106,7 +107,8 @@ function ProductDetail({ product, meal, source, header }: { product: CatalogProd
   const [adding, setAdding] = useState(false);
   const [mode, setMode] = useState<'per100' | 'mine'>('per100');
   const [amount, setAmount] = useState(product.servingQuantity ?? 100);
-  const [editing, setEditing] = useState<{ nutrient: NutrientKey | null } | null>(null);
+  const [sheet, setSheet] = useState<'amount' | 'correction' | null>(null);
+  const [sharing, setSharing] = useState(false);
 
   useEffect(() => {
     trackActivity('product_analyzed', product.gtin);
@@ -134,9 +136,25 @@ function ProductDetail({ product, meal, source, header }: { product: CatalogProd
   const additives = product.additiveInfo ?? [];
   const v = product.nutrientsPer100;
 
+  const share = async () => {
+    if (sharing) return;
+    haptic.light();
+    setSharing(true);
+    try {
+      await shareProductCard(product.gtin, name);
+    } catch {
+      showToast(t.share.error, 'error');
+    } finally {
+      setSharing(false);
+    }
+  };
+
   return (
     <Screen>
-      {header}
+      <Row style={{ justifyContent: 'space-between', paddingTop: space.sm }}>
+        <IconButton icon="chevronLeft" label={t.common.back} onPress={() => router.back()} />
+        <Button title={sharing ? t.share.preparing : t.share.action} icon="share" variant="soft" size="md" loading={sharing} onPress={share} />
+      </Row>
 
       {/* Hero: real photo and score side by side, identity right below */}
       <Appear index={0}>
@@ -153,7 +171,7 @@ function ProductDetail({ product, meal, source, header }: { product: CatalogProd
             {name}
           </Text>
           <Text variant="secondary" color="textSecondary" numberOfLines={1}>
-            {[product.brand, product.quantityText].filter(Boolean).join(' · ')}
+            {[product.brand, quantityLabel(product.quantityText)].filter(Boolean).join(' · ')}
           </Text>
         </View>
       </Appear>
@@ -202,9 +220,15 @@ function ProductDetail({ product, meal, source, header }: { product: CatalogProd
               onMode={setMode}
               basis={unit}
               amountLabel={f(t.stats.myAmountValue, { value: `${formatNumber(amount, locale)} ${unit}` })}
-              onEditAmount={() => setEditing({ nutrient: null })}
+              onEditAmount={() => setSheet('amount')}
             />
-            <NutrientGrid values={mode === 'per100' ? v : scaleNutrients(v, amount)} onEdit={(key) => setEditing({ nutrient: key })} />
+            <NutrientGrid values={mode === 'per100' ? v : scaleNutrients(v, amount)} />
+            <Pressable accessibilityRole="button" onPress={() => setSheet('correction')} hitSlop={8} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', paddingVertical: 4 }}>
+              <Icon name="alert" size={15} color={p.textSecondary} />
+              <Text variant="secondaryStrong" color="textSecondary" style={{ textDecorationLine: 'underline' }}>
+                {t.stats.correctLink}
+              </Text>
+            </Pressable>
           </View>
         </Appear>
       ) : (
@@ -372,18 +396,18 @@ function ProductDetail({ product, meal, source, header }: { product: CatalogProd
         </Text>
       </View>
 
-      {editing ? (
-        <NutrientEditSheet
+      {sheet === 'amount' ? (
+        <AmountSheet
           product={product}
-          nutrient={editing.nutrient}
           amount={amount}
-          onApplyAmount={(g) => {
+          onApply={(g) => {
             setAmount(g);
             setMode('mine');
           }}
-          onClose={() => setEditing(null)}
+          onClose={() => setSheet(null)}
         />
       ) : null}
+      {sheet === 'correction' ? <CorrectionSheet product={product} onClose={() => setSheet(null)} /> : null}
 
       <BottomSheet visible={adding} onClose={() => setAdding(false)} title={t.product.addToDay}>
         <AddToDiaryCard

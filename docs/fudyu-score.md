@@ -1,4 +1,4 @@
-# Fudyu Score — methodology (v1.0.0)
+# Fudyu Score — methodology (v1.0.1)
 
 The Fudyu Score summarises a **packaged product** on a 0–100 scale. It is an
 editorial summary built on public, documented criteria. It is **not** a
@@ -8,6 +8,16 @@ shows it with a link to this methodology ("Ver cómo se calcula").
 Implementation: `packages/core/src/score.ts` (engine) and
 `packages/core/src/nutriscore.ts` (Nutri-Score 2023). Tests:
 `score.test.ts`, `nutriscore.test.ts`.
+
+## 0. What the number means
+- **0–100, per 100 g or 100 ml, higher is better.** It summarises the product's
+  nutritional profile (Nutri-Score 2023, the EU-backed algorithm) and moves it
+  down only for three documented non-nutrient facts (§2.2).
+- **Compare within the same kind of product** (two yogurts, two cereals). A
+  beverage tops out at 79 unless it is water; oils follow their own scale.
+- **It is not a diagnosis, a health risk or a probability of disease**, and it
+  is the same for everyone. Personal fit is shown apart ("Para ti").
+- **Without the data it needs there is no number** ("Sin puntuación").
 
 ## 1. Levels
 
@@ -59,6 +69,10 @@ personal medical assessment.
 | Each additive whose **EFSA re-evaluation estimated intakes above the ADI** for some population groups (Open Food Facts taxonomy, 95th percentile) | −4 each, max −8 | Precautionary: reducing sources of an additive with documented exposure concerns. |
 
 - Together, the adjustments never go below −25.
+- **Overlap, checked (2.2 audit):** NOVA 4 is a processing signal and the EFSA
+  exposure finding is a specific-additive signal. They are different lines of
+  evidence; a product can carry both, and the −25 cap bounds the total. No
+  adjustment uses a nutrient, so no nutrient is counted twice.
 - **Authorised additives without such findings are not penalised.** Their presence alone says nothing about safety.
 - The final score is `round(nutrition + adjustments)`, clamped to 0–100.
 
@@ -72,9 +86,10 @@ personal medical assessment.
 - **No personal data in the score.** It is the same for everyone. Personal fit ("Para ti": declared allergens, diet, goals) is computed separately (`personal.ts`) and never changes the score.
 - **No generic foods.** Fresh foods from USDA have no Fudyu Score, because the inputs the method needs are not available.
 
-## 3. Reasons shown ("¿Por qué?")
-- **Concerns:** Nutri-Score components that reach at least 40 % of their maximum points (energy only from 60 %). "Muy alto" is used from 67 %. The adjustments above are also concerns.
-- **Strengths:** positive components (fibre, protein, fruits/vegetables/legumes) from 40 % of their maximum. NOVA 1 counts too.
+## 3. Reasons shown ("Qué influye en la puntuación")
+Reasons only list what moves the number.
+- **Concerns:** Nutri-Score components that reach at least 40 % of their maximum points (energy only from 60 %). "Muy alto" is used from 67 %. The adjustments above are also concerns. For oils and nuts, the two official saturated-fat components are shown as one reason (the stronger).
+- **Strengths:** positive components (fibre, protein, fruits/vegetables/legumes) from 40 % of their maximum. NOVA 1 does not change the number, so it is shown under "Procesamiento", not as a reason.
 - **"Low in" claims** use the thresholds of Regulation (EC) No 1924/2006:
   - sugars ≤ 5 g (≤ 2.5 g/100 ml)
   - salt ≤ 0.3 g
@@ -122,3 +137,8 @@ Open Food Facts data (ODbL); NOVA as classified by Open Food Facts.
 
 ## 6. Changelog
 - **1.0.0 (2026-11-08):** first version.
+- **1.0.1 (2026-11-08):** explanations only; every score is unchanged. NOVA 1
+  is no longer listed as a reason (it never changed the number); oils show one
+  saturated-fat reason. Audit tests added: unique reasons, every reason backed
+  by a scored component or adjustment, monotonic in sugars, salt, saturated
+  fat, fibre and protein (`score.test.ts`).

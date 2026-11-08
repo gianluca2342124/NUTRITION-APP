@@ -19,7 +19,7 @@ import { initHaptics } from '@/lib/haptics';
 import { initPrefs } from '@/lib/prefs';
 import { queryClient } from '@/lib/queries';
 import { SessionProvider } from '@/lib/session';
-import { restoreOnboarding } from '@/lib/stores';
+import { restoreCompare, restoreOnboarding } from '@/lib/stores';
 import { useIsDark, usePalette } from '@/lib/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
@@ -38,7 +38,7 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    Promise.all([restoreOnboarding(), initHaptics(), initPrefs()]).finally(() => setReady(true));
+    Promise.all([restoreOnboarding(), restoreCompare(), initHaptics(), initPrefs()]).finally(() => setReady(true));
   }, []);
 
   const appReady = ready && (fontsLoaded || !!fontError);

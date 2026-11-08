@@ -1,20 +1,23 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Alert, Platform, Switch, View } from 'react-native';
+import { Alert, Platform, ScrollView, Switch, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { ACHIEVEMENT_IDS, ACTIVITY_LEVELS, GOALS, formatNumber, type AchievementId, type Goal } from '@repo/core';
 import { communityRecipeNutrition, type CommunityArticle, type CommunityRecipe } from '@repo/data';
 import { AchievementBadge, AchievementGrid } from '@/components/achievements';
 import { FudyuCharacter } from '@/components/art';
 import { Avatar, MyAvatar } from '@/components/avatar';
-import { ArticleCard, PublicationStatusPill, RecipeCardView } from '@/components/cards';
+import { PublicationStatusPill } from '@/components/cards';
+import { FoodImage } from '@/components/food-image';
 import { Icon } from '@/components/icons';
 import { BottomSheet } from '@/components/sheet';
-import { Button, Card, Choice, Field, IconButton, Notice, PressableScale, Row, Screen, SectionHeader, SegmentedControl, Text, haptic } from '@/components/ui';
+import { Button, Card, Choice, Field, IconButton, Notice, PressableScale, Row, Screen, Text, haptic } from '@/components/ui';
 import {
-  mediaUrl,
   pickAndUpload,
   removeMedia,
   useDeletePublication,
+  useMediaUrl,
   useMyArticles,
   useMyRecipes,
   usePublicAchievements,
@@ -28,7 +31,7 @@ import { today, useConsents, useGamification, useProfile, useRecordConsent, useT
 import { useSession } from '@/lib/session';
 import { showToast } from '@/lib/stores';
 import { supabase } from '@/lib/supabase';
-import { radius, space, usePalette } from '@/lib/theme';
+import { radius, shadow, space, usePalette } from '@/lib/theme';
 import { updateProfile } from '@repo/data';
 
 type FieldKey = 'goal' | 'sex' | 'age' | 'height' | 'weight' | 'activity';
@@ -46,21 +49,25 @@ function ask(message: string, onYes: () => void, yes: string, no: string) {
 }
 
 /**
- * Perfil: who you are (photo, name, @usuario, bio), your private data (only
- * you see it), your publications and your achievements. "Vista pública" shows
- * exactly what others can see — never health data.
+ * Perfil: the person first (photo, name, @usuario, bio), then what they
+ * publish and earn. Private data sits below in compact cards. The profile is
+ * private until the person makes it public; "Cómo te ven los demás" shows
+ * exactly what others would see.
  */
 export default function ProfileTab() {
   const { t } = useT();
+  const p = usePalette();
+  const insets = useSafeAreaInsets();
   const pub = usePublicProfile();
   const profile = useProfile();
+  const game = useGamification();
   const recipes = useMyRecipes();
   const articles = useMyArticles();
-  const [tab, setTab] = useState<'mine' | 'public'>('mine');
-  const [editing, setEditing] = useState(false);
+  const [sheet, setSheet] = useState<'edit' | 'public' | 'achievements' | null>(null);
   const [field, setField] = useState<FieldKey | null>(null);
 
   const name = pub.data?.displayName ?? profile.data?.displayName ?? null;
+  const isPublic = pub.data?.isPublic === true;
   const publications = useMemo<Publication[]>(
     () =>
       [
@@ -69,49 +76,114 @@ export default function ProfileTab() {
       ].sort((a, b) => b.item.updatedAt.localeCompare(a.item.updatedAt)),
     [recipes.data, articles.data],
   );
+  const gamification = game.data?.enabled !== false;
+  const earned = game.data?.achievements ?? [];
 
   return (
-    <Screen>
-      <Row style={{ justifyContent: 'space-between', paddingTop: space.sm }}>
-        <Text variant="largeTitle" accessibilityRole="header">
-          {t.me.title}
-        </Text>
-        <IconButton icon="settings" label={t.me.settings} onPress={() => router.push('/settings')} />
-      </Row>
+    <Screen tabBar padded={false} edges={[]}>
+      {/* Cover band (behind the status bar) + identity */}
+      <View style={{ height: insets.top + 112, marginBottom: -56 }}>
+        <Svg width="100%" height="100%" style={{ position: 'absolute' }}>
+          <Defs>
+            <LinearGradient id="cover" x1="0" y1="0" x2="1" y2="1">
+              <Stop offset="0" stopColor={p.primary} stopOpacity={0.95} />
+              <Stop offset="1" stopColor={p.primaryTint} stopOpacity={0.9} />
+            </LinearGradient>
+          </Defs>
+          <Rect x="0" y="0" width="100%" height="100%" fill="url(#cover)" />
+        </Svg>
+        <Row style={{ justifyContent: 'flex-end', paddingTop: insets.top + space.xs, paddingHorizontal: space.md }}>
+          <IconButton icon="settings" label={t.me.settings} onPress={() => router.push('/settings')} />
+        </Row>
+      </View>
 
-      <View style={{ alignItems: 'center', marginTop: space.sm, gap: 6 }}>
-        <MyAvatar size={104} />
-        <Text variant="title" align="center" style={{ marginTop: space.xs }}>
+      <View style={{ paddingHorizontal: space.md, alignItems: 'center', gap: 6 }}>
+        <View style={[{ borderRadius: 60, borderWidth: 4, borderColor: p.background }, shadow(p, 'card')]}>
+          <MyAvatar size={104} />
+        </View>
+        <Text variant="title" align="center" style={{ marginTop: 4 }} numberOfLines={2}>
           {name ?? t.me.noName}
         </Text>
-        {pub.data?.username ? (
-          <Text variant="secondaryStrong" color="textSecondary">
-            @{pub.data.username}
-          </Text>
-        ) : null}
-        {pub.data?.bio ? (
-          <Text variant="secondary" color="textSecondary" align="center" style={{ maxWidth: 320 }}>
-            {pub.data.bio}
-          </Text>
-        ) : null}
-        <Button title={t.me.editProfile} icon="edit" variant="soft" size="md" onPress={() => setEditing(true)} style={{ marginTop: space.xs }} />
+        <Row gap={space.xs}>
+          {pub.data?.username ? (
+            <Text variant="secondaryStrong" color="textSecondary">
+              @{pub.data.username}
+            </Text>
+          ) : null}
+          <PressableScale
+            accessibilityRole="button"
+            accessibilityLabel={`${isPublic ? t.me.public : t.me.private}. ${t.me.publicView}`}
+            onPress={() => setSheet('public')}
+            style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, height: 26, borderRadius: radius.pill, backgroundColor: isPublic ? p.secondarySoft : p.surfaceMuted }}
+          >
+            <Icon name={isPublic ? 'globe' : 'lock'} size={12} color={isPublic ? p.secondaryText : p.textSecondary} />
+            <Text variant="micro" style={{ color: isPublic ? p.secondaryText : p.textSecondary }}>
+              {isPublic ? t.me.public : t.me.private}
+            </Text>
+          </PressableScale>
+        </Row>
+        <Text variant="secondary" color={pub.data?.bio ? 'textSecondary' : 'textTertiary'} align="center" style={{ maxWidth: 320 }}>
+          {pub.data?.bio ?? t.me.addBio}
+        </Text>
+        <Row gap={space.xs} style={{ marginTop: space.xs }}>
+          <Button title={t.me.editProfile} icon="edit" variant="soft" size="md" onPress={() => setSheet('edit')} />
+          <Button title={t.me.publicView} icon="eye" variant="ghost" size="md" onPress={() => setSheet('public')} />
+        </Row>
+
+        {/* Small, honest numbers */}
+        <Row style={{ alignSelf: 'stretch', marginTop: space.md, backgroundColor: p.surface, borderRadius: radius.lg, paddingVertical: space.sm }}>
+          <Stat value={publications.length} label={t.me.statPublications} />
+          <Stat value={gamification ? earned.length : null} label={t.me.statAchievements} />
+          <Stat value={gamification ? (game.data?.streak.current ?? null) : null} label={t.me.statStreak} />
+        </Row>
       </View>
 
-      <View style={{ marginTop: space.lg }}>
-        <SegmentedControl
-          value={tab}
-          onChange={setTab}
-          options={[
-            { value: 'mine', label: t.me.myProfile },
-            { value: 'public', label: t.me.publicView },
-          ]}
-        />
+      <View style={{ paddingHorizontal: space.md }}>
+        <Publications publications={publications} />
+
+        {/* Achievements: earned badges first; the full grid on demand */}
+        <Row style={{ justifyContent: 'space-between', marginTop: space.xl, marginBottom: space.sm }}>
+          <Text variant="section">{t.me.achievements}</Text>
+          {gamification && game.data ? (
+            <Button title={t.me.seeAll} variant="ghost" size="md" onPress={() => setSheet('achievements')} />
+          ) : null}
+        </Row>
+        {!game.data ? null : !gamification ? (
+          <Notice tone="info" text={t.me.achievementsOff} />
+        ) : earned.length ? (
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -space.md }} contentContainerStyle={{ gap: space.sm, paddingHorizontal: space.md }}>
+            {earned.map((a) => (
+              <View key={a.id} style={{ width: 84, alignItems: 'center', gap: 4 }}>
+                <AchievementBadge id={a.id} earned size={60} />
+                <Text variant="micro" align="center" numberOfLines={2}>
+                  {t.achievements.items[a.id].title}
+                </Text>
+              </View>
+            ))}
+          </ScrollView>
+        ) : (
+          <Text variant="secondary" color="textSecondary">
+            {t.me.achievementsEmpty}
+          </Text>
+        )}
+
+        <PersonalData onEditField={setField} />
       </View>
 
-      {tab === 'mine' ? <MyProfile publications={publications} onEditField={setField} /> : <PublicView publications={publications} />}
-
-      <BottomSheet visible={editing} onClose={() => setEditing(false)} title={t.me.editProfile}>
-        {editing ? <ProfileEditor onDone={() => setEditing(false)} /> : null}
+      <BottomSheet visible={sheet === 'edit'} onClose={() => setSheet(null)} title={t.me.editProfile}>
+        {sheet === 'edit' ? <ProfileEditor onDone={() => setSheet(null)} /> : null}
+      </BottomSheet>
+      <BottomSheet visible={sheet === 'public'} onClose={() => setSheet(null)} title={t.me.publicView}>
+        {sheet === 'public' ? <PublicView publications={publications} /> : null}
+      </BottomSheet>
+      <BottomSheet visible={sheet === 'achievements'} onClose={() => setSheet(null)} title={t.me.achievements}>
+        {sheet === 'achievements' && game.data ? (
+          <AchievementGrid
+            ids={ACHIEVEMENT_IDS}
+            earned={new Set(earned.map((a) => a.id))}
+            progress={{ ...game.data.counts, longestStreak: game.data.streak.longest }}
+          />
+        ) : null}
       </BottomSheet>
       <BottomSheet visible={field != null} onClose={() => setField(null)} title={field ? t.me.fields[field] : ''}>
         {field ? <PersonalFieldEditor field={field} onDone={() => setField(null)} /> : null}
@@ -120,87 +192,53 @@ export default function ProfileTab() {
   );
 }
 
-/* ------------------------------------------------------------------ mine */
+function Stat({ value, label }: { value: number | null; label: string }) {
+  const { locale } = useT();
+  return (
+    <View style={{ flex: 1, alignItems: 'center', gap: 2 }} accessible accessibilityLabel={`${label}: ${value ?? '—'}`}>
+      <Text variant="cardTitle" style={{ fontVariant: ['tabular-nums'] }}>
+        {value == null ? '—' : formatNumber(value, locale)}
+      </Text>
+      <Text variant="caption" color="textSecondary">
+        {label}
+      </Text>
+    </View>
+  );
+}
 
-function MyProfile({ publications, onEditField }: { publications: Publication[]; onEditField: (f: FieldKey) => void }) {
-  const { t, f, locale } = useT();
+/* ------------------------------------------------------------ publications */
+
+function Publications({ publications }: { publications: Publication[] }) {
+  const { t, f } = useT();
   const p = usePalette();
-  const profile = useProfile();
-  const consents = useConsents();
-  const health = useHealthProfile();
-  const record = useRecordConsent();
-  const game = useGamification();
   const remove = useDeletePublication();
-  const earned = useMemo(() => new Set((game.data?.achievements ?? []).map((a) => a.id)), [game.data]);
-  const h = health.data;
-  const year = Number(today().slice(0, 4));
-  const consented = consents.data?.health_data === true;
-
-  const cards: { key: FieldKey; value: string | null; locked?: boolean }[] = [
-    { key: 'goal', value: profile.data ? t.goals[profile.data.primaryGoal] : null },
-    { key: 'sex', value: h?.sex ? t.sex[h.sex] : null, locked: !consented },
-    { key: 'age', value: h?.birthYear ? f(t.me.ageValue, { value: year - h.birthYear }) : null, locked: !consented },
-    { key: 'height', value: h?.heightCm ? `${formatNumber(h.heightCm, locale)} cm` : null, locked: !consented },
-    { key: 'weight', value: h?.weightKg ? `${formatNumber(h.weightKg, locale, 1)} kg` : null, locked: !consented },
-    { key: 'activity', value: h?.activity ? t.activity[h.activity as keyof typeof t.activity] : null, locked: !consented },
-  ];
+  const onDelete = (pubItem: Publication) =>
+    ask(
+      f(t.me.deleteConfirm, { title: pubItem.item.title }),
+      () =>
+        remove.mutate(
+          { kind: pubItem.kind, id: pubItem.item.id },
+          {
+            onSuccess: () => {
+              haptic.medium();
+              removeMedia('community-media', pubItem.kind === 'recipe' ? pubItem.item.imagePath : pubItem.item.coverPath);
+              showToast(t.me.deleted, 'success');
+            },
+            onError: (e) => showToast(errorMessage(e, t), 'error'),
+          },
+        ),
+      t.common.delete,
+      t.common.cancel,
+    );
 
   return (
     <>
-      <SectionHeader title={t.me.yourData} subtitle={t.me.yourDataPrivate} />
-      {!consented && consents.data ? (
-        <Card style={{ gap: space.sm, marginBottom: space.sm }}>
-          <Row gap={space.xs}>
-            <Icon name="lock" size={18} color={p.primaryText} />
-            <Text variant="cardTitle" style={{ flex: 1 }}>
-              {t.me.dataConsentTitle}
-            </Text>
-          </Row>
-          <Text variant="secondary" color="textSecondary">
-            {t.me.dataConsentBody}
-          </Text>
-          <Button title={t.me.dataConsentAction} size="md" loading={record.isPending} onPress={() => record.mutate({ type: 'health_data', granted: true })} />
-        </Card>
-      ) : null}
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: space.xs }}>
-        {cards
-          .filter((c) => !c.locked)
-          .map((c) => (
-            <PressableScale
-              key={c.key}
-              accessibilityRole="button"
-              accessibilityLabel={`${f(t.me.editField, { field: t.me.fields[c.key] })}: ${c.value ?? t.me.notSet}`}
-              onPress={() => {
-                haptic.light();
-                onEditField(c.key);
-              }}
-              style={{
-                width: c.key === 'goal' ? '100%' : '49%',
-                backgroundColor: p.surface,
-                borderRadius: radius.md,
-                padding: space.sm,
-                gap: 4,
-                borderWidth: 1,
-                borderColor: p.border,
-              }}
-            >
-              <Row style={{ justifyContent: 'space-between' }}>
-                <Text variant="eyebrow" color="textSecondary">
-                  {t.me.fields[c.key]}
-                </Text>
-                <Icon name="edit" size={14} color={p.textTertiary} />
-              </Row>
-              <Text variant="bodyStrong" numberOfLines={2} color={c.value ? 'ink' : 'textTertiary'}>
-                {c.value ?? t.me.notSet}
-              </Text>
-            </PressableScale>
-          ))}
-      </View>
-
-      <SectionHeader title={t.me.publications} />
+      <Text variant="section" style={{ marginTop: space.xl, marginBottom: space.sm }}>
+        {t.me.publications}
+      </Text>
       {publications.length === 0 ? (
         <Card style={{ alignItems: 'center', gap: space.xs, paddingVertical: space.lg }}>
-          <FudyuCharacter expression="smile" size={76} />
+          <FudyuCharacter expression="smile" size={72} />
           <Text variant="cardTitle" align="center" style={{ marginTop: space.xs }}>
             {t.me.publicationsEmptyTitle}
           </Text>
@@ -211,89 +249,168 @@ function MyProfile({ publications, onEditField }: { publications: Publication[];
           <Button title={t.me.writeArticle} variant="ghost" size="md" onPress={() => router.push('/create/article')} />
         </Card>
       ) : (
-        <View style={{ gap: space.sm }}>
-          {publications.map((pubItem) => (
-            <PublicationCard
-              key={`${pubItem.kind}:${pubItem.item.id}`}
-              pub={pubItem}
-              onEdit={() => router.push({ pathname: pubItem.kind === 'recipe' ? '/create/recipe' : '/create/article', params: { id: pubItem.item.id } })}
-              onDelete={() =>
-                ask(
-                  f(t.me.deleteConfirm, { title: pubItem.item.title }),
-                  () =>
-                    remove.mutate(
-                      { kind: pubItem.kind, id: pubItem.item.id },
-                      {
-                        onSuccess: () => {
-                          haptic.medium();
-                          removeMedia('community-media', pubItem.kind === 'recipe' ? pubItem.item.imagePath : pubItem.item.coverPath);
-                          showToast(t.me.deleted, 'success');
-                        },
-                        onError: (e) => showToast(errorMessage(e, t), 'error'),
-                      },
-                    ),
-                  t.common.delete,
-                  t.common.cancel,
-                )
-              }
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: space.sm }}>
+          <CreateTile icon="book" label={t.me.newRecipe} onPress={() => router.push('/create/recipe')} />
+          <CreateTile icon="article" label={t.me.newArticle} onPress={() => router.push('/create/article')} />
+          {publications.map((x) => (
+            <PublicationTile
+              key={`${x.kind}:${x.item.id}`}
+              pub={x}
+              onOpen={() => router.push({ pathname: x.kind === 'recipe' ? '/create/recipe' : '/create/article', params: { id: x.item.id } })}
+              onDelete={() => onDelete(x)}
             />
           ))}
-          <Row gap={space.xs}>
-            <Button title={t.me.createRecipe} icon="plus" variant="soft" size="md" style={{ flex: 1 }} onPress={() => router.push('/create/recipe')} />
-            <Button title={t.me.writeArticle} icon="article" variant="soft" size="md" style={{ flex: 1 }} onPress={() => router.push('/create/article')} />
-          </Row>
+          {/* Keep the last row aligned */}
+          {publications.length % 2 === 1 ? <View style={{ width: '48.5%' }} /> : null}
         </View>
       )}
-
-      <SectionHeader title={t.me.achievements} />
-      {game.data && game.data.enabled !== false ? (
-        <Card style={{ paddingVertical: space.lg }}>
-          <AchievementGrid ids={ACHIEVEMENT_IDS} earned={earned} progress={{ ...game.data.counts, longestStreak: game.data.streak.longest }} />
-        </Card>
-      ) : game.data ? (
-        <Notice tone="info" text={t.me.achievementsOff} />
+      {publications.some((x) => x.item.status === 'rejected' && x.item.reviewNote) ? (
+        <Text variant="caption" style={{ color: p.errorText, marginTop: space.xs }}>
+          {publications
+            .filter((x) => x.item.status === 'rejected' && x.item.reviewNote)
+            .map((x) => `${x.item.title}: ${f(t.publish.reviewNote, { note: x.item.reviewNote! })}`)
+            .join('\n')}
+        </Text>
       ) : null}
     </>
   );
 }
 
-function PublicationCard({ pub, onEdit, onDelete }: { pub: Publication; onEdit?: () => void; onDelete?: () => void }) {
-  const { t, f, locale } = useT();
+function CreateTile({ icon, label, onPress }: { icon: 'book' | 'article'; label: string; onPress: () => void }) {
   const p = usePalette();
-  const footer =
-    onEdit || onDelete || pub.item.reviewNote ? (
-      <View style={{ gap: 6, marginTop: 6 }}>
-        {pub.item.status === 'rejected' && pub.item.reviewNote ? (
-          <Text variant="caption" style={{ color: p.errorText }}>
-            {f(t.publish.reviewNote, { note: pub.item.reviewNote })}
-          </Text>
-        ) : null}
-        {onEdit || onDelete ? (
-          <Row style={{ justifyContent: 'flex-end' }} gap={space.xs}>
-            {onEdit ? <IconButton icon="edit" tone="soft" size={36} label={`${t.publish.edit}: ${pub.item.title}`} onPress={onEdit} /> : null}
-            {onDelete ? <IconButton icon="trash" tone="clear" size={36} label={`${t.common.delete}: ${pub.item.title}`} onPress={onDelete} /> : null}
-          </Row>
-        ) : null}
-      </View>
-    ) : undefined;
-  const badge = <PublicationStatusPill status={pub.item.status} />;
-  if (pub.kind === 'recipe') {
-    const r = pub.item;
-    const n = r.ingredients.length ? communityRecipeNutrition(r) : null;
-    const meta = [
-      t.me.recipe,
-      r.minutes ? f(t.recipes.minutes, { value: r.minutes }) : null,
-      n?.perServing.energy_kcal != null ? `${formatNumber(n.perServing.energy_kcal, locale)} kcal` : null,
-    ]
-      .filter(Boolean)
-      .join(' · ');
-    return <RecipeCardView title={r.title} imageUri={mediaUrl('community-media', r.imagePath)} meta={meta} badge={badge} footer={footer} width="100%" onPress={onEdit ?? (() => undefined)} />;
-  }
-  const a = pub.item;
-  return <ArticleCard title={a.title} excerpt={a.body.slice(0, 140) || null} coverUri={mediaUrl('community-media', a.coverPath)} badge={badge} footer={footer} onPress={onEdit ?? (() => undefined)} />;
+  return (
+    <PressableScale
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      onPress={onPress}
+      style={{ width: '48.5%', height: 76, borderRadius: radius.lg, borderWidth: 1.5, borderStyle: 'dashed', borderColor: p.borderStrong, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8 }}
+    >
+      <Icon name={icon} size={18} color={p.primaryText} />
+      <Text variant="secondaryStrong" style={{ color: p.primaryText }}>
+        {label}
+      </Text>
+    </PressableScale>
+  );
 }
 
-/* ------------------------------------------------------------------ public */
+function PublicationTile({ pub, onOpen, onDelete }: { pub: Publication; onOpen?: () => void; onDelete?: () => void }) {
+  const { t, f, locale } = useT();
+  const p = usePalette();
+  const path = pub.kind === 'recipe' ? pub.item.imagePath : pub.item.coverPath;
+  const uri = useMediaUrl('community-media', path);
+  let meta: string = pub.kind === 'recipe' ? t.me.recipe : t.me.article;
+  if (pub.kind === 'recipe' && pub.item.ingredients.length) {
+    const kcal = communityRecipeNutrition(pub.item).perServing.energy_kcal;
+    meta = [pub.item.minutes ? f(t.recipes.minutes, { value: pub.item.minutes }) : null, kcal != null ? `${formatNumber(kcal, locale)} kcal` : null].filter(Boolean).join(' · ') || meta;
+  }
+  return (
+    <PressableScale
+      accessibilityRole="button"
+      accessibilityLabel={`${pub.item.title}. ${t.me.status[pub.item.status]}`}
+      onPress={onOpen}
+      disabled={!onOpen}
+      style={[{ width: '48.5%', borderRadius: radius.lg, backgroundColor: p.surface, overflow: 'hidden' }, shadow(p, 'card')]}
+    >
+      <View>
+        {uri || pub.kind === 'recipe' ? (
+          <FoodImage uri={uri} fallback="recipe" width="100%" height={112} radius={0} />
+        ) : (
+          <View style={{ height: 112, backgroundColor: p.primarySoft, alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name="article" size={28} color={p.primaryText} />
+          </View>
+        )}
+        <View style={{ position: 'absolute', top: 8, left: 8 }}>
+          <PublicationStatusPill status={pub.item.status} />
+        </View>
+      </View>
+      <View style={{ padding: space.sm, gap: 2 }}>
+        <Text variant="secondaryStrong" numberOfLines={2}>
+          {pub.item.title}
+        </Text>
+        <Row style={{ justifyContent: 'space-between' }}>
+          <Text variant="caption" color="textSecondary" numberOfLines={1} style={{ flex: 1 }}>
+            {meta}
+          </Text>
+          {onDelete ? <IconButton icon="trash" tone="clear" size={32} label={`${t.common.delete}: ${pub.item.title}`} onPress={onDelete} /> : null}
+        </Row>
+      </View>
+    </PressableScale>
+  );
+}
+
+/* ---------------------------------------------------------- personal data */
+
+function PersonalData({ onEditField }: { onEditField: (f: FieldKey) => void }) {
+  const { t, f, locale } = useT();
+  const p = usePalette();
+  const profile = useProfile();
+  const consents = useConsents();
+  const health = useHealthProfile();
+  const record = useRecordConsent();
+  const h = health.data;
+  const year = Number(today().slice(0, 4));
+  const consented = consents.data?.health_data === true;
+  const cells: { key: FieldKey; value: string | null }[] = consented
+    ? [
+        { key: 'sex', value: h?.sex ? t.sex[h.sex] : null },
+        { key: 'age', value: h?.birthYear ? f(t.me.ageValue, { value: year - h.birthYear }) : null },
+        { key: 'height', value: h?.heightCm ? `${formatNumber(h.heightCm, locale)} cm` : null },
+        { key: 'weight', value: h?.weightKg ? `${formatNumber(h.weightKg, locale, 1)} kg` : null },
+        { key: 'activity', value: h?.activity ? t.activity[h.activity as keyof typeof t.activity] : null },
+      ]
+    : [];
+
+  const cell = (key: FieldKey, value: string | null, width: `${number}%`) => (
+    <PressableScale
+      key={key}
+      accessibilityRole="button"
+      accessibilityLabel={`${f(t.me.editField, { field: t.me.fields[key] })}: ${value ?? t.me.notSet}`}
+      onPress={() => {
+        haptic.light();
+        onEditField(key);
+      }}
+      style={{ width, backgroundColor: p.surface, borderRadius: radius.md, paddingHorizontal: 10, paddingVertical: 8, gap: 2 }}
+    >
+      <Row style={{ justifyContent: 'space-between' }}>
+        <Text variant="micro" color="textTertiary" style={{ textTransform: 'uppercase', letterSpacing: 0.6 }}>
+          {t.me.fields[key]}
+        </Text>
+        <Icon name="edit" size={12} color={p.textTertiary} />
+      </Row>
+      <Text variant="secondaryStrong" numberOfLines={1} color={value ? 'ink' : 'textTertiary'}>
+        {value ?? t.me.notSet}
+      </Text>
+    </PressableScale>
+  );
+
+  return (
+    <>
+      <Row style={{ marginTop: space.xl, marginBottom: 2 }} gap={6}>
+        <Icon name="lock" size={14} color={p.textSecondary} />
+        <Text variant="section">{t.me.yourData}</Text>
+      </Row>
+      <Text variant="caption" color="textTertiary" style={{ marginBottom: space.sm }}>
+        {t.me.yourDataPrivate}
+      </Text>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 6 }}>
+        {cell('goal', profile.data ? t.goals[profile.data.primaryGoal] : null, '100%')}
+        {cells.map((c) => cell(c.key, c.value, '32.4%'))}
+        {cells.length % 3 === 2 ? <View style={{ width: '32.4%' }} /> : null}
+      </View>
+      {!consented && consents.data ? (
+        <Card style={{ gap: space.xs, marginTop: space.sm }}>
+          <Text variant="bodyStrong">{t.me.dataConsentTitle}</Text>
+          <Text variant="caption" color="textSecondary">
+            {t.me.dataConsentBody}
+          </Text>
+          <Button title={t.me.dataConsentAction} size="md" variant="soft" loading={record.isPending} onPress={() => record.mutate({ type: 'health_data', granted: true })} />
+        </Card>
+      ) : null}
+    </>
+  );
+}
+
+/* ------------------------------------------------------------ public view */
 
 function PublicView({ publications }: { publications: Publication[] }) {
   const { t } = useT();
@@ -301,46 +418,34 @@ function PublicView({ publications }: { publications: Publication[] }) {
   const { userId } = useSession();
   const pub = usePublicProfile();
   const save = useSavePublicProfile();
-  const show = pub.data?.showAchievements === true;
+  const isPublic = pub.data?.isPublic === true;
+  const show = isPublic && pub.data?.showAchievements === true;
   const achievements = usePublicAchievements(userId, show);
   const published = publications.filter((x) => x.item.status === 'published');
   const empty = !pub.data?.displayName && !pub.data?.username && !pub.data?.bio && !pub.data?.avatarPath;
 
   return (
-    <>
-      <SectionHeader title={t.me.publicTitle} />
-      <Card style={{ alignItems: 'center', gap: 6, paddingVertical: space.lg }}>
-        {empty ? (
-          <Text variant="secondary" color="textSecondary" align="center">
-            {t.me.publicEmpty}
-          </Text>
-        ) : (
-          <>
-            <Avatar path={pub.data?.avatarPath} name={pub.data?.displayName} size={84} />
-            {pub.data?.displayName ? <Text variant="cardTitle">{pub.data.displayName}</Text> : null}
-            {pub.data?.username ? (
-              <Text variant="secondaryStrong" color="textSecondary">
-                @{pub.data.username}
-              </Text>
-            ) : null}
-            {pub.data?.bio ? (
-              <Text variant="secondary" color="textSecondary" align="center">
-                {pub.data.bio}
-              </Text>
-            ) : null}
-          </>
-        )}
-        {show && (achievements.data ?? []).length > 0 ? (
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: space.xs, marginTop: space.sm }}>
-            {(achievements.data ?? []).map((a) => (
-              <AchievementBadge key={a.achievement} id={a.achievement as AchievementId} earned size={48} />
-            ))}
+    <View style={{ gap: space.md }}>
+      <Card style={{ gap: space.xs }}>
+        <Row gap={space.sm}>
+          <View style={{ flex: 1 }}>
+            <Text variant="bodyStrong">{t.me.publicSwitch}</Text>
+            <Text variant="caption" color="textSecondary">
+              {t.me.publicSwitchHint}
+            </Text>
           </View>
-        ) : null}
-      </Card>
-
-      <Card style={{ marginTop: space.sm, paddingVertical: space.xs }}>
-        <Row gap={space.sm} style={{ paddingVertical: space.xs }}>
+          <Switch
+            value={isPublic}
+            disabled={save.isPending}
+            onValueChange={(v) => {
+              haptic.selection();
+              save.mutate({ isPublic: v });
+            }}
+            trackColor={{ true: p.primary, false: p.borderStrong }}
+            accessibilityLabel={t.me.publicSwitch}
+          />
+        </Row>
+        <Row gap={space.sm} style={{ opacity: isPublic ? 1 : 0.45 }}>
           <View style={{ flex: 1 }}>
             <Text variant="bodyStrong">{t.me.showAchievements}</Text>
             <Text variant="caption" color="textSecondary">
@@ -348,8 +453,8 @@ function PublicView({ publications }: { publications: Publication[] }) {
             </Text>
           </View>
           <Switch
-            value={show}
-            disabled={save.isPending}
+            value={pub.data?.showAchievements === true}
+            disabled={!isPublic || save.isPending}
             onValueChange={(v) => save.mutate({ showAchievements: v })}
             trackColor={{ true: p.primary, false: p.borderStrong }}
             accessibilityLabel={t.me.showAchievements}
@@ -357,26 +462,50 @@ function PublicView({ publications }: { publications: Publication[] }) {
         </Row>
       </Card>
 
-      <SectionHeader title={t.me.publications} />
-      {published.length ? (
-        <View style={{ gap: space.sm }}>
-          {published.map((x) => (
-            <PublicationCard key={`${x.kind}:${x.item.id}`} pub={x} />
-          ))}
-        </View>
+      {!isPublic ? (
+        <Notice tone="info" icon="lock" text={t.me.privateState} />
       ) : (
-        <Text variant="secondary" color="textSecondary">
-          {t.me.publicContentEmpty}
-        </Text>
+        <Card style={{ alignItems: 'center', gap: 6, paddingVertical: space.lg }}>
+          {empty ? (
+            <Text variant="secondary" color="textSecondary" align="center">
+              {t.me.publicEmpty}
+            </Text>
+          ) : (
+            <>
+              <Avatar path={pub.data?.avatarPath} name={pub.data?.displayName} size={80} />
+              {pub.data?.displayName ? <Text variant="cardTitle">{pub.data.displayName}</Text> : null}
+              {pub.data?.username ? (
+                <Text variant="secondaryStrong" color="textSecondary">
+                  @{pub.data.username}
+                </Text>
+              ) : null}
+              {pub.data?.bio ? (
+                <Text variant="secondary" color="textSecondary" align="center">
+                  {pub.data.bio}
+                </Text>
+              ) : null}
+            </>
+          )}
+          {show && (achievements.data ?? []).length > 0 ? (
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: space.xs, marginTop: space.sm }}>
+              {(achievements.data ?? []).map((a) => (
+                <AchievementBadge key={a.achievement} id={a.achievement as AchievementId} earned size={44} />
+              ))}
+            </View>
+          ) : null}
+          <Text variant="caption" color="textTertiary" style={{ marginTop: space.sm }}>
+            {published.length ? published.map((x) => x.item.title).join(' · ') : t.me.publicContentEmpty}
+          </Text>
+        </Card>
       )}
 
-      <Row gap={space.xs} style={{ marginTop: space.lg, alignItems: 'flex-start' }}>
+      <Row gap={space.xs} style={{ alignItems: 'flex-start' }}>
         <Icon name="lock" size={16} color={p.textTertiary} />
         <Text variant="caption" color="textTertiary" style={{ flex: 1 }}>
           {t.me.publicNote}
         </Text>
       </Row>
-    </>
+    </View>
   );
 }
 
@@ -442,12 +571,12 @@ function ProfileEditor({ onDone }: { onDone: () => void }) {
         </View>
       </Row>
       <Field label={t.me.name} value={name} onChangeText={setName} maxLength={60} autoComplete="name" />
-      <Field label={t.me.username} value={username} onChangeText={setUsername} autoCapitalize="none" autoCorrect={false} maxLength={25} placeholder="tu_usuario" />
+      <Field label={t.me.username} value={username} onChangeText={setUsername} autoCapitalize="none" autoCorrect={false} maxLength={25} />
       <Text variant="caption" color="textTertiary" style={{ marginTop: -space.sm }}>
         {t.me.usernameHint}
       </Text>
       <Field label={t.me.bio} value={bio} onChangeText={setBio} multiline maxLength={280} style={{ minHeight: 84, textAlignVertical: 'top' }} />
-      <Notice tone="info" icon="eye" text={t.me.photoPublic} />
+      <Notice tone="info" icon="lock" text={t.me.photoPublic} />
       {error ? <Notice tone="error" text={error} /> : null}
       <Button title={t.common.save} onPress={onSave} loading={save.isPending} disabled={uploading} />
     </View>
@@ -474,8 +603,7 @@ function PersonalFieldEditor({ field, onDone }: { field: FieldKey; onDone: () =>
     if (target.data?.method !== 'user_defined') showToast(t.me.targetUpdated, 'success');
     onDone();
   };
-  const run = (v: Parameters<typeof update.mutate>[0]) =>
-    update.mutate(v, { onSuccess: done, onError: (e) => setError(errorMessage(e, t)) });
+  const run = (v: Parameters<typeof update.mutate>[0]) => update.mutate(v, { onSuccess: done, onError: (e) => setError(errorMessage(e, t)) });
 
   if (field === 'goal') {
     const goals = profile.data?.goals ?? [];
@@ -534,12 +662,7 @@ function PersonalFieldEditor({ field, onDone }: { field: FieldKey; onDone: () =>
         loading={update.isPending}
         onPress={() =>
           run({
-            health:
-              field === 'age'
-                ? { birthYear: year - Math.round(value) }
-                : field === 'height'
-                  ? { heightCm: Math.round(value) }
-                  : { weightKg: Math.round(value * 10) / 10 },
+            health: field === 'age' ? { birthYear: year - Math.round(value) } : field === 'height' ? { heightCm: Math.round(value) } : { weightKg: Math.round(value * 10) / 10 },
           })
         }
       />

@@ -10,6 +10,8 @@ export type PublicationStatus = 'draft' | 'pending_review' | 'published' | 'reje
 
 export interface PublicProfile {
   userId: string;
+  /** Off by default: nobody else can see the profile until the person turns it on. */
+  isPublic: boolean;
   username: string | null;
   displayName: string | null;
   bio: string | null;
@@ -22,6 +24,7 @@ type Row = Record<string, unknown>;
 function mapProfile(r: Row): PublicProfile {
   return {
     userId: String(r.user_id),
+    isPublic: r.is_public === true,
     username: (r.username as string | null) ?? null,
     displayName: (r.display_name as string | null) ?? null,
     bio: (r.bio as string | null) ?? null,
@@ -47,14 +50,21 @@ export async function savePublicProfile(
   if (patch.bio !== undefined) row.bio = patch.bio?.trim() || null;
   if (patch.avatarPath !== undefined) row.avatar_path = patch.avatarPath;
   if (patch.showAchievements !== undefined) row.show_achievements = patch.showAchievements;
+  if (patch.isPublic !== undefined) row.is_public = patch.isPublic;
   const { error } = await client.from('public_profiles').upsert(row, { onConflict: 'user_id', defaultToNull: false });
   if (error) throw error;
 }
 
-/** Public URL of an image in a public bucket (avatars, community-media). */
-export function publicMediaUrl(client: SupabaseClient, bucket: 'avatars' | 'community-media', path: string | null): string | null {
-  if (!path) return null;
-  return client.storage.from(bucket).getPublicUrl(path).data.publicUrl;
+export type MediaBucket = 'avatars' | 'community-media';
+
+/**
+ * Short-lived URL for a private image. Storage RLS decides: the owner, or
+ * anyone for published content and avatars of public profiles.
+ */
+export async function signedMediaUrl(client: SupabaseClient, bucket: MediaBucket, path: string, expiresIn = 3600): Promise<string> {
+  const { data, error } = await client.storage.from(bucket).createSignedUrl(path, expiresIn);
+  if (error) throw error;
+  return data.signedUrl;
 }
 
 export interface PublicAchievement {
@@ -74,6 +84,10 @@ export async function publicAchievements(client: SupabaseClient, userId: string)
 export interface CommunityIngredient {
   kind: 'generic_food' | 'product';
   foodId: string;
+  /** For the ingredient's picture: curated photo by slug, or the product photo. */
+  slug: string | null;
+  category: string | null;
+  imageUrl: string | null;
   label: string;
   grams: number;
   basis: Basis;
@@ -98,7 +112,7 @@ export interface CommunityRecipe {
 }
 
 const NUTRIENTS = 'basis, energy_kcal, protein_g, carbs_g, sugars_g, fat_g, saturated_fat_g, fiber_g, salt_g';
-const RECIPE_SELECT = `*, community_recipe_ingredients(position, generic_food_id, product_id, grams, label, generic_foods(${NUTRIENTS}), products(${NUTRIENTS}))`;
+const RECIPE_SELECT = `*, community_recipe_ingredients(position, generic_food_id, product_id, grams, label, generic_foods(slug, category, ${NUTRIENTS}), products(image_url, ${NUTRIENTS}))`;
 
 function embedded(v: unknown): Row | null {
   if (Array.isArray(v)) return (v[0] as Row | undefined) ?? null;
@@ -128,6 +142,9 @@ function mapRecipe(r: Row): CommunityRecipe {
       return {
         kind: i.generic_food_id ? 'generic_food' : 'product',
         foodId: String(i.generic_food_id ?? i.product_id),
+        slug: (food.slug as string | undefined) ?? null,
+        category: (food.category as string | undefined) ?? null,
+        imageUrl: (food.image_url as string | undefined) ?? null,
         label: String(i.label),
         grams: Number(i.grams),
         basis: food.basis === '100ml' ? '100ml' : '100g',
@@ -138,7 +155,10 @@ function mapRecipe(r: Row): CommunityRecipe {
 }
 
 /** Nutrition from catalogue values only (the author never types numbers). */
-export function communityRecipeNutrition(recipe: Pick<CommunityRecipe, 'servings' | 'ingredients'>): RecipeNutrition {
+export function communityRecipeNutrition(recipe: {
+  servings: number;
+  ingredients: readonly Pick<CommunityIngredient, 'foodId' | 'label' | 'grams' | 'basis' | 'per100'>[];
+}): RecipeNutrition {
   return recipeNutrition({
     servings: Math.max(1, recipe.servings),
     ingredients: recipe.ingredients.map((i, idx) => ({

@@ -16,19 +16,9 @@ function digits(key: NutrientKey, value: number): number {
 
 /**
  * One stat of the product card: icon, accent, big number, unit, small label.
- * Unknown values show "Sin dato" — never zero. Changes animate briefly.
+ * Read-only: unknown values show "Sin dato" — never zero. Changes animate briefly.
  */
-export function StatTile({
-  stat,
-  value,
-  onEdit,
-  width,
-}: {
-  stat: NutrientStat;
-  value: number | null;
-  onEdit?: () => void;
-  width: number | `${number}%`;
-}) {
+export function StatTile({ stat, value, width }: { stat: NutrientStat; value: number | null; width: number | `${number}%` }) {
   const p = usePalette();
   const { t, locale } = useT();
   const accent = p[stat.color as keyof Palette];
@@ -57,20 +47,6 @@ export function StatTile({
         <Text variant="eyebrow" color="textSecondary" numberOfLines={1} style={{ flex: 1, fontSize: 10.5, letterSpacing: 0.4 }}>
           {label}
         </Text>
-        {onEdit ? (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={`${t.stats.editTitle}: ${label}`}
-            hitSlop={10}
-            onPress={() => {
-              haptic.light();
-              onEdit();
-            }}
-            style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
-          >
-            <Icon name="edit" size={14} color={p.textTertiary} />
-          </Pressable>
-        ) : null}
       </View>
       {text == null ? (
         <Text variant="bodyStrong" color="textTertiary">
@@ -92,11 +68,9 @@ export function StatTile({
 /** Eight-stat grid: two columns on phones, four on wide screens. */
 export function NutrientGrid({
   values,
-  onEdit,
   keys,
 }: {
   values: NutrientValues;
-  onEdit?: (key: NutrientKey) => void;
   /** Subset/order of nutrients (defaults to all eight). */
   keys?: readonly NutrientKey[];
 }) {
@@ -108,13 +82,13 @@ export function NutrientGrid({
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: gap }}>
       {stats.map((stat) => (
-        <StatTile key={stat.key} stat={stat} value={values[stat.key]} width={tileWidth} onEdit={onEdit ? () => onEdit(stat.key) : undefined} />
+        <StatTile key={stat.key} stat={stat} value={values[stat.key]} width={tileWidth} />
       ))}
     </View>
   );
 }
 
-/** "Por 100 g" / "Mi cantidad" switch with the current amount and a pencil to change it. */
+/** "Por 100 g" / "Mi cantidad" switch, plus a labelled action to change the amount. */
 export function BasisToggle({
   mode,
   onMode,
@@ -135,8 +109,8 @@ export function BasisToggle({
     { value: 'mine', label: amountLabel },
   ];
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.xs }}>
-      <View style={{ flexDirection: 'row', flex: 1, backgroundColor: p.surfaceMuted, borderRadius: radius.pill, padding: 3 }} accessibilityRole="tablist">
+    <View style={{ gap: space.xs }}>
+      <View style={{ flexDirection: 'row', backgroundColor: p.surfaceMuted, borderRadius: radius.pill, padding: 3 }} accessibilityRole="tablist">
         {options.map((o) => {
           const active = o.value === mode;
           return (
@@ -160,15 +134,18 @@ export function BasisToggle({
       </View>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={t.stats.editAmountTitle}
+        accessibilityLabel={t.stats.changeAmount}
         onPress={() => {
           haptic.light();
           onEditAmount();
         }}
-        hitSlop={8}
-        style={({ pressed }) => ({ width: 40, height: 40, borderRadius: 20, backgroundColor: p.primarySoft, alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}
+        hitSlop={6}
+        style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 6, height: 36, paddingHorizontal: 12, borderRadius: 18, alignSelf: 'flex-end', backgroundColor: p.primarySoft, opacity: pressed ? 0.6 : 1 })}
       >
-        <Icon name="edit" size={18} color={p.primaryText} />
+        <Icon name="scale" size={16} color={p.primaryText} />
+        <Text variant="caption" style={{ color: p.primaryText, fontWeight: '700' }} numberOfLines={1}>
+          {t.stats.changeAmount}
+        </Text>
       </Pressable>
     </View>
   );

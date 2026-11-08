@@ -22,7 +22,12 @@ import type { Basis, EuAdditiveStatus } from './products';
  * This is an editorial summary, not a validated health measure.
  */
 
-export const FUDYU_SCORE_VERSION = '1.0.0';
+/**
+ * 1.0.1 — explanations only (every score is unchanged): reasons list only what
+ * moves the number; NOVA 1 is shown under "Procesamiento", not as a reason;
+ * oils show one saturated-fat reason instead of two.
+ */
+export const FUDYU_SCORE_VERSION = '1.0.1';
 
 export const SCORE_LEVELS = ['excellent', 'good', 'fair', 'poor', 'limit'] as const;
 export type ScoreLevel = (typeof SCORE_LEVELS)[number];
@@ -79,8 +84,7 @@ export type FactorKey =
   | 'low_sugars'
   | 'low_salt'
   | 'low_saturated_fat'
-  | 'water'
-  | 'minimally_processed';
+  | 'water';
 
 export interface ScoreFactor {
   key: FactorKey;
@@ -277,17 +281,22 @@ export function computeFudyuScore(input: ScoreInput): FudyuScoreResult {
     if (c.id === 'fruits_vegetables_legumes') unknown.push('fruits_vegetables_legumes');
   }
 
+  // Reasons are only things that move the number: Nutri-Score components that
+  // scored, the adjustments, and "low" values that kept a component at 0 points.
   const factors: ScoreFactor[] = [
     ...componentFactors(ns, input),
     ...adjustments.map<ScoreFactor>((a) => ({ key: a.key, sign: -1, codes: a.codes, impact: Math.abs(a.points) / 10 })),
     ...claimFactors(input, ns.category),
-    ...(input.novaGroup === 1 ? [{ key: 'minimally_processed', sign: 1, impact: 0.45 } as ScoreFactor] : []),
   ];
-  // Claims that repeat a stronger reason are dropped (e.g. "low sugars" next to a sugars component).
   const deduped = factors.filter((f, i) => factors.findIndex((g) => g.key === f.key) === i);
-  deduped.sort((a, b) => b.impact - a.impact);
+  // Oils and nuts have two saturated-fat components in the official algorithm;
+  // they are one reason for a person, so only the stronger one is shown.
+  const satFat = deduped.filter((f) => f.sign < 0 && (f.key === 'saturated_fat' || f.key === 'saturated_fat_ratio'));
+  const weaker = satFat.length === 2 ? satFat.reduce((a, b) => (a.impact < b.impact ? a : b)) : null;
+  const reasons = weaker ? deduped.filter((f) => f !== weaker) : deduped;
+  reasons.sort((a, b) => b.impact - a.impact);
 
-  return { status: 'scored', version, score, level: scoreLevel(score), nutritionScore: Math.round(nutritionScore), nutriscore: ns, adjustments, factors: deduped, unknown };
+  return { status: 'scored', version, score, level: scoreLevel(score), nutritionScore: Math.round(nutritionScore), nutriscore: ns, adjustments, factors: reasons, unknown };
 }
 
 /**

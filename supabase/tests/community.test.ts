@@ -51,16 +51,22 @@ function recipe(overrides: Partial<RecipeDraft> = {}): RecipeDraft {
 }
 
 describe('public profile', () => {
-  it('holds only what the person chose to show', async () => {
+  it('is private by default and holds only what the person chose to show', async () => {
     const a = await user();
     const b = await user();
     await savePublicProfile(a.client, a.userId, { username: `ana_${a.userId.slice(0, 6)}`, displayName: 'Ana', bio: 'Cocino los domingos.' });
 
+    // Private until the person turns it public.
+    expect(await getPublicProfile(b.client, a.userId)).toBeNull();
+    expect((await anonClient().from('public_profiles').select('user_id').eq('user_id', a.userId)).data ?? []).toHaveLength(0);
+    expect(await getPublicProfile(a.client, a.userId)).toMatchObject({ isPublic: false, displayName: 'Ana' });
+
+    await savePublicProfile(a.client, a.userId, { isPublic: true });
     const seen = await getPublicProfile(b.client, a.userId);
-    expect(seen).toMatchObject({ displayName: 'Ana', bio: 'Cocino los domingos.', showAchievements: false });
+    expect(seen).toMatchObject({ isPublic: true, displayName: 'Ana', bio: 'Cocino los domingos.', showAchievements: false });
     // Privacy by construction: no health, goal or history columns exist here.
     const { data } = await anonClient().from('public_profiles').select('*').eq('user_id', a.userId).single();
-    expect(Object.keys(data ?? {}).sort()).toEqual(['avatar_path', 'bio', 'display_name', 'show_achievements', 'updated_at', 'user_id', 'username']);
+    expect(Object.keys(data ?? {}).sort()).toEqual(['avatar_path', 'bio', 'display_name', 'is_public', 'show_achievements', 'updated_at', 'user_id', 'username']);
 
     // Others cannot edit it, and health data stays private.
     const hijack = await b.client.from('public_profiles').update({ bio: 'x' }).eq('user_id', a.userId).select();
@@ -70,13 +76,61 @@ describe('public profile', () => {
     expect(health.data ?? []).toHaveLength(0);
   });
 
-  it('shows achievements only when the person opts in', async () => {
+  it('shows achievements only on a public profile that opted in', async () => {
     const a = await user();
     await serviceClient().from('user_achievements').insert({ user_id: a.userId, achievement: 'first_scan' });
-    await savePublicProfile(a.client, a.userId, { displayName: 'Ana' });
+    await savePublicProfile(a.client, a.userId, { displayName: 'Ana', showAchievements: true });
+    expect(await publicAchievements(anonClient(), a.userId)).toHaveLength(0);
+    await savePublicProfile(a.client, a.userId, { isPublic: true, showAchievements: false });
     expect(await publicAchievements(anonClient(), a.userId)).toHaveLength(0);
     await savePublicProfile(a.client, a.userId, { showAchievements: true });
     expect((await publicAchievements(anonClient(), a.userId)).map((x) => x.achievement)).toEqual(['first_scan']);
+  });
+});
+
+describe('private media', () => {
+  const bytes = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46]);
+  const canSign = async (client: ReturnType<typeof anonClient>, bucket: 'avatars' | 'community-media', path: string) =>
+    !(await client.storage.from(bucket).createSignedUrl(path, 60)).error;
+
+  it('serves drafts only to their owner, and published images to everyone', async () => {
+    const a = await user();
+    const b = await user();
+    const path = `${a.userId}/${randomUUID()}.jpg`;
+    const up = await a.client.storage.from('community-media').upload(path, bytes, { contentType: 'image/jpeg' });
+    expect(up.error).toBeNull();
+
+    // A hard-to-guess URL is not access: the bucket is private.
+    const publicUrl = a.client.storage.from('community-media').getPublicUrl(path).data.publicUrl;
+    expect((await fetch(publicUrl)).ok).toBe(false);
+    expect(await canSign(a.client, 'community-media', path)).toBe(true);
+    expect(await canSign(b.client, 'community-media', path)).toBe(false);
+    expect(await canSign(anonClient(), 'community-media', path)).toBe(false);
+
+    const draft = recipe({ imagePath: path });
+    await saveCommunityRecipe(a.client, draft, true);
+    expect(await canSign(b.client, 'community-media', path)).toBe(false);
+    await serviceClient().from('community_recipes').update({ status: 'published' }).eq('id', draft.id);
+    expect(await canSign(anonClient(), 'community-media', path)).toBe(true);
+    const signed = await anonClient().storage.from('community-media').createSignedUrl(path, 60);
+    expect((await fetch(signed.data!.signedUrl)).ok).toBe(true);
+
+    // Others can never overwrite or delete it.
+    const overwrite = await b.client.storage.from('community-media').upload(path, bytes, { contentType: 'image/jpeg', upsert: true });
+    expect(overwrite.error).not.toBeNull();
+  });
+
+  it('shows an avatar to others only when the profile is public', async () => {
+    const a = await user();
+    const b = await user();
+    const path = `${a.userId}/${randomUUID()}.jpg`;
+    await a.client.storage.from('avatars').upload(path, bytes, { contentType: 'image/jpeg' });
+    await savePublicProfile(a.client, a.userId, { displayName: 'Ana', avatarPath: path });
+    expect(await canSign(a.client, 'avatars', path)).toBe(true);
+    expect(await canSign(b.client, 'avatars', path)).toBe(false);
+    await savePublicProfile(a.client, a.userId, { isPublic: true });
+    expect(await canSign(b.client, 'avatars', path)).toBe(true);
+    expect(await canSign(anonClient(), 'avatars', path)).toBe(true);
   });
 });
 

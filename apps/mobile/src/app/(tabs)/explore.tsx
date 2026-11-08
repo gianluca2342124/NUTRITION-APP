@@ -65,7 +65,7 @@ export default function ExploreScreen() {
   });
 
   return (
-    <Screen>
+    <Screen tabBar>
       <Text variant="largeTitle" style={{ paddingTop: space.sm }}>
         {t.nav.explore}
       </Text>

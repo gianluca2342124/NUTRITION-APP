@@ -22,7 +22,6 @@ import { useT } from '@/lib/i18n';
 import { today, useDiary, useGamification, useProfile, useScans, useTarget, useTotals } from '@/lib/queries';
 import { useSession } from '@/lib/session';
 import { radius, space, usePalette } from '@/lib/theme';
-import { openAddSheet } from '@/lib/stores';
 import { useHiddenIds } from '@/lib/undo';
 
 function greeting(t: ReturnType<typeof useT>['t']): string {
@@ -62,14 +61,14 @@ export default function TodayScreen() {
   if (session.status === 'unconfigured') return <BackendNotConfigured />;
   if (session.status === 'error') {
     return (
-      <Screen>
+      <Screen tabBar>
         <ErrorState message={`${t.errors.serviceUnavailable} (${session.error ?? ''})`} retryLabel={t.common.retry} />
       </Screen>
     );
   }
   if (session.status === 'loading' || profile.isLoading) {
     return (
-      <Screen scroll={false} contentStyle={{ justifyContent: 'center', alignItems: 'center' }}>
+      <Screen tabBar scroll={false} contentStyle={{ justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator color={p.primary} />
       </Screen>
     );
@@ -95,7 +94,7 @@ export default function TodayScreen() {
   };
 
   return (
-    <Screen
+    <Screen tabBar
       refreshControl={
         <RefreshControl
           refreshing={diary.isRefetching}
@@ -202,7 +201,6 @@ export default function TodayScreen() {
           size={76}
           title={isFuture ? t.today.futureTitle : isToday ? t.today.feedEmptyTitle : t.today.pastEmptyTitle}
           body={isFuture ? t.today.futureBody : isToday ? t.today.feedEmptyBody : undefined}
-          action={isToday ? <Button title={t.today.logAction} icon="plus" size="md" onPress={openAddSheet} /> : undefined}
         />
       ) : (
         <View style={{ gap: space.sm, marginTop: space.sm }}>
@@ -293,7 +291,7 @@ function macro(entries: unknown[], v: number | null): number | null {
 function BackendNotConfigured() {
   const { t } = useT();
   return (
-    <Screen>
+    <Screen tabBar>
       <EmptyState
         icon="info"
         title={t.errors.notConfigured}

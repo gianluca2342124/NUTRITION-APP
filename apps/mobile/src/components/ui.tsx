@@ -21,6 +21,7 @@ import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 import { fontFamilies, motion, type FontWeightKey } from '@repo/design';
 import { Icon, type IconName } from './icons';
 import { haptic as playHaptic } from '@/lib/haptics';
+import { useNavClearance } from '@/lib/nav-metrics';
 import { radius, shadow, space, typography, usePalette, type Palette } from '@/lib/theme';
 
 /** Semantic haptics (see lib/haptics.ts). */
@@ -78,6 +79,7 @@ export function Screen({
   edges = ['top'],
   padded = true,
   bottomInset = 120,
+  tabBar = false,
   contentStyle,
   ...scrollProps
 }: {
@@ -86,10 +88,13 @@ export function Screen({
   edges?: Edge[];
   padded?: boolean;
   bottomInset?: number;
+  /** Inside the tabs: leave exactly the room the floating navigation takes. */
+  tabBar?: boolean;
   contentStyle?: StyleProp<ViewStyle>;
 } & ScrollViewProps) {
   const p = usePalette();
-  const inner = [{ paddingHorizontal: padded ? space.md : 0, paddingBottom: bottomInset }, contentStyle];
+  const clearance = useNavClearance();
+  const inner = [{ paddingHorizontal: padded ? space.md : 0, paddingBottom: tabBar ? clearance : bottomInset }, contentStyle];
   return (
     <SafeAreaView edges={edges} style={{ flex: 1, backgroundColor: p.background }}>
       {scroll ? (

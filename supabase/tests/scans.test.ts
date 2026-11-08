@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { dailyTotals, deleteEntry, deleteScan, linkProductScan, linkScanToEntry, listEntries, listScans, recordScan } from '@repo/data';
+import { dailyTotals, deleteEntry, deleteScan, linkProductScan, linkScanToEntry, listEntries, listScans, recentFoods, recordScan } from '@repo/data';
 import { deleteUser, newAnonymousUser, serviceClient } from './helpers';
 
 /** Scan history: scanned products never count as eaten; adding one to the day does. */
@@ -41,9 +41,10 @@ describe('product scans', () => {
     const scans = await listScans(client, day);
     expect(scans).toHaveLength(1);
     expect(scans[0]).toMatchObject({ productId, source: 'barcode', entryId: null, product: { gtin: GTIN, nutritionAvailable: true } });
-    // Scanning is not eating: the day stays empty.
+    // Scanning is not eating: the day, the progress totals and "recent foods" stay empty.
     expect(await listEntries(client, day)).toHaveLength(0);
     expect(await dailyTotals(client, day, day)).toHaveLength(0);
+    expect(await recentFoods(client)).toHaveLength(0);
   });
 
   it('adds a scanned product to the day only when the user confirms', async () => {

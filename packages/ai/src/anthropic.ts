@@ -15,6 +15,17 @@ export interface AnthropicProviderConfig {
 export const DEFAULT_ANTHROPIC_MODEL = 'claude-opus-5-5';
 
 /**
+ * Models that accept the server-side refusal fallback (`fallbacks: "default"`).
+ * Claude Haiku 5.5 has none (a declined request stays declined), so it is
+ * never sent there; refusals are handled below either way.
+ */
+const SERVER_FALLBACK_MODELS = new Set(['claude-opus-5-5', 'claude-opus-5', 'claude-sonnet-5-5', 'claude-fable-5-1', 'claude-fable-5']);
+
+export function supportsServerFallback(model: string): boolean {
+  return SERVER_FALLBACK_MODELS.has(model);
+}
+
+/**
  * Claude adapter using structured outputs (`output_config.format`).
  * Thinking is left at the model default (adaptive); depth is controlled with
  * `effort`, which is set explicitly per task.
@@ -51,7 +62,7 @@ export function createAnthropicProvider(cfg: AnthropicProviderConfig): Structure
         const response = await client.beta.messages.parse({
           model,
           max_tokens: req.maxTokens ?? 16_000,
-          ...(cfg.fallbacks ? { betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' as const } : {}),
+          ...(cfg.fallbacks && supportsServerFallback(model) ? { betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' as const } : {}),
           system,
           messages: [{ role: 'user', content }],
           output_config: { format: betaZodOutputFormat(req.schema), effort: req.effort ?? cfg.effort[req.task] },

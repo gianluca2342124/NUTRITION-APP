@@ -8,7 +8,7 @@ import { ARTICLE_MIN_BODY, saveCommunityArticle, type CommunityArticle } from '@
 import { motion } from '@repo/design';
 import { EditorHeader, ImageSlot, SentForReview } from '@/components/publish';
 import { Button, Field, Notice, Screen, SegmentedControl, Skeleton, Text, haptic } from '@/components/ui';
-import { mediaUrl, pickAndUpload, removeMedia, useCommunityArticle } from '@/lib/community';
+import { pickAndUpload, removeMedia, useCommunityArticle, useMediaUrl } from '@/lib/community';
 import { errorMessage } from '@/lib/errors';
 import { uuid } from '@/lib/ids';
 import { useT } from '@/lib/i18n';
@@ -48,6 +48,7 @@ function ArticleEditor({ initial }: { initial: CommunityArticle | null }) {
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
 
+  const cover = useMediaUrl('community-media', coverPath);
   const sourceList = sources.split('\n').map((s) => s.trim()).filter(Boolean);
   const paragraphs = body.split(/\n\s*\n/).map((s) => s.trim()).filter(Boolean);
   const missing = [
@@ -107,7 +108,6 @@ function ArticleEditor({ initial }: { initial: CommunityArticle | null }) {
     );
   }
 
-  const cover = mediaUrl('community-media', coverPath);
   return (
     <Screen edges={['top', 'bottom']} bottomInset={48}>
       <EditorHeader title={initial ? t.publish.articleEdit : t.publish.articleNew} />

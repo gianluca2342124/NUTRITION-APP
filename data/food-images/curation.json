@@ -4,8 +4,14 @@
     "aceite-de-oliva": {
       "file": "File:Olive Oil (Unsplash).jpg"
     },
+    "aceitunas-verdes": {
+      "file": "File:DFC 3933 A close-up of a pile of pitted green olives showing their smooth glossy skins and hollow centers.jpg"
+    },
     "aguacate": {
       "file": "File:Avocado Hass - single and halved.jpg"
+    },
+    "almendras": {
+      "file": "File:Almonds - in shell, shell cracked open, shelled, blanched.jpg"
     },
     "arandanos": {
       "file": "File:Dish of blueberries.jpg"
@@ -13,11 +19,32 @@
     "arroz-blanco-cocido": {
       "file": "File:Cooked white rice.jpg"
     },
+    "arroz-integral-cocido": {
+      "file": "File:Par cooked brown rice - stonesoup cropped.jpg"
+    },
+    "atun-al-natural": {
+      "file": "File:Lata de atún-Albo.jpg"
+    },
     "brocoli": {
       "file": "File:Brocoli 03.jpg"
     },
+    "cacahuetes": {
+      "file": "File:Roasted Peanuts with shell.jpg"
+    },
     "cafe": {
       "file": "File:Cup of coffee (Serbian cuisine, Grand kava).jpg"
+    },
+    "calabacin": {
+      "file": "File:Cucurbita pepo Vilarromaris Oroso Galiza 3.jpg"
+    },
+    "cebolla": {
+      "file": "File:White onion cross section.jpg"
+    },
+    "cerezas": {
+      "file": "File:Sweet cherries in basket 2018 G2.jpg"
+    },
+    "champinones": {
+      "file": "File:2016-01 Agaricus bisporus 07.jpg"
     },
     "chocolate-negro": {
       "file": "File:2023 Gorzka czekolada.jpg"
@@ -25,8 +52,14 @@
     "copos-de-avena": {
       "file": "File:Rolled oats 2.jpg"
     },
+    "espinacas": {
+      "file": "File:Liat Portal for Foodie Disorder - Fresh spinach leaves.jpg"
+    },
     "fresas": {
       "file": "File:Garden strawberry (Fragaria × ananassa) single2.jpg"
+    },
+    "gambas-cocidas": {
+      "file": "File:Cooked shrimp on a plate.jpg"
     },
     "garbanzos-cocidos": {
       "file": "File:Ordinary chickpeas in a ceramic bowl.jpg"
@@ -37,14 +70,47 @@
     "hummus": {
       "file": "File:Hummus from The Nile.jpg"
     },
+    "jamon-cocido": {
+      "file": "File:13-08-31-wien-redaktionstreffen-EuT-by-Bi-frie-171.jpg"
+    },
+    "judias-verdes": {
+      "file": "File:Green beans with olive vegetable.jpg"
+    },
     "kiwi": {
       "file": "File:Kiwi (Actinidia chinensis) 1 Luc Viatour.jpg"
+    },
+    "leche-entera": {
+      "file": "File:Glass of Milk (33657535532).jpg"
+    },
+    "leche-semidesnatada": {
+      "file": "File:Glass of Milk (33657535532).jpg"
+    },
+    "lechuga-romana": {
+      "file": "File:Romaine lettuce.jpg"
     },
     "lentejas-cocidas": {
       "file": "File:Liat Portal for Foodie Disorder - Cooked Lentils with Caramelized Onions.jpg"
     },
+    "limon": {
+      "file": "File:Lemon - whole and split.jpg"
+    },
+    "mandarina": {
+      "file": "File:2023 Mandarynki.jpg"
+    },
+    "mango": {
+      "file": "File:Mango on white.jpg"
+    },
+    "mantequilla": {
+      "file": "File:Butter block.JPG"
+    },
     "manzana": {
       "file": "File:Red Delicious Apple 2021.jpg"
+    },
+    "melocoton": {
+      "file": "File:Bowl of peaches with colour enhanced.jpg"
+    },
+    "miel": {
+      "file": "File:Jar and honey stick.jpg"
     },
     "naranja": {
       "file": "File:Orange-Fruit-Pieces.jpg"
@@ -55,21 +121,57 @@
     "pan-de-barra": {
       "file": "File:Brot 001 2016 07 03.jpg"
     },
+    "pan-integral": {
+      "file": "File:Vegan no-knead whole wheat bread loaf, September 2010.jpg"
+    },
     "pasta-cocida": {
       "file": "File:A plate of red sauce pasta.jpg",
       "author": "Masum-al-Hasan Rocky"
     },
+    "patata-asada": {
+      "file": "File:BakedPotatoWithButter.jpg"
+    },
+    "patata-cocida": {
+      "file": "File:Asparagus with potatoes.jpg"
+    },
+    "pechuga-de-pavo": {
+      "file": "File:Turkey breast - December 2025 - Sarah Stierch.jpg"
+    },
     "pechuga-de-pollo": {
       "file": "File:Grilled Chicken Breasts (28905381261).jpg"
+    },
+    "pepino": {
+      "file": "File:Ryerson Market cucumbers on sale.jpg"
+    },
+    "pera": {
+      "file": "File:Pear DS.jpg"
     },
     "pimiento-rojo": {
       "file": "File:Red bell pepper.jpg"
     },
+    "pina": {
+      "file": "File:Pineapple on the Arruda Plantation in Ponta Delgada 04.jpg"
+    },
     "platano": {
       "file": "File:Bananas on black background 02.jpg"
     },
+    "queso-feta": {
+      "file": "File:Feta Cheese.jpg"
+    },
     "salmon": {
       "file": "File:Raw salmon fillets.jpg"
+    },
+    "salsa-de-soja": {
+      "file": "File:Bowl of soy sauce, the sequel.jpg"
+    },
+    "salsa-de-tomate": {
+      "file": "File:Fresh Tomato Sauce (Unsplash).jpg"
+    },
+    "sandia": {
+      "file": "File:Slice of Watermelon from Wilson Farm, Lexington MA.jpg"
+    },
+    "sardinas-en-aceite": {
+      "file": "File:Canned sardines with lemon.jpg"
     },
     "tomate": {
       "file": "File:Tomatoes 2026 G1.jpg"

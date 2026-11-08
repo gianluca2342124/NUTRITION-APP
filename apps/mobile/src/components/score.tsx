@@ -72,7 +72,13 @@ export function ScoreDial({ result, size = 138 }: { result: FudyuScoreResult; si
           </Text>
         )}
       </View>
-      <Text variant="section" align="center" style={{ color: tone?.strong ?? p.textSecondary, fontWeight: '800', letterSpacing: 1.2, textTransform: 'uppercase' }}>
+      <Text
+        variant={size >= 110 ? 'section' : 'bodyStrong'}
+        align="center"
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        style={{ color: size >= 110 ? (tone?.strong ?? p.textSecondary) : (tone?.text ?? p.textSecondary), fontWeight: '800', letterSpacing: size >= 110 ? 1.2 : 0.6, textTransform: 'uppercase' }}
+      >
         {label}
       </Text>
       {!scored ? (

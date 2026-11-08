@@ -60,7 +60,11 @@ describe('Fudyu Score', () => {
     const r = computeFudyuScore(inputFor('3229820019307', { novaGroup: 1 }));
     expect(r).toMatchObject({ status: 'scored', version: FUDYU_SCORE_VERSION, score: 85, level: 'excellent', adjustments: [] });
     if (r.status !== 'scored') return;
-    expect(topFactors(r).map((f) => f.key)).toEqual(['fiber', 'protein', 'minimally_processed']);
+    const keys = topFactors(r).map((f) => f.key);
+    expect(keys.slice(0, 2)).toEqual(['fiber', 'protein']);
+    // NOVA 1 does not change the number, so it is not a reason (it shows under "Procesamiento").
+    expect(r.factors.map((f) => f.key)).not.toContain('minimally_processed');
+    expect(computeFudyuScore(inputFor('3229820019307', { novaGroup: null }))).toMatchObject({ score: 85 });
   });
 
   it('explains a spread high in sugars and saturated fat', () => {
@@ -124,5 +128,74 @@ describe('Fudyu Score', () => {
     const a = computeFudyuScore(inputFor('8480000047403', { novaGroup: 2 }));
     const b = computeFudyuScore(inputFor('8480000047403', { novaGroup: 2 }));
     expect(a).toEqual(b);
+  });
+});
+
+describe('audit: reasons only reflect what moves the number', () => {
+  const scored = () =>
+    products.flatMap((raw) =>
+      [null, 1, 4].map((nova) => computeFudyuScore(inputFor(raw.code, { novaGroup: nova }))).filter((r) => r.status === 'scored'),
+    ) as Extract<ReturnType<typeof computeFudyuScore>, { status: 'scored' }>[];
+  const NEG: Record<string, string[]> = {
+    sugars: ['sugars'],
+    saturated_fat: ['saturated_fat', 'energy_from_saturated_fat'],
+    saturated_fat_ratio: ['saturated_fat_ratio'],
+    salt: ['salt'],
+    energy: ['energy'],
+    sweeteners: ['non_nutritive_sweeteners'],
+  };
+  const POS: Record<string, string> = { fiber: 'fiber', protein: 'proteins', fruits_vegetables_legumes: 'fruits_vegetables_legumes' };
+
+  it('never repeats a reason, and shows at most one saturated-fat reason', () => {
+    for (const r of scored()) {
+      const keys = r.factors.map((f) => f.key);
+      expect(new Set(keys).size).toBe(keys.length);
+      expect(keys.filter((k) => k === 'saturated_fat' || k === 'saturated_fat_ratio').length).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it('every reason against is a component that scored points or an applied adjustment', () => {
+    for (const r of scored()) {
+      for (const f of r.factors.filter((x) => x.sign < 0)) {
+        const adjustment = r.adjustments.some((a) => a.key === f.key);
+        const component = r.nutriscore.components.some((c) => (NEG[f.key] ?? []).includes(c.id) && c.counted && c.points > 0);
+        expect(adjustment || component, f.key).toBe(true);
+      }
+    }
+  });
+
+  it('every reason in favour earned points or kept that nutrient from counting against', () => {
+    for (const r of scored()) {
+      const against = new Set(r.factors.filter((x) => x.sign < 0).map((x) => x.key));
+      for (const f of r.factors.filter((x) => x.sign > 0)) {
+        if (POS[f.key]) {
+          expect(r.nutriscore.components.some((c) => c.id === POS[f.key] && c.counted && c.points > 0), f.key).toBe(true);
+        } else if (f.key === 'low_sugars') expect(against.has('sugars')).toBe(false);
+        else if (f.key === 'low_salt') expect(against.has('salt')).toBe(false);
+        else if (f.key === 'low_saturated_fat') expect(against.has('saturated_fat') || against.has('saturated_fat_ratio')).toBe(false);
+        else expect(f.key).toBe('water');
+      }
+    }
+  });
+
+  it('adjustments are never nutrients, so no nutrient is counted twice', () => {
+    for (const r of scored()) for (const a of r.adjustments) expect(['ultra_processed', 'additive_not_authorised', 'additive_exposure']).toContain(a.key);
+  });
+
+  it('more sugar, salt or saturated fat never raises the score; more fibre or protein never lowers it', () => {
+    const base = inputFor('3229820019307');
+    const at = (patch: Partial<ScoreInput['nutrientsPer100']>) => {
+      const r = computeFudyuScore({ ...base, nutrientsPer100: { ...base.nutrientsPer100, ...patch } });
+      return r.status === 'scored' ? r.score : NaN;
+    };
+    const series = (key: keyof ScoreInput['nutrientsPer100'], values: number[]) => values.map((v) => at({ [key]: v }));
+    const nonIncreasing = (xs: number[]) => xs.every((x, i) => i === 0 || x <= xs[i - 1]!);
+    const nonDecreasing = (xs: number[]) => xs.every((x, i) => i === 0 || x >= xs[i - 1]!);
+    const grid = Array.from({ length: 31 }, (_, i) => i * 2);
+    expect(nonIncreasing(series('sugars_g', grid))).toBe(true);
+    expect(nonIncreasing(series('saturated_fat_g', grid.map((x) => x / 2)))).toBe(true);
+    expect(nonIncreasing(series('salt_g', grid.map((x) => x / 10)))).toBe(true);
+    expect(nonDecreasing(series('fiber_g', grid.map((x) => x / 4)))).toBe(true);
+    expect(nonDecreasing(series('protein_g', grid.map((x) => x / 2)))).toBe(true);
   });
 });

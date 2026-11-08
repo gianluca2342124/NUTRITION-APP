@@ -11,6 +11,7 @@ import { BottomSheet } from './sheet';
 import { Button, Text, haptic } from './ui';
 import { useT } from '@/lib/i18n';
 import { celebrationStore, toastStore, useCelebration, useToast } from '@/lib/stores';
+import { useNavHeight } from '@/lib/nav-metrics';
 import { UNDO_WINDOW_MS, usePendingUndo } from '@/lib/undo';
 import { radius, shadow, space, usePalette } from '@/lib/theme';
 
@@ -109,7 +110,7 @@ export function ToastHost() {
 export function UndoHost() {
   const p = usePalette();
   const { t } = useT();
-  const insets = useSafeAreaInsets();
+  const navHeight = useNavHeight();
   const pending = usePendingUndo();
   if (!pending) return null;
   return (
@@ -119,7 +120,7 @@ export function UndoHost() {
       exiting={FadeOutDown.duration(motion.fast)}
       accessibilityLiveRegion="polite"
       pointerEvents="box-none"
-      style={{ position: 'absolute', left: space.md, right: space.md, bottom: Math.max(insets.bottom - 6, 12) + 76, alignItems: 'center' }}
+      style={{ position: 'absolute', left: space.md, right: space.md, bottom: navHeight + 8, alignItems: 'center' }}
     >
       <View
         style={[

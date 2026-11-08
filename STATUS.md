@@ -1,6 +1,6 @@
 # STATUS
 
-Last updated: 2026-11-08 (2.1) · Branch: `claude/nifty-mccarthy-v7012h`
+Last updated: 2026-11-08 (2.2) · Branch: `claude/nifty-mccarthy-v7012h`
 
 ## Phases
 | Phase | State |
@@ -8,11 +8,32 @@ Last updated: 2026-11-08 (2.1) · Branch: `claude/nifty-mccarthy-v7012h`
 | 0 — Foundation | Done |
 | 1 — Core nutrition | Done in code. AI-backed features need credentials to run live (see below) |
 | **2.0 — Product experience redesign** | Done: design system, Today, streaks and achievements, Fudyu Score, product, additives, scanner, progress, onboarding, Explore, recipes, Coach preview, web |
+| **2.2 — Quality and real-world readiness** | Done: simpler "+", no duplicate CTAs, nav clearance, clear amount vs correction, Profile redesign, private media, score audit, 61 licensed photos, visual recipe editor, AA contrast, 9:16 share card, compare demo flow, per-task AI models. Real AI calls and iPhone checks still pending (see below) |
 | **2.1 — Premium experience upgrade** | Done: typography, score card, editable nutrient grid, chronological Today with scans, undo, new navigation with "+", Profile with moderated publications, haptics, motion and celebrations |
 | 2 — Connected intelligence (Coach, plans, shopping lists) | Not started. The Coach tab shows an honest preview and does not simulate answers |
 | 3 — Web & SEO | Partly done: home, search, food, product, additive, recipes, methodology, credits, sitemap |
 | 4 — Community | Started: authors can draft recipes and articles and send them to review. Nothing is published without a moderator (no moderation UI yet) |
 | 5 — Commerce & growth | Not started |
+
+## What is new in 2.2
+- **UX:** "+" shows Foto de comida, Código de barras and Voz first; Buscar, Leer etiqueta, Crear receta and Escribir artículo below (manual label entry moved inside "Leer etiqueta"). Today has no CTA duplicating "+". Tab screens reserve exactly the space of the floating navigation (safe areas included) and content fades under it.
+- **Nutrition editing:** stat tiles are read-only. "Cambiar cantidad" only changes the numbers shown (nothing is logged); "¿El envase dice otra cosa? Corregir un dato" sends a moderated `product_correction`.
+- **Profile:** cover, large avatar, name, @usuario, bio, publications grid, earned achievements, then compact private data cards. The public profile is **private by default** (`is_public`); "Cómo te ven los demás" holds the switches.
+- **Security:** avatars and publication media moved to private buckets; signed URLs only for the owner, published content or avatars of public profiles (storage RLS + tests).
+- **Fudyu Score 1.0.1:** audited; explanations now list only what moves the number (NOVA 1 no longer a reason, one saturated-fat reason for oils); audit tests (unique and backed reasons, monotonicity); meaning of the number documented.
+- **Visual:** 61 licensed food photos (was 27); visual recipe editor (full-bleed cover, inline title, time/servings chips, ingredient photos, live nutrition, sticky actions, preview); WCAG AA contrast enforced by a token test.
+- **Sharing and demo:** `/api/v1/share/product/[code]` renders a 1080×1920 PNG (real photo, name, brand, score or "Sin puntuación", level, three facts, sources); "Compartir" on the product screen. Compare: "Escanear otro" returns straight to the side-by-side view; the list survives restarts; the higher score gets a badge.
+- **AI:** meal photos on Opus 5.5, labels on Sonnet 5.5 (low effort), meal text on Haiku 5.5 (low effort, no server-side fallback). Estimates in `docs/ai-costs.md`.
+
+## Verified for 2.2 (commands actually run)
+- `pnpm check`: **174 unit tests** pass (new: score audit, contrast, share facts, AI cost and fallback routing).
+- `pnpm test:db`: **44 integration tests** pass (new: profile private by default, media not readable through public URLs, drafts readable only by their owner, published media and public avatars readable, scans never in "recent foods").
+- `next build` passes; the share card renders for a real product (Nutella) in 3.9 s on the dev server.
+- Browser E2E at 390×844 with no page errors: "+" sheet, product card with separate amount/correction sheets, share button, compare one → two products with badge, Today scan/add/delete/undo, bottom of Hoy and Perfil clear of the navigation, visual recipe editor → "Enviado a revisión", profile edit, private-by-default public view and opt-in, manual label entry from the label flow.
+
+## Blocked / not verified in 2.2
+- **Real AI calls and measured cost:** no Anthropic API key in this environment (Anthropic hosts cannot be added as a network secret here). Add `ANTHROPIC_API_KEY` as an environment variable of the cloud environment (environment menu → Edit) or on the server, then measure with `ai_usage` (`docs/ai-costs.md`).
+- **iPhone:** camera, barcode, haptics, motion/Reduce Motion, voice, Liquid Glass and the share sheet need a real device (`docs/device-testing.md`).
 
 ## What is new in 2.1
 - **Design system:** Plus Jakarta Sans (OFL, 400–800) on app and web; nutrient tokens and icons (`NUTRIENT_STATS`); motion durations by pattern; central `haptics.ts` with intents, throttling and a setting.
@@ -117,7 +138,6 @@ Last updated: 2026-11-08 (2.1) · Branch: `claude/nifty-mccarthy-v7012h`
 - **Web home:** static and revalidated hourly, so products imported after a build appear on the home page after revalidation.
 - **Recipes:** 10 editorial recipes, not yet reviewed by a dietitian. Their photos show the main ingredient (labelled as illustrative).
 - **Photos:** only 27 generic foods have a curated photo. No AI-generated images.
-- **Comparison list:** kept in memory, so it is lost when the app restarts.
 - **Carried over from 1.0:**
   - US generic catalogue (USDA)
   - no offline persistence

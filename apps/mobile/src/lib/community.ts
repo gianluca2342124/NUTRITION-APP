@@ -9,8 +9,9 @@ import {
   listMyArticles,
   listMyRecipes,
   publicAchievements,
-  publicMediaUrl,
   savePublicProfile,
+  signedMediaUrl,
+  type MediaBucket,
   type PublicProfile,
 } from '@repo/data';
 import { uuid } from './ids';
@@ -64,8 +65,20 @@ export function useDeletePublication() {
   });
 }
 
-export function mediaUrl(bucket: 'avatars' | 'community-media', path: string | null | undefined): string | null {
-  return publicMediaUrl(supabase(), bucket, path ?? null);
+/**
+ * Private image → signed URL (cached for less than its lifetime). Returns
+ * null while loading, without access, or when there is no image.
+ */
+export function useMediaUrl(bucket: MediaBucket, path: string | null | undefined): string | null {
+  const q = useQuery({
+    queryKey: ['media', bucket, path],
+    enabled: !!path,
+    staleTime: 45 * 60_000,
+    gcTime: 50 * 60_000,
+    retry: 1,
+    queryFn: () => signedMediaUrl(supabase(), bucket, path!, 3600),
+  });
+  return q.data ?? null;
 }
 
 /**

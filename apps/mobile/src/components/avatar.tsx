@@ -2,7 +2,7 @@ import { Image } from 'expo-image';
 import { View } from 'react-native';
 import { Icon } from './icons';
 import { Text, fontFor } from './ui';
-import { mediaUrl, usePublicProfile } from '@/lib/community';
+import { useMediaUrl, usePublicProfile } from '@/lib/community';
 import { useProfile } from '@/lib/queries';
 import { usePalette } from '@/lib/theme';
 
@@ -17,7 +17,7 @@ export function initials(name: string | null | undefined): string {
 /** The person's photo, or their initials on the brand tint. */
 export function Avatar({ path, name, size, ring }: { path: string | null | undefined; name: string | null | undefined; size: number; ring?: string }) {
   const p = usePalette();
-  const uri = mediaUrl('avatars', path);
+  const uri = useMediaUrl('avatars', path);
   const letters = initials(name);
   return (
     <View

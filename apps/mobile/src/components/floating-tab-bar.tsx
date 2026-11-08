@@ -2,17 +2,19 @@ import type { BottomTabBarProps } from 'expo-router/js-tabs';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, useWindowDimensions, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { motion } from '@repo/design';
 import { MyAvatar } from './avatar';
 import { GlassSurface } from './glass';
 import { Icon, type IconName } from './icons';
 import { PressableScale, Text, haptic } from './ui';
 import { useT } from '@/lib/i18n';
+import { NAV_ISLAND, NAV_PLUS, NAV_PLUS_RISE, navBottomOffset } from '@/lib/nav-metrics';
 import { openAddSheet } from '@/lib/stores';
 import { shadow, usePalette } from '@/lib/theme';
 
 const ICONS: Record<string, IconName> = { index: 'home', explore: 'explore', coach: 'coach' };
-const PLUS = 58;
+const PLUS = NAV_PLUS;
 
 /**
  * Floating island: Hoy · Explorar · (+) · Coach · Perfil. The selection pill
@@ -45,10 +47,25 @@ export function FloatingTabBar({ state, descriptors, navigateToTab, insets }: Bo
   }, [focusedSlot, slotWidth, x]);
   const pill = useAnimatedStyle(() => ({ transform: [{ translateX: x.get() }] }));
 
+  const offset = navBottomOffset(insets.bottom);
+  const fade = offset + NAV_ISLAND + NAV_PLUS_RISE + 28;
   return (
-    <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: Math.max(insets.bottom - 6, 12), paddingHorizontal: 16, alignItems: 'center' }}>
+    <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingBottom: offset, paddingHorizontal: 16, alignItems: 'center' }}>
+      {/* Content scrolling under the bar fades out instead of colliding with it. */}
+      <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: fade }}>
+        <Svg width="100%" height="100%">
+          <Defs>
+            <LinearGradient id="navFade" x1="0" y1="0" x2="0" y2="1">
+              <Stop offset="0" stopColor={p.background} stopOpacity={0} />
+              <Stop offset="0.55" stopColor={p.background} stopOpacity={0.82} />
+              <Stop offset="1" stopColor={p.background} stopOpacity={0.96} />
+            </LinearGradient>
+          </Defs>
+          <Rect x="0" y="0" width="100%" height="100%" fill="url(#navFade)" />
+        </Svg>
+      </View>
       <View style={{ width: '100%', maxWidth: 520 }}>
-        <GlassSurface radius={32} style={{ height: 64, paddingHorizontal: 6, justifyContent: 'center' }}>
+        <GlassSurface radius={32} style={{ height: NAV_ISLAND, paddingHorizontal: 6, justifyContent: 'center' }}>
           <View accessibilityRole="tablist" onLayout={(e) => setSlotWidth(e.nativeEvent.layout.width / slots.length)} style={{ flexDirection: 'row', height: 52 }}>
             {slotWidth > 0 && focusedSlot >= 0 ? (
               <Animated.View pointerEvents="none" style={[{ position: 'absolute', top: 0, left: 0, width: slotWidth, height: 52, borderRadius: 26, backgroundColor: p.primaryTint, opacity: 0.85 }, pill]} />
@@ -97,7 +114,7 @@ export function FloatingTabBar({ state, descriptors, navigateToTab, insets }: Bo
           style={[
             {
               position: 'absolute',
-              top: -16,
+              top: -NAV_PLUS_RISE,
               left: '50%',
               marginLeft: -PLUS / 2,
               width: PLUS,

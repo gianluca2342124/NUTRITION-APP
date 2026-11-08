@@ -19,3 +19,4 @@ export * from './nutriscore';
 export * from './score';
 export * from './personal';
 export * from './recipes';
+export * from './share';

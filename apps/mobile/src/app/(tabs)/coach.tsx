@@ -21,7 +21,7 @@ export default function CoachScreen() {
     ['flask', t.coach.capabilityExplain],
   ];
   return (
-    <Screen>
+    <Screen tabBar>
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingTop: space.sm }}>
         <Text variant="largeTitle">{t.coach.title}</Text>
         <View style={{ backgroundColor: p.primarySoft, borderRadius: radius.pill, paddingHorizontal: space.sm, paddingVertical: 6 }}>

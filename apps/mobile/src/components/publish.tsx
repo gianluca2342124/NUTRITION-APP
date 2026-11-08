@@ -6,7 +6,7 @@ import { motion } from '@repo/design';
 import { FudyuCharacter } from './art';
 import { Icon } from './icons';
 import { Button, IconButton, PressableScale, Row, Text } from './ui';
-import { mediaUrl } from '@/lib/community';
+import { useMediaUrl } from '@/lib/community';
 import { useT } from '@/lib/i18n';
 import { radius, space, usePalette } from '@/lib/theme';
 
@@ -26,7 +26,7 @@ export function EditorHeader({ title }: { title: string }) {
 export function ImageSlot({ path, label, busy, onPick, height = 180 }: { path: string | null; label: string; busy: boolean; onPick: () => void; height?: number }) {
   const p = usePalette();
   const { t } = useT();
-  const uri = mediaUrl('community-media', path);
+  const uri = useMediaUrl('community-media', path);
   return (
     <PressableScale
       accessibilityRole="button"

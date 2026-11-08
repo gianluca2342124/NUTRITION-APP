@@ -16,6 +16,19 @@ export const CURATED_FOOD_IMAGES: Record<string, CuratedImage> = {
       "changes": "cropped and resized"
     }
   },
+  "aceitunas-verdes": {
+    "square": "/food-images/aceitunas-verdes-square.webp",
+    "wide": "/food-images/aceitunas-verdes-wide.webp",
+    "credit": {
+      "title": "DFC 3933 A close-up of a pile of pitted green olives showing their smooth glossy skins and hollow centers.jpg",
+      "author": "PattayaPatrol",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:DFC_3933_A_close-up_of_a_pile_of_pitted_green_olives_showing_their_smooth_glossy_skins_and_hollow_centers.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
   "aguacate": {
     "square": "/food-images/aguacate-square.webp",
     "wide": "/food-images/aguacate-wide.webp",
@@ -25,6 +38,19 @@ export const CURATED_FOOD_IMAGES: Record<string, CuratedImage> = {
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:Avocado_Hass_-_single_and_halved.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "almendras": {
+    "square": "/food-images/almendras-square.webp",
+    "wide": "/food-images/almendras-wide.webp",
+    "credit": {
+      "title": "Almonds - in shell, shell cracked open, shelled, blanched.jpg",
+      "author": "Ivar Leidus",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Almonds_-_in_shell,_shell_cracked_open,_shelled,_blanched.jpg",
       "source": "Wikimedia Commons",
       "changes": "cropped and resized"
     }
@@ -55,6 +81,32 @@ export const CURATED_FOOD_IMAGES: Record<string, CuratedImage> = {
       "changes": "cropped and resized"
     }
   },
+  "arroz-integral-cocido": {
+    "square": "/food-images/arroz-integral-cocido-square.webp",
+    "wide": "/food-images/arroz-integral-cocido-wide.webp",
+    "credit": {
+      "title": "Par cooked brown rice - stonesoup cropped.jpg",
+      "author": "jules / stonesoup",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Par_cooked_brown_rice_-_stonesoup_cropped.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "atun-al-natural": {
+    "square": "/food-images/atun-al-natural-square.webp",
+    "wide": "/food-images/atun-al-natural-wide.webp",
+    "credit": {
+      "title": "Lata de atún-Albo.jpg",
+      "author": "Tamorlan",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lata_de_at%C3%BAn-Albo.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
   "brocoli": {
     "square": "/food-images/brocoli-square.webp",
     "wide": "/food-images/brocoli-wide.webp",
@@ -68,6 +120,19 @@ export const CURATED_FOOD_IMAGES: Record<string, CuratedImage> = {
       "changes": "cropped and resized"
     }
   },
+  "cacahuetes": {
+    "square": "/food-images/cacahuetes-square.webp",
+    "wide": "/food-images/cacahuetes-wide.webp",
+    "credit": {
+      "title": "Roasted Peanuts with shell.jpg",
+      "author": "Sanjay Acharya",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Roasted_Peanuts_with_shell.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
   "cafe": {
     "square": "/food-images/cafe-square.webp",
     "wide": "/food-images/cafe-wide.webp",
@@ -77,6 +142,58 @@ export const CURATED_FOOD_IMAGES: Record<string, CuratedImage> = {
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cup_of_coffee_(Serbian_cuisine,_Grand_kava).jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "calabacin": {
+    "square": "/food-images/calabacin-square.webp",
+    "wide": "/food-images/calabacin-wide.webp",
+    "credit": {
+      "title": "Cucurbita pepo Vilarromaris Oroso Galiza 3.jpg",
+      "author": "Lmbuga",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cucurbita_pepo_Vilarromaris_Oroso_Galiza_3.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "cebolla": {
+    "square": "/food-images/cebolla-square.webp",
+    "wide": "/food-images/cebolla-wide.webp",
+    "credit": {
+      "title": "White onion cross section.jpg",
+      "author": "Amada44",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:White_onion_cross_section.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "cerezas": {
+    "square": "/food-images/cerezas-square.webp",
+    "wide": "/food-images/cerezas-wide.webp",
+    "credit": {
+      "title": "Sweet cherries in basket 2018 G2.jpg",
+      "author": "George Chernilevsky",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sweet_cherries_in_basket_2018_G2.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "champinones": {
+    "square": "/food-images/champinones-square.webp",
+    "wide": "/food-images/champinones-wide.webp",
+    "credit": {
+      "title": "2016-01 Agaricus bisporus 07.jpg",
+      "author": "0x010C",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:2016-01_Agaricus_bisporus_07.jpg",
       "source": "Wikimedia Commons",
       "changes": "cropped and resized"
     }
@@ -107,6 +224,19 @@ export const CURATED_FOOD_IMAGES: Record<string, CuratedImage> = {
       "changes": "cropped and resized"
     }
   },
+  "espinacas": {
+    "square": "/food-images/espinacas-square.webp",
+    "wide": "/food-images/espinacas-wide.webp",
+    "credit": {
+      "title": "Liat Portal for Foodie Disorder - Fresh spinach leaves.jpg",
+      "author": "HaJunkiyada",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Liat_Portal_for_Foodie_Disorder_-_Fresh_spinach_leaves.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
   "fresas": {
     "square": "/food-images/fresas-square.webp",
     "wide": "/food-images/fresas-wide.webp",
@@ -116,6 +246,19 @@ export const CURATED_FOOD_IMAGES: Record<string, CuratedImage> = {
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:Garden_strawberry_(Fragaria_%C3%97_ananassa)_single2.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "gambas-cocidas": {
+    "square": "/food-images/gambas-cocidas-square.webp",
+    "wide": "/food-images/gambas-cocidas-wide.webp",
+    "credit": {
+      "title": "Cooked shrimp on a plate.jpg",
+      "author": "Leon Brocard",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cooked_shrimp_on_a_plate.jpg",
       "source": "Wikimedia Commons",
       "changes": "cropped and resized"
     }
@@ -159,6 +302,32 @@ export const CURATED_FOOD_IMAGES: Record<string, CuratedImage> = {
       "changes": "cropped and resized"
     }
   },
+  "jamon-cocido": {
+    "square": "/food-images/jamon-cocido-square.webp",
+    "wide": "/food-images/jamon-cocido-wide.webp",
+    "credit": {
+      "title": "13-08-31-wien-redaktionstreffen-EuT-by-Bi-frie-171.jpg",
+      "author": "Bi-frie (talk)",
+      "license": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:13-08-31-wien-redaktionstreffen-EuT-by-Bi-frie-171.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "judias-verdes": {
+    "square": "/food-images/judias-verdes-square.webp",
+    "wide": "/food-images/judias-verdes-wide.webp",
+    "credit": {
+      "title": "Green beans with olive vegetable.jpg",
+      "author": "Jpatokal",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Green_beans_with_olive_vegetable.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
   "kiwi": {
     "square": "/food-images/kiwi-square.webp",
     "wide": "/food-images/kiwi-wide.webp",
@@ -168,6 +337,45 @@ export const CURATED_FOOD_IMAGES: Record<string, CuratedImage> = {
       "license": "CC BY-SA 2.5",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kiwi_(Actinidia_chinensis)_1_Luc_Viatour.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "leche-entera": {
+    "square": "/food-images/leche-entera-square.webp",
+    "wide": "/food-images/leche-entera-wide.webp",
+    "credit": {
+      "title": "Glass of Milk (33657535532).jpg",
+      "author": "NIAID",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Glass_of_Milk_(33657535532).jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "leche-semidesnatada": {
+    "square": "/food-images/leche-semidesnatada-square.webp",
+    "wide": "/food-images/leche-semidesnatada-wide.webp",
+    "credit": {
+      "title": "Glass of Milk (33657535532).jpg",
+      "author": "NIAID",
+      "license": "CC BY 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Glass_of_Milk_(33657535532).jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "lechuga-romana": {
+    "square": "/food-images/lechuga-romana-square.webp",
+    "wide": "/food-images/lechuga-romana-wide.webp",
+    "credit": {
+      "title": "Romaine lettuce.jpg",
+      "author": "Rainer Zenz",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Romaine_lettuce.jpg",
       "source": "Wikimedia Commons",
       "changes": "cropped and resized"
     }
@@ -185,6 +393,58 @@ export const CURATED_FOOD_IMAGES: Record<string, CuratedImage> = {
       "changes": "cropped and resized"
     }
   },
+  "limon": {
+    "square": "/food-images/limon-square.webp",
+    "wide": "/food-images/limon-wide.webp",
+    "credit": {
+      "title": "Lemon - whole and split.jpg",
+      "author": "Ivar Leidus",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lemon_-_whole_and_split.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "mandarina": {
+    "square": "/food-images/mandarina-square.webp",
+    "wide": "/food-images/mandarina-wide.webp",
+    "credit": {
+      "title": "2023 Mandarynki.jpg",
+      "author": "Jacek Halicki",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:2023_Mandarynki.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "mango": {
+    "square": "/food-images/mango-square.webp",
+    "wide": "/food-images/mango-wide.webp",
+    "credit": {
+      "title": "Mango on white.jpg",
+      "author": "Rhododendrites",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mango_on_white.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "mantequilla": {
+    "square": "/food-images/mantequilla-square.webp",
+    "wide": "/food-images/mantequilla-wide.webp",
+    "credit": {
+      "title": "Butter block.JPG",
+      "author": "Meanos",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Butter_block.JPG",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
   "manzana": {
     "square": "/food-images/manzana-square.webp",
     "wide": "/food-images/manzana-wide.webp",
@@ -194,6 +454,32 @@ export const CURATED_FOOD_IMAGES: Record<string, CuratedImage> = {
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:Red_Delicious_Apple_2021.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "melocoton": {
+    "square": "/food-images/melocoton-square.webp",
+    "wide": "/food-images/melocoton-wide.webp",
+    "credit": {
+      "title": "Bowl of peaches with colour enhanced.jpg",
+      "author": "Cary Bass",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bowl_of_peaches_with_colour_enhanced.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "miel": {
+    "square": "/food-images/miel-square.webp",
+    "wide": "/food-images/miel-wide.webp",
+    "credit": {
+      "title": "Jar and honey stick.jpg",
+      "author": "Tasmanianbeekeepers",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Jar_and_honey_stick.jpg",
       "source": "Wikimedia Commons",
       "changes": "cropped and resized"
     }
@@ -237,6 +523,19 @@ export const CURATED_FOOD_IMAGES: Record<string, CuratedImage> = {
       "changes": "cropped and resized"
     }
   },
+  "pan-integral": {
+    "square": "/food-images/pan-integral-square.webp",
+    "wide": "/food-images/pan-integral-wide.webp",
+    "credit": {
+      "title": "Vegan no-knead whole wheat bread loaf, September 2010.jpg",
+      "author": "Veganbaking.net",
+      "license": "CC BY-SA 2.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vegan_no-knead_whole_wheat_bread_loaf,_September_2010.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
   "pasta-cocida": {
     "square": "/food-images/pasta-cocida-square.webp",
     "wide": "/food-images/pasta-cocida-wide.webp",
@@ -246,6 +545,45 @@ export const CURATED_FOOD_IMAGES: Record<string, CuratedImage> = {
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:A_plate_of_red_sauce_pasta.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "patata-asada": {
+    "square": "/food-images/patata-asada-square.webp",
+    "wide": "/food-images/patata-asada-wide.webp",
+    "credit": {
+      "title": "BakedPotatoWithButter.jpg",
+      "author": "Renee Comet (photographer)",
+      "license": "Public domain",
+      "licenseUrl": null,
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:BakedPotatoWithButter.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "patata-cocida": {
+    "square": "/food-images/patata-cocida-square.webp",
+    "wide": "/food-images/patata-cocida-wide.webp",
+    "credit": {
+      "title": "Asparagus with potatoes.jpg",
+      "author": "Kritzolina",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Asparagus_with_potatoes.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "pechuga-de-pavo": {
+    "square": "/food-images/pechuga-de-pavo-square.webp",
+    "wide": "/food-images/pechuga-de-pavo-wide.webp",
+    "credit": {
+      "title": "Turkey breast - December 2025 - Sarah Stierch.jpg",
+      "author": "Missvain",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Turkey_breast_-_December_2025_-_Sarah_Stierch.jpg",
       "source": "Wikimedia Commons",
       "changes": "cropped and resized"
     }
@@ -263,6 +601,32 @@ export const CURATED_FOOD_IMAGES: Record<string, CuratedImage> = {
       "changes": "cropped and resized"
     }
   },
+  "pepino": {
+    "square": "/food-images/pepino-square.webp",
+    "wide": "/food-images/pepino-wide.webp",
+    "credit": {
+      "title": "Ryerson Market cucumbers on sale.jpg",
+      "author": "Jason Zhang",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ryerson_Market_cucumbers_on_sale.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "pera": {
+    "square": "/food-images/pera-square.webp",
+    "wide": "/food-images/pera-wide.webp",
+    "credit": {
+      "title": "Pear DS.jpg",
+      "author": "Augustus Binu : flickr",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pear_DS.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
   "pimiento-rojo": {
     "square": "/food-images/pimiento-rojo-square.webp",
     "wide": "/food-images/pimiento-rojo-wide.webp",
@@ -272,6 +636,19 @@ export const CURATED_FOOD_IMAGES: Record<string, CuratedImage> = {
       "license": "CC BY-SA 4.0",
       "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:Red_bell_pepper.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "pina": {
+    "square": "/food-images/pina-square.webp",
+    "wide": "/food-images/pina-wide.webp",
+    "credit": {
+      "title": "Pineapple on the Arruda Plantation in Ponta Delgada 04.jpg",
+      "author": "Kritzolina",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pineapple_on_the_Arruda_Plantation_in_Ponta_Delgada_04.jpg",
       "source": "Wikimedia Commons",
       "changes": "cropped and resized"
     }
@@ -289,6 +666,19 @@ export const CURATED_FOOD_IMAGES: Record<string, CuratedImage> = {
       "changes": "cropped and resized"
     }
   },
+  "queso-feta": {
+    "square": "/food-images/queso-feta-square.webp",
+    "wide": "/food-images/queso-feta-wide.webp",
+    "credit": {
+      "title": "Feta Cheese.jpg",
+      "author": "JJ Harrison (https://www.jjharrison.com.au/)",
+      "license": "CC BY-SA 2.5",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Feta_Cheese.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
   "salmon": {
     "square": "/food-images/salmon-square.webp",
     "wide": "/food-images/salmon-wide.webp",
@@ -298,6 +688,58 @@ export const CURATED_FOOD_IMAGES: Record<string, CuratedImage> = {
       "license": "CC0",
       "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
       "sourceUrl": "https://commons.wikimedia.org/wiki/File:Raw_salmon_fillets.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "salsa-de-soja": {
+    "square": "/food-images/salsa-de-soja-square.webp",
+    "wide": "/food-images/salsa-de-soja-wide.webp",
+    "credit": {
+      "title": "Bowl of soy sauce, the sequel.jpg",
+      "author": "Bodhi Peace",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bowl_of_soy_sauce,_the_sequel.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "salsa-de-tomate": {
+    "square": "/food-images/salsa-de-tomate-square.webp",
+    "wide": "/food-images/salsa-de-tomate-wide.webp",
+    "credit": {
+      "title": "Fresh Tomato Sauce (Unsplash).jpg",
+      "author": "Dennis Klein klein2",
+      "license": "CC0",
+      "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fresh_Tomato_Sauce_(Unsplash).jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "sandia": {
+    "square": "/food-images/sandia-square.webp",
+    "wide": "/food-images/sandia-wide.webp",
+    "credit": {
+      "title": "Slice of Watermelon from Wilson Farm, Lexington MA.jpg",
+      "author": "John Phelan",
+      "license": "CC BY-SA 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Slice_of_Watermelon_from_Wilson_Farm,_Lexington_MA.jpg",
+      "source": "Wikimedia Commons",
+      "changes": "cropped and resized"
+    }
+  },
+  "sardinas-en-aceite": {
+    "square": "/food-images/sardinas-en-aceite-square.webp",
+    "wide": "/food-images/sardinas-en-aceite-wide.webp",
+    "credit": {
+      "title": "Canned sardines with lemon.jpg",
+      "author": "Pannet",
+      "license": "CC BY-SA 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+      "sourceUrl": "https://commons.wikimedia.org/wiki/File:Canned_sardines_with_lemon.jpg",
       "source": "Wikimedia Commons",
       "changes": "cropped and resized"
     }

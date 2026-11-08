@@ -62,4 +62,6 @@ progress lives in `STATUS.md`.
 - Copy goes in `packages/i18n` (Spanish is the reference locale).
 - Tests: unit tests next to sources (`*.test.ts`); integration tests in
   `supabase/tests/` run against `pnpm db:start`.
-- AI defaults to `claude-opus-5-5` for every task; models/effort are env-configurable.
+- AI models per task (env-configurable): meal photos `claude-opus-5-5`; label reading
+  `claude-sonnet-5-5`; short meal text `claude-haiku-5-5` (no server-side fallback there);
+  transcription uses a speech-to-text provider, never an LLM. See `docs/ai-costs.md`.

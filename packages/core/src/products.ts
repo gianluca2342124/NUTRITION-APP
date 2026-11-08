@@ -93,3 +93,9 @@ export type CatalogProduct = z.infer<typeof CatalogProductSchema>;
 export function localizedName(p: { name: string | null; names: Record<string, string> }, locale: string): string | null {
   return p.names[locale] ?? p.name ?? Object.values(p.names)[0] ?? null;
 }
+
+/** Tidies a source quantity for display ("400.0 g" → "400 g"); keeps real decimals. */
+export function quantityLabel(text: string | null | undefined): string | null {
+  if (!text) return null;
+  return text.replace(/(\d+)[.,]0+(?=\s*[a-zA-Zµ])/g, '$1').trim() || null;
+}
