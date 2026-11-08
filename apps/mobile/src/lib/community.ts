@@ -8,6 +8,7 @@ import {
   getPublicProfile,
   listMyArticles,
   listMyRecipes,
+  listPublishedRecipes,
   publicAchievements,
   savePublicProfile,
   signedMediaUrl,
@@ -46,6 +47,16 @@ export function useMyRecipes() {
 export function useMyArticles() {
   const { userId, status } = useSession();
   return useQuery({ queryKey: ['my-articles', userId], queryFn: () => listMyArticles(supabase(), userId!), enabled: status === 'ready' && !!userId });
+}
+
+/** Approved community recipes (published by a moderator), newest first. */
+export function usePublishedRecipes() {
+  return useQuery({ queryKey: ['community-published'], queryFn: () => listPublishedRecipes(supabase()), staleTime: 10 * 60_000 });
+}
+
+/** Someone else's public profile (null when it is private). */
+export function useAuthorProfile(userId: string | undefined) {
+  return useQuery({ queryKey: ['author-profile', userId], queryFn: () => getPublicProfile(supabase(), userId!), enabled: !!userId, staleTime: 10 * 60_000 });
 }
 
 export function useCommunityRecipe(id: string | undefined) {

@@ -12,7 +12,7 @@ Last updated: 2026-11-08 (2.2) · Branch: `claude/nifty-mccarthy-v7012h`
 | **2.1 — Premium experience upgrade** | Done: typography, score card, editable nutrient grid, chronological Today with scans, undo, new navigation with "+", Profile with moderated publications, haptics, motion and celebrations |
 | 2 — Connected intelligence (Coach, plans, shopping lists) | Not started. The Coach tab shows an honest preview and does not simulate answers |
 | 3 — Web & SEO | Partly done: home, search, food, product, additive, recipes, methodology, credits, sitemap |
-| 4 — Community | Started: authors can draft recipes and articles and send them to review. Nothing is published without a moderator (no moderation UI yet) |
+| 4 — Community | Started: drafts, review, private media; approved recipes appear in Explore and on indexable web pages. Nothing is published without a moderator (no moderation UI yet). Plan: `docs/next-phase.md` |
 | 5 — Commerce & growth | Not started |
 
 ## What is new in 2.2
@@ -24,12 +24,14 @@ Last updated: 2026-11-08 (2.2) · Branch: `claude/nifty-mccarthy-v7012h`
 - **Visual:** 61 licensed food photos (was 27); visual recipe editor (full-bleed cover, inline title, time/servings chips, ingredient photos, live nutrition, sticky actions, preview); WCAG AA contrast enforced by a token test.
 - **Sharing and demo:** `/api/v1/share/product/[code]` renders a 1080×1920 PNG (real photo, name, brand, score or "Sin puntuación", level, three facts, sources); "Compartir" on the product screen. Compare: "Escanear otro" returns straight to the side-by-side view; the list survives restarts; the higher score gets a badge.
 - **AI:** meal photos on Opus 5.5, labels on Sonnet 5.5 (low effort), meal text on Haiku 5.5 (low effort, no server-side fallback). Estimates in `docs/ai-costs.md`.
+- **Next phase started:** approved community recipes in Explore (detail screen, "Añadir una ración") and on the web (`/recetas/comunidad/[id]`, schema.org Recipe, sitemap, published-only media route). Coach and alternatives are not started (`docs/next-phase.md`).
 
 ## Verified for 2.2 (commands actually run)
 - `pnpm check`: **174 unit tests** pass (new: score audit, contrast, share facts, AI cost and fallback routing).
-- `pnpm test:db`: **44 integration tests** pass (new: profile private by default, media not readable through public URLs, drafts readable only by their owner, published media and public avatars readable, scans never in "recent foods").
+- `pnpm test:db`: **45 integration tests** pass (including the media route: in review → 404, published → 200, unknown or `../` → 404) (new: profile private by default, media not readable through public URLs, drafts readable only by their owner, published media and public avatars readable, scans never in "recent foods").
 - `next build` passes; the share card renders for a real product (Nutella) in 3.9 s on the dev server.
-- Browser E2E at 390×844 with no page errors: "+" sheet, product card with separate amount/correction sheets, share button, compare one → two products with badge, Today scan/add/delete/undo, bottom of Hoy and Perfil clear of the navigation, visual recipe editor → "Enviado a revisión", profile edit, private-by-default public view and opt-in, manual label entry from the label flow.
+- `next build` lists `/recetas/comunidad/[id]`, the media route and the share route; the community page renders on desktop and at 390 px without horizontal overflow; the sitemap includes it.
+- Browser E2E at 390×844 with no page errors (also: a moderator-published recipe appears in Explore, opens, and "Añadir una ración" saves it): "+" sheet, product card with separate amount/correction sheets, share button, compare one → two products with badge, Today scan/add/delete/undo, bottom of Hoy and Perfil clear of the navigation, visual recipe editor → "Enviado a revisión", profile edit, private-by-default public view and opt-in, manual label entry from the label flow.
 
 ## Blocked / not verified in 2.2
 - **Real AI calls and measured cost:** no Anthropic API key in this environment (Anthropic hosts cannot be added as a network secret here). Add `ANTHROPIC_API_KEY` as an environment variable of the cloud environment (environment menu → Edit) or on the server, then measure with `ai_usage` (`docs/ai-costs.md`).

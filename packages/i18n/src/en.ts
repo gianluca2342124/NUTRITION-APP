@@ -936,6 +936,15 @@ export const en: Messages = {
     discover: 'Discover recipes',
     seeAll: 'See all recipes',
   },
+  community: {
+    title: 'From the community',
+    subtitle: 'Recipes from people who use Fudyu, reviewed before they go live.',
+    by: 'By {name}',
+    anonymous: 'Community recipe',
+    reviewed: 'Reviewed before publishing. Nutrition computed from catalogue data (USDA, Open Food Facts).',
+    notFound: 'This recipe does not exist or is no longer published.',
+    photoByAuthor: 'Photo by the person who shared the recipe',
+  },
   web: {
     heroTitle: 'Know your food.',
     heroSubtitle: 'Search a food, a product or an additive and discover what it contains, with verifiable data.',

@@ -1,7 +1,7 @@
 import 'server-only';
 import { cacheLife } from 'next/cache';
 import { computeFudyuScore, scoreInputFromProduct, type Additive, type AdditiveInfo, type CatalogProduct, type FudyuScoreResult, type GenericFood, type Recipe, type SearchHit, type SearchKind } from '@repo/core';
-import { getAdditive, getAdditiveInfo, getGenericFood, getProductBySlug, getRecipe, listRecipes, mapGenericFoodRow, GENERIC_FOOD_COLUMNS } from '@repo/data';
+import { getAdditive, getAdditiveInfo, getCommunityRecipe, getGenericFood, getProductBySlug, getPublicProfile, getRecipe, listPublishedRecipes, listRecipes, mapGenericFoodRow, GENERIC_FOOD_COLUMNS, type CommunityRecipe, type PublicProfile } from '@repo/data';
 import { supabaseConfigured } from '@/server/env';
 import { publicClient } from '@/server/supabase';
 
@@ -146,4 +146,38 @@ export async function recipeBySlug(slug: string): Promise<Recipe | null> {
   cacheLife('hours');
   if (!supabaseConfigured()) return null;
   return getRecipe(publicClient(), slug);
+}
+
+/* ------------------------------------------------- community (published only) */
+
+export async function publishedCommunityRecipes(): Promise<CommunityRecipe[]> {
+  'use cache';
+  cacheLife('hours');
+  if (!supabaseConfigured()) return [];
+  try {
+    return await listPublishedRecipes(publicClient());
+  } catch {
+    return [];
+  }
+}
+
+/** A published community recipe (anonymous reads only ever see published rows). */
+export async function communityRecipeById(id: string): Promise<CommunityRecipe | null> {
+  'use cache';
+  cacheLife('hours');
+  if (!supabaseConfigured() || !/^[0-9a-f-]{36}$/i.test(id)) return null;
+  const r = await getCommunityRecipe(publicClient(), id);
+  return r?.status === 'published' ? r : null;
+}
+
+/** The author's public profile, or null when it is private. */
+export async function publicAuthor(userId: string): Promise<PublicProfile | null> {
+  'use cache';
+  cacheLife('hours');
+  if (!supabaseConfigured()) return null;
+  try {
+    return await getPublicProfile(publicClient(), userId);
+  } catch {
+    return null;
+  }
 }

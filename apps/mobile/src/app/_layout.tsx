@@ -79,6 +79,7 @@ export default function RootLayout() {
                 <Stack.Screen name="create/article" options={{ presentation: 'modal' }} />
                 <Stack.Screen name="methodology" />
                 <Stack.Screen name="recipe/[slug]" />
+                <Stack.Screen name="community/recipe/[id]" />
               </Stack>
               <UndoHost />
               <ToastHost />

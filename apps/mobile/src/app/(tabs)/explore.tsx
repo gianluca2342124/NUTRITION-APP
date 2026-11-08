@@ -15,12 +15,14 @@ import {
   type SearchHit,
   type SearchKind,
 } from '@repo/core';
-import { FoodCard, RecipeCard } from '@/components/cards';
+import { communityRecipeNutrition, type CommunityRecipe } from '@repo/data';
+import { FoodCard, RecipeCard, RecipeCardView } from '@/components/cards';
 import { FoodImage } from '@/components/food-image';
 import { Icon } from '@/components/icons';
 import { FriendlyEmptyState } from '@/components/states';
 import { Button, Card, Chip, ListRow, Notice, Screen, SectionHeader, Text, fontFor } from '@/components/ui';
 import { apiClient } from '@/lib/api';
+import { useMediaUrl, usePublishedRecipes } from '@/lib/community';
 import { errorMessage } from '@/lib/errors';
 import { useT } from '@/lib/i18n';
 import { categoryArt, foodImageUri } from '@/lib/media';
@@ -218,6 +220,8 @@ function Discover() {
         </>
       ) : null}
 
+      <CommunityRecipes />
+
       {(foods.data?.length ?? 0) > 0 ? (
         <>
           <SectionHeader title={t.web.discoverTitle} subtitle={t.web.discoverSubtitle} />
@@ -278,4 +282,29 @@ function Discover() {
       </Text>
     </View>
   );
+}
+
+/** Approved community recipes; hidden until a moderator has published one. */
+function CommunityRecipes() {
+  const { t } = useT();
+  const published = usePublishedRecipes();
+  if (!published.data?.length) return null;
+  return (
+    <>
+      <SectionHeader title={t.community.title} subtitle={t.community.subtitle} />
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -space.md }} contentContainerStyle={{ gap: space.sm, paddingHorizontal: space.md, paddingBottom: space.xs }}>
+        {published.data.map((r) => (
+          <CommunityRecipeCard key={r.id} recipe={r} />
+        ))}
+      </ScrollView>
+    </>
+  );
+}
+
+function CommunityRecipeCard({ recipe }: { recipe: CommunityRecipe }) {
+  const { t, f, locale } = useT();
+  const uri = useMediaUrl('community-media', recipe.imagePath);
+  const kcal = recipe.ingredients.length ? communityRecipeNutrition(recipe).perServing.energy_kcal : null;
+  const meta = [recipe.minutes ? f(t.recipes.minutes, { value: recipe.minutes }) : null, kcal != null ? `${formatNumber(kcal, locale)} kcal` : null].filter(Boolean).join(' · ');
+  return <RecipeCardView title={recipe.title} imageUri={uri} meta={meta || t.community.anonymous} onPress={() => router.push({ pathname: '/community/recipe/[id]', params: { id: recipe.id } })} />;
 }

@@ -971,6 +971,15 @@ export const es = {
     discover: 'Descubre recetas',
     seeAll: 'Ver todas las recetas',
   },
+  community: {
+    title: 'De la comunidad',
+    subtitle: 'Recetas de personas que usan Fudyu, revisadas antes de publicarse.',
+    by: 'Por {name}',
+    anonymous: 'Receta de la comunidad',
+    reviewed: 'Revisada antes de publicarse. Nutrición calculada con datos del catálogo (USDA, Open Food Facts).',
+    notFound: 'Esta receta no existe o ya no está publicada.',
+    photoByAuthor: 'Foto de quien comparte la receta',
+  },
   web: {
     heroTitle: 'Entiende lo que comes.',
     heroSubtitle: 'Busca un alimento, un producto o un aditivo y descubre qué contiene, con datos verificables.',

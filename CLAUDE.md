@@ -55,6 +55,15 @@ progress lives in `STATUS.md`.
 - Haptics go through `lib/haptics.ts`; confetti only via `celebrate()` for real
   events, never for calorie limits.
 
+## Fudyu 2.2 rules
+- Avatars and publication media live in private buckets; read them with signed URLs
+  (storage RLS: owner, published content, avatar of a public profile). Never make a
+  bucket public. The web serves published images through `/api/v1/media/community`.
+- `public_profiles.is_public` defaults to false: nothing about a person is visible to
+  others until they turn it on.
+- Fudyu Score reasons list only what moves the number (audit tests in `score.test.ts`).
+- Text contrast meets WCAG AA in both themes (`packages/design/src/tokens.test.ts`).
+
 ## Conventions
 - Migrations: new file per change in `supabase/migrations/`; seeds (foods,
   additives, editorial recipes from `data/recipes/recipes.json`) are generated
